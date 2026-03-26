@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UREP · Análisis de Tiempos Veterinarios</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg:#f5f4f0;--surface:#fff;--surface2:#f9f8f5;--border:#e2e0d8;
+    --text:#1a1a18;--text2:#5a5956;--text3:#9a9892;
+    --accent:#1d6fa4;--success:#3b6d11;--success-bg:#eaf3de;
+    --warn:#854f0b;--warn-bg:#faeeda;--danger:#a32d2d;--danger-bg:#fcebeb;
+    --info:#185fa5;--info-bg:#e6f1fb;--shadow:0 1px 3px rgba(0,0,0,.06);--r:10px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;}
+  .header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100;}
+  .h-brand{display:flex;align-items:center;gap:10px;}
+  .h-logo{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+  .h-logo svg{width:18px;height:18px;fill:white;}
+  .h-title{font-size:15px;font-weight:600;}
+  .h-sub{font-size:11px;color:var(--text3);}
+  .h-meta{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text3);}
+  .sdot{width:7px;height:7px;border-radius:50%;animation:pulse 2s infinite;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+  .wrap{max-width:1300px;margin:0 auto;padding:20px 24px 48px;}
+  .banner{border-radius:var(--r);padding:11px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px;font-size:13px;flex-wrap:wrap;}
+  .b-loading{background:var(--info-bg);color:var(--info);border:1px solid #B5D4F4;}
+  .b-ok{background:var(--success-bg);color:var(--success);border:1px solid #C0DD97;}
+  .b-error{background:var(--danger-bg);color:var(--danger);border:1px solid #F7C1C1;}
+  .spin{width:16px;height:16px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:sp .7s linear infinite;flex-shrink:0;}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  .btn-xs{height:28px;padding:0 12px;border-radius:6px;border:1px solid currentColor;background:transparent;color:inherit;font-size:12px;font-weight:500;cursor:pointer;}
+  .filters{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:20px;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;}
+  .fg{display:flex;flex-direction:column;gap:4px;min-width:148px;flex:1;}
+  .fl{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;}
+  select,input[type=date]{height:34px;border:1px solid var(--border);border-radius:7px;padding:0 10px;font-size:13px;color:var(--text);background:var(--surface2);outline:none;width:100%;}
+  select:focus,input:focus{border-color:var(--accent);}
+  .btn{height:34px;padding:0 16px;border-radius:7px;border:none;cursor:pointer;font-size:13px;font-weight:500;}
+  .btn-p{background:var(--accent);color:white;}.btn-g{background:var(--surface2);color:var(--text2);border:1px solid var(--border);}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:12px;margin-bottom:20px;}
+  .kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;}
+  .kl{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
+  .kv{font-size:30px;font-weight:700;line-height:1;}
+  .ku{font-size:12px;color:var(--text3);margin-left:3px;font-weight:400;}
+  .st{font-size:13px;font-weight:600;color:var(--text2);margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+  .st::before{content:'';display:block;width:3px;height:14px;background:var(--accent);border-radius:2px;}
+  .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:12px;margin-bottom:20px;}
+  .pc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+  .ph{padding:11px 14px 9px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+  .pn{font-size:12px;font-weight:600;}
+  .badge{font-size:11px;font-weight:500;padding:2px 9px;border-radius:20px;}
+  .ok-c{background:var(--success-bg);color:var(--success);}
+  .wn-c{background:var(--warn-bg);color:var(--warn);}
+  .bd-c{background:var(--danger-bg);color:var(--danger);}
+  .if-c{background:var(--info-bg);color:var(--info);}
+  .pb{padding:11px 14px;}
+  .ps{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;}
+  .psv{font-size:20px;font-weight:700;line-height:1.1;}
+  .psl{font-size:10px;color:var(--text3);margin-top:2px;}
+  .pbar{height:5px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:10px;}
+  .pbf{height:100%;border-radius:3px;transition:width .4s;}
+  .bok{background:#639922;}.bwn{background:#BA7517;}.bbd{background:#E24B4A;}.bif{background:#378ADD;}
+  .pm{font-size:10px;color:var(--text3);margin-top:5px;display:flex;justify-content:space-between;}
+  .g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+  @media(max-width:760px){.g2{grid-template-columns:1fr;}}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;}
+  .cw{position:relative;height:220px;}
+  .ar{background:var(--surface);border:1px solid var(--border);border-left:3px solid;border-radius:var(--r);padding:10px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;}
+  .ar.vencida{border-left-color:#E24B4A;}.ar.urgente{border-left-color:#BA7517;}
+  .ar.activa{border-left-color:#378ADD;}.ar.subsanada{border-left-color:#639922;}
+  .as{font-size:13px;font-weight:600;}.am{font-size:12px;color:var(--text2);margin-top:2px;}
+  .ad{font-size:22px;font-weight:700;}.al{font-size:10px;color:var(--text3);}
+  .tabs{display:flex;gap:2px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:3px;width:fit-content;margin-bottom:14px;}
+  .tab{padding:5px 14px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;color:var(--text3);border:none;background:none;transition:all .15s;}
+  .tab.active{background:var(--surface);color:var(--text);box-shadow:var(--shadow);}
+  .tw{overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;font-size:12px;}
+  thead th{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;padding:6px 8px;background:var(--surface2);border-bottom:1px solid var(--border);white-space:nowrap;text-align:left;}
+  tbody tr{border-bottom:1px solid var(--border);}
+  tbody tr:hover{background:var(--surface2);}
+  tbody td{padding:7px 8px;white-space:nowrap;}
+  .cn{text-align:right;font-variant-numeric:tabular-nums;font-weight:600;}
+  .tag{display:inline-block;padding:1px 7px;border-radius:20px;font-size:10px;font-weight:500;}
+  .mb{height:5px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:3px;}
+  .mf{height:100%;border-radius:3px;background:var(--accent);}
+  .empty{text-align:center;padding:32px;color:var(--text3);font-size:13px;}
+  .foot{font-size:11px;color:var(--text3);text-align:center;margin-top:32px;}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="h-brand">
+    <div class="h-logo"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h.01M12 16h.01M9 16h.01"/></svg></div>
+    <div><div class="h-title">UREP · Análisis de Tiempos</div><div class="h-sub">Establecimientos Veterinarios · SRS El Salvador</div></div>
+  </div>
+  <div class="h-meta">
+    <div class="sdot" id="sdot" style="background:#9a9892"></div>
+    <span id="slbl">Cargando...</span><span>·</span><span id="ulbl">—</span>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="banner b-loading" id="banner"><div class="spin"></div><span id="bmsg">Conectando con Google Sheets...</span></div>
+
+  <div class="filters">
+    <div class="fg"><div class="fl">Analista</div><select id="f-an"><option value="">Todos</option></select></div>
+    <div class="fg"><div class="fl">Trámite</div><select id="f-tr"><option value="">Todos</option></select></div>
+    <div class="fg"><div class="fl">Estado</div>
+      <select id="f-es">
+        <option value="">Todos</option><option value="proceso">En proceso</option>
+        <option value="subsanacion">En subsanación</option><option value="vencida">Subsanación vencida</option>
+        <option value="finalizado">Finalizados</option>
+      </select>
+    </div>
+    <div class="fg"><div class="fl">Tipo ingreso</div><select id="f-ti"><option value="">Todos</option></select></div>
+    <div class="fg"><div class="fl">Desde</div><input type="date" id="f-de"></div>
+    <div class="fg"><div class="fl">Hasta</div><input type="date" id="f-ha"></div>
+    <div style="display:flex;gap:8px;align-items:flex-end">
+      <button class="btn btn-p" onclick="applyFilters()">Filtrar</button>
+      <button class="btn btn-g" onclick="clearFilters()">Limpiar</button>
+      <button class="btn btn-g" onclick="loadData()">↺</button>
+    </div>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi"><div class="kl">Total expedientes</div><div class="kv" id="k0">—</div></div>
+    <div class="kpi"><div class="kl">Promedio días total</div><div class="kv" id="k1">—<span class="ku">días háb.</span></div></div>
+    <div class="kpi"><div class="kl">En proceso</div><div class="kv" id="k2" style="color:var(--info)">—</div></div>
+    <div class="kpi"><div class="kl">En subsanación</div><div class="kv" id="k3" style="color:var(--warn)">—</div></div>
+    <div class="kpi"><div class="kl">Subsanación vencida</div><div class="kv" id="k4" style="color:var(--danger)">—</div></div>
+    <div class="kpi"><div class="kl">Finalizados</div><div class="kv" id="k5" style="color:var(--success)">—</div></div>
+  </div>
+
+  <div class="st">Tiempos por fase — promedio días hábiles (excluye fines de semana y feriados SV 2026)</div>
+  <div class="pgrid" id="pgrid"></div>
+
+  <div class="g2">
+    <div class="card"><div class="st">Promedio días por fase</div><div class="cw"><canvas id="cf"></canvas></div></div>
+    <div class="card"><div class="st">Expedientes por analista</div><div class="cw"><canvas id="ca"></canvas></div></div>
+  </div>
+
+  <div class="st">Monitor de subsanación</div>
+  <div id="slist" style="margin-bottom:20px"></div>
+
+  <div class="card" style="margin-bottom:16px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div class="st" style="margin:0">Detalle por expediente</div>
+      <button class="btn btn-g" style="font-size:12px" onclick="exportCSV()">Exportar CSV</button>
+    </div>
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('all',this)">Todos</button>
+      <button class="tab" onclick="switchTab('proceso',this)">En proceso</button>
+      <button class="tab" onclick="switchTab('subsanacion',this)">Subsanación</button>
+      <button class="tab" onclick="switchTab('finalizado',this)">Finalizados</button>
+    </div>
+    <div class="tw"><table>
+      <thead><tr>
+        <th>N° Solicitud</th><th>Nombre comercial</th><th>Analista</th><th>Trámite</th><th>Estado</th>
+        <th class="cn">Asignación</th><th class="cn">Rev. BPM</th><th class="cn">Dict. técnico</th>
+        <th class="cn">Inspección</th><th class="cn">Notificación</th><th class="cn">Subsanación</th>
+        <th class="cn">2° Dict.</th><th class="cn">Total</th>
+      </tr></thead>
+      <tbody id="tb"></tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="st">Rendimiento por analista</div>
+    <div class="tw"><table>
+      <thead><tr>
+        <th>Analista</th><th class="cn">Expedientes</th><th class="cn">Prom. asignación</th>
+        <th class="cn">Prom. dict. técnico</th><th class="cn">Prom. notificación</th>
+        <th class="cn">Prom. subsanación</th><th class="cn">Prom. total</th><th style="min-width:110px">Carga</th>
+      </tr></thead>
+      <tbody id="tba"></tbody>
+    </table></div>
+  </div>
+
+  <div class="foot">UREP · SRS El Salvador · Días hábiles: excluye sábados, domingos y feriados oficiales El Salvador 2026 · Fases en curso contadas hasta hoy</div>
+</div>
+
+<script>
+const SHEET_ID  = '1AQ6vSR9UTI4pdukdQG-VXX6_7Amr7BxKeo0ySrgPmEo';
+const SHEET_TAB = 'Tr%C3%A1mites';
+const DATA_START = 3; // datos desde fila 3
+
+// Índices de columna 0-based según tus encabezados reales
+const C = {
+  estadoSol:0, nSol:1, ingreso:2, mandamiento:3, comercial:4, propietario:5,
+  tramite:6, tipoIngreso:7, personaPresenta:8, comentario:9,
+  fechaAsig:10, analista:11, tipoProceso:12, correo:13, regente:14,
+  estadoRev:15, fechaRevBpm:16,
+  fechaSolInsp:17, estadoInsp:18, fechaInsp:19, fechaInfInsp:20,
+  estadoDict:21, fechaDict1:22,
+  fechaEmRes1:23, fechaFirma1:24, fechaRegFirma1:25, fechaNotif1:26,
+  fechaSolProrroga:27, diasProrroga:28, ultimoDiaSubs:29, comentarioSubs:30, fechaSubs:31,
+  fechaSolReInsp:32, estadoReInsp:33, fechaReInsp:34, fechaInfReInsp:35,
+  resolucion2:36, fechaEmRes2:37, fechaFirma2:38, fechaRegFirma2:39, fechaNotif2:40,
+  nRegistro:41
+};
+
+// Feriados El Salvador 2026 (incluye cierre 2025 y apertura 2027)
+const FERIADOS = new Set([
+  '2026-01-01','2026-02-01','2026-03-30','2026-03-31',
+  '2026-04-01','2026-04-02','2026-04-03','2026-04-06','2026-04-07',
+  '2026-05-01','2026-06-17','2026-07-31',
+  '2026-08-03','2026-08-04','2026-08-05','2026-08-06','2026-08-07',
+  '2026-09-15','2026-11-02',
+  '2026-12-21','2026-12-22','2026-12-23','2026-12-24','2026-12-25',
+  '2027-01-01'
+]);
+
+function fmt(d){ if(!d)return null; return d.toISOString().split('T')[0]; }
+
+function parseD(s){
+  if(!s||!s.trim())return null;
+  s=s.trim();
+  if(/^\d{4}-\d{2}-\d{2}$/.test(s))return new Date(s+'T00:00:00');
+  if(/^\d{1,2}\/\d{1,2}\/\d{2,4}$/.test(s)){
+    const pts=s.split('/');
+    let [a,b,y]=pts;
+    if(y.length===2)y='20'+y;
+    if(parseInt(a)>12)return new Date(`${y}-${b.padStart(2,'0')}-${a.padStart(2,'0')}T00:00:00`);
+    return new Date(`${y}-${a.padStart(2,'0')}-${b.padStart(2,'0')}T00:00:00`);
+  }
+  const t=new Date(s); return isNaN(t)?null:t;
+}
+
+function workdays(d1,d2){
+  if(!d1||!d2)return null;
+  const a=new Date(d1);a.setHours(0,0,0,0);
+  const b=new Date(d2);b.setHours(0,0,0,0);
+  if(a>=b)return 0;
+  let days=0; const cur=new Date(a); cur.setDate(cur.getDate()+1);
+  while(cur<=b){
+    const w=cur.getDay();
+    if(w!==0&&w!==6&&!FERIADOS.has(fmt(cur)))days++;
+    cur.setDate(cur.getDate()+1);
+  }
+  return days;
+}
+
+function avg(arr){
+  const v=arr.filter(x=>x!==null&&x!==undefined&&!isNaN(x)&&x>=0);
+  return v.length?Math.round(v.reduce((a,b)=>a+b,0)/v.length):null;
+}
+
+function derivarEstado(r){
+  const today=new Date();today.setHours(0,0,0,0);
+  if(r.fechaNotif2)return 'Finalizado';
+  if(r.fechaNotif1&&!r.ultimoDiaSubs&&!r.fechaSolProrroga)return 'Finalizado';
+  if(r.fechaSubs&&!r.fechaNotif2)return '2ª Revisión';
+  if(r.ultimoDiaSubs&&!r.fechaSubs){
+    const u=parseD(r.ultimoDiaSubs);
+    if(u&&u<today)return 'Vencida';
+    return 'Subsanación';
+  }
+  return 'En proceso';
+}
+
+let RAW=[],FILTERED=[],activeTab='all',chF=null,chA=null;
+
+async function loadData(){
+  setBanner('loading','Conectando con Google Sheets...');
+  document.getElementById('sdot').style.background='#9a9892';
+  const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${SHEET_TAB}`;
+  try{
+    const resp=await fetch(url);
+    if(!resp.ok)throw new Error(`HTTP ${resp.status} — Verifica que la Sheet sea pública (solo lectura)`);
+    const text=await resp.text();
+    const rows=parseCSV(text);
+    // Las primeras DATA_START-1 filas son encabezados/títulos, saltamos
+    const data=rows.slice(DATA_START-1).filter(r=>r[C.nSol]&&r[C.nSol].trim()!=='');
+    RAW=data.map(mapRow);
+    FILTERED=[...RAW];
+    populateFilters();
+    renderAll();
+    setBanner('ok',`✓ ${RAW.length} expedientes cargados · ${new Date().toLocaleString('es-SV')}`);
+    document.getElementById('sdot').style.background='#639922';
+    document.getElementById('slbl').textContent='Google Sheets en vivo';
+    document.getElementById('ulbl').textContent=new Date().toLocaleTimeString('es-SV');
+  }catch(e){
+    setBanner('error',`Error: ${e.message}`);
+    document.getElementById('sdot').style.background='#E24B4A';
+  }
+}
+
+function setBanner(t,msg){
+  const b=document.getElementById('banner');
+  b.className=`banner b-${t}`;
+  b.innerHTML=(t==='loading'?'<div class="spin"></div>':'')+`<span>${msg}</span>`+
+    (t==='ok'?`<button class="btn-xs" onclick="loadData()" style="margin-left:auto">↺ Actualizar</button>`:'');
+}
+
+function parseCSV(text){
+  const rows=[];
+  for(const line of text.split('\n')){
+    if(!line.trim())continue;
+    const cols=[];let inQ=false,cur='';
+    for(let i=0;i<line.length;i++){
+      const c=line[i];
+      if(c==='"'){inQ=!inQ;continue;}
+      if(c===','&&!inQ){cols.push(cur.trim());cur='';continue;}
+      cur+=c;
+    }
+    cols.push(cur.trim());
+    rows.push(cols);
+  }
+  return rows;
+}
+
+function g(row,idx){ const v=row[idx]; return(v!==undefined&&v!==null)?String(v).trim():''; }
+
+function mapRow(row){
+  const today=new Date();today.setHours(0,0,0,0);
+  const ingreso       =parseD(g(row,C.ingreso));
+  const fechaAsig     =parseD(g(row,C.fechaAsig));
+  const fechaRevBpm   =parseD(g(row,C.fechaRevBpm));
+  const fechaSolInsp  =parseD(g(row,C.fechaSolInsp));
+  const fechaInfInsp  =parseD(g(row,C.fechaInfInsp));
+  const fechaDict1    =parseD(g(row,C.fechaDict1));
+  const fechaNotif1   =parseD(g(row,C.fechaNotif1));
+  const fechaSolProrr =parseD(g(row,C.fechaSolProrroga));
+  const diasProrr     =parseInt(g(row,C.diasProrroga))||null;
+  const ultimoDiaSubs =g(row,C.ultimoDiaSubs);
+  const fechaSubs     =parseD(g(row,C.fechaSubs));
+  const fechaInfReInsp=parseD(g(row,C.fechaInfReInsp));
+  const fechaDict2    =parseD(g(row,C.fechaEmRes2));
+  const fechaNotif2   =parseD(g(row,C.fechaNotif2));
+
+  // ── Fases ──────────────────────────────────────────────────────────────────
+  // F1 Asignación: Ingreso → Fecha asignación (tiempo administrativo inicial)
+  const ph_asig   = workdays(ingreso, fechaAsig);
+
+  // F2 BPM Rev. preliminar: Asignación → Fecha revisión BPM (solo cuando aplica)
+  const ph_bpm    = fechaRevBpm ? workdays(fechaAsig, fechaRevBpm) : null;
+
+  // F3 Revisión técnica 1er dict.: (Rev BPM si existe, sino Asignación) → Fecha dictamen técnico
+  const ph_rt     = workdays(fechaRevBpm||fechaAsig, fechaDict1);
+
+  // F4 Verificación inspección: Fecha solicitud inspección → Fecha informe (corre en paralelo)
+  const ph_insp   = workdays(fechaSolInsp, fechaInfInsp);
+
+  // F5 Emisión resolución/Notificación: Fecha dictamen → Fecha notificación
+  const ph_notif  = workdays(fechaDict1, fechaNotif1);
+
+  // F6 Subsanación: Fecha notificación → Fecha subsanación (o HOY si aún no subsana)
+  const ph_subs   = (fechaNotif1&&ultimoDiaSubs) ? workdays(fechaNotif1, fechaSubs||today) : null;
+
+  // F7 Prórroga: días otorgados (campo directo de la bitácora)
+  const ph_prorr  = diasProrr;
+
+  // F8 2ª Revisión técnica: Fecha subsanación → Fecha 2° dictamen
+  const ph_2rev   = workdays(fechaSubs, fechaDict2);
+
+  // F9 Emisión 2ª resolución: Fecha 2° dictamen → Fecha notificación final
+  const ph_res2   = workdays(fechaDict2, fechaNotif2);
+
+  // Total: Ingreso → notif final (o notif1 si no hay 2do, o HOY si activo)
+  const finTotal  = fechaNotif2||fechaNotif1||today;
+  const ph_total  = workdays(ingreso, finTotal>today?today:finTotal);
+
+  const obj={
+    nSol:g(row,C.nSol), comercial:g(row,C.comercial)||g(row,C.nSol),
+    analista:g(row,C.analista)||'Sin asignar', tramite:g(row,C.tramite)||'N/D',
+    tipoIngreso:g(row,C.tipoIngreso),
+    ingreso:fmt(ingreso), fechaAsig:fmt(fechaAsig), fechaRevBpm:fmt(fechaRevBpm),
+    fechaDict1:fmt(fechaDict1), fechaSolInsp:fmt(fechaSolInsp), fechaInfInsp:fmt(fechaInfInsp),
+    fechaNotif1:fmt(fechaNotif1), fechaSolProrr:fmt(fechaSolProrr), diasProrr,
+    ultimoDiaSubs, fechaSubs:fmt(fechaSubs), fechaDict2:fmt(fechaDict2), fechaNotif2:fmt(fechaNotif2),
+    ph_asig, ph_bpm, ph_rt, ph_insp, ph_notif, ph_subs, ph_prorr, ph_2rev, ph_res2, ph_total,
+  };
+  obj.estado=derivarEstado(obj);
+  return obj;
+}
+
+function populateFilters(){
+  const an=[...new Set(RAW.map(r=>r.analista).filter(Boolean))].sort();
+  const tr=[...new Set(RAW.map(r=>r.tramite).filter(Boolean))].sort();
+  const ti=[...new Set(RAW.map(r=>r.tipoIngreso).filter(Boolean))].sort();
+  document.getElementById('f-an').innerHTML='<option value="">Todos</option>'+an.map(a=>`<option>${a}</option>`).join('');
+  document.getElementById('f-tr').innerHTML='<option value="">Todos</option>'+tr.map(t=>`<option>${t}</option>`).join('');
+  document.getElementById('f-ti').innerHTML='<option value="">Todos</option>'+ti.map(t=>`<option>${t}</option>`).join('');
+}
+
+function applyFilters(){
+  const an=document.getElementById('f-an').value;
+  const tr=document.getElementById('f-tr').value;
+  const es=document.getElementById('f-es').value;
+  const ti=document.getElementById('f-ti').value;
+  const de=document.getElementById('f-de').value;
+  const ha=document.getElementById('f-ha').value;
+  FILTERED=RAW.filter(r=>{
+    if(an&&r.analista!==an)return false;
+    if(tr&&r.tramite!==tr)return false;
+    if(ti&&r.tipoIngreso!==ti)return false;
+    if(es==='proceso'&&!['En proceso','2ª Revisión'].includes(r.estado))return false;
+    if(es==='subsanacion'&&r.estado!=='Subsanación')return false;
+    if(es==='vencida'&&r.estado!=='Vencida')return false;
+    if(es==='finalizado'&&r.estado!=='Finalizado')return false;
+    if(de&&r.ingreso&&r.ingreso<de)return false;
+    if(ha&&r.ingreso&&r.ingreso>ha)return false;
+    return true;
+  });
+  renderAll();
+}
+
+function clearFilters(){
+  ['f-an','f-tr','f-es','f-ti'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-de').value='';
+  document.getElementById('f-ha').value='';
+  FILTERED=[...RAW];
+  renderAll();
+}
+
+function switchTab(t,el){
+  activeTab=t;
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  el.classList.add('active');
+  renderTable();
+}
+
+function renderAll(){ renderKPIs();renderPhases();renderCharts();renderSubs();renderTable();renderAnalistas(); }
+
+function renderKPIs(){
+  document.getElementById('k0').textContent=FILTERED.length;
+  const tots=FILTERED.map(r=>r.ph_total).filter(x=>x!==null&&!isNaN(x));
+  document.getElementById('k1').innerHTML=(avg(tots)||'—')+'<span class="ku">días háb.</span>';
+  document.getElementById('k2').textContent=FILTERED.filter(r=>['En proceso','2ª Revisión'].includes(r.estado)).length;
+  document.getElementById('k3').textContent=FILTERED.filter(r=>r.estado==='Subsanación').length;
+  document.getElementById('k4').textContent=FILTERED.filter(r=>r.estado==='Vencida').length;
+  document.getElementById('k5').textContent=FILTERED.filter(r=>r.estado==='Finalizado').length;
+}
+
+const PD=[
+  {k:'ph_asig',  l:'Fase asignación',             m:3,  d:'Ingreso → Asignación'},
+  {k:'ph_bpm',   l:'BPM Revisión preliminar',     m:5,  d:'Asignación → Rev. BPM'},
+  {k:'ph_rt',    l:'Revisión técnica (1er dict.)',m:10, d:'Rev. previa → Dictamen técnico'},
+  {k:'ph_insp',  l:'Verificación de inspección',  m:8,  d:'Sol. inspección → Informe'},
+  {k:'ph_notif', l:'Emisión de resolución',       m:5,  d:'Dictamen → Notificación'},
+  {k:'ph_subs',  l:'Verificación de subsanación', m:15, d:'Notificación → Subsanación (o hoy)'},
+  {k:'ph_prorr', l:'Verificación de prórroga',    m:10, d:'Días de prórroga otorgados'},
+  {k:'ph_2rev',  l:'2ª Revisión técnica',         m:8,  d:'Subsanación → 2° Dictamen'},
+  {k:'ph_res2',  l:'Emisión 2ª resolución',       m:5,  d:'2° Dictamen → Notif. final'},
+];
+const PC=['#378ADD','#1D9E75','#7F77DD','#D85A30','#BA7517','#D4537E','#639922','#888780','#185fa5'];
+
+function sc(v,m){ if(v===null||v===undefined)return'if'; const p=v/m; return p<=.7?'ok':p<=1?'wn':'bd'; }
+
+function renderPhases(){
+  const el=document.getElementById('pgrid'); el.innerHTML='';
+  PD.forEach((ph,i)=>{
+    const vals=FILTERED.map(r=>r[ph.k]).filter(x=>x!==null&&x!==undefined&&!isNaN(x)&&x>=0);
+    if(!vals.length)return;
+    const p=avg(vals),mn=Math.min(...vals),mx=Math.max(...vals);
+    const s=sc(p,ph.m); const pct=Math.min(100,Math.round((p/ph.m)*100));
+    const bc=s==='ok'?'bok':s==='wn'?'bwn':s==='bd'?'bbd':'bif';
+    const bc2=s==='ok'?'ok-c':s==='wn'?'wn-c':s==='bd'?'bd-c':'if-c';
+    el.innerHTML+=`<div class="pc">
+      <div class="ph"><div class="pn">${ph.l}</div><span class="badge ${bc2}">${p} días háb.</span></div>
+      <div class="pb">
+        <div class="ps">
+          <div><div class="psv" style="color:${PC[i]}">${p}</div><div class="psl">Promedio</div></div>
+          <div><div class="psv">${mn}</div><div class="psl">Mínimo</div></div>
+          <div><div class="psv">${mx}</div><div class="psl">Máximo</div></div>
+        </div>
+        <div class="pbar"><div class="pbf ${bc}" style="width:${pct}%"></div></div>
+        <div class="pm"><span>${ph.d}</span><span>Ref.: ${ph.m}d · ${vals.length} exp.</span></div>
+      </div>
+    </div>`;
+  });
+  if(!el.innerHTML)el.innerHTML='<div class="empty">Sin datos suficientes.</div>';
+}
+
+function renderCharts(){
+  const fd=PD.map(ph=>{const v=FILTERED.map(r=>r[ph.k]).filter(x=>x!==null&&!isNaN(x)&&x>=0);return v.length?avg(v):0;});
+  if(chF)chF.destroy();
+  chF=new Chart(document.getElementById('cf'),{type:'bar',data:{labels:PD.map(p=>p.l.split('(')[0].trim()),datasets:[{data:fd,backgroundColor:PC,borderRadius:5,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:9}}},y:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{font:{size:10}},title:{display:true,text:'días hábiles',font:{size:10}}}}}});
+  const co={};FILTERED.forEach(r=>{co[r.analista]=(co[r.analista]||0)+1;});
+  const sa=Object.entries(co).sort((a,b)=>b[1]-a[1]);
+  if(chA)chA.destroy();
+  chA=new Chart(document.getElementById('ca'),{type:'doughnut',data:{labels:sa.map(x=>x[0]),datasets:[{data:sa.map(x=>x[1]),backgroundColor:PC,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:11},boxWidth:12,padding:8}}}}});
+}
+
+function renderSubs(){
+  const today=new Date();today.setHours(0,0,0,0);
+  const rows=FILTERED.filter(r=>r.fechaNotif1&&r.ultimoDiaSubs);
+  const el=document.getElementById('slist');
+  if(!rows.length){el.innerHTML='<div class="empty">No hay expedientes con subsanación activa.</div>';return;}
+  const sorted=rows.slice().sort((a,b)=>{
+    const ua=parseD(a.ultimoDiaSubs)||new Date(9999,0,1);
+    const ub=parseD(b.ultimoDiaSubs)||new Date(9999,0,1);
+    return ua-ub;
+  });
+  el.innerHTML=sorted.slice(0,20).map(r=>{
+    const ult=parseD(r.ultimoDiaSubs);
+    const dp=workdays(parseD(r.fechaNotif1),r.fechaSubs?parseD(r.fechaSubs):today);
+    const vencida=ult&&ult<today&&!r.fechaSubs;
+    const urgente=!vencida&&!r.fechaSubs&&ult&&workdays(today,ult)<=3;
+    const subsanada=!!r.fechaSubs;
+    const cls=subsanada?'subsanada':vencida?'vencida':urgente?'urgente':'activa';
+    const dr=ult?workdays(today,ult):null;
+    const lbl=subsanada?`Subsanó en ${dp} días háb.`:vencida?`Venció hace ${workdays(ult,today)} días háb.`:`Vence en ${dr} días háb. · Plazo: ${r.ultimoDiaSubs}`;
+    const col=subsanada?'var(--success)':vencida?'var(--danger)':urgente?'var(--warn)':'var(--info)';
+    return`<div class="ar ${cls}">
+      <div><div class="as">${r.nSol} · ${r.comercial}</div>
+      <div class="am">${r.analista} · ${r.tramite} · Notif.: ${r.fechaNotif1||'—'}${r.diasProrr?' · Prórroga: '+r.diasProrr+'d':''}</div></div>
+      <div style="text-align:right"><div class="ad" style="color:${col}">${dp??'—'}</div><div class="al">${lbl}</div></div>
+    </div>`;
+  }).join('');
+}
+
+function etag(e){const m={'Finalizado':'ok-c','En proceso':'if-c','Subsanación':'wn-c','Vencida':'bd-c','2ª Revisión':'wn-c'};return`<span class="tag ${m[e]||'if-c'}">${e}</span>`;}
+function celD(v,m){if(v===null||v===undefined)return'<td class="cn" style="color:var(--text3)">—</td>';const p=v/m;const c=p<=.7?'var(--success)':p<=1?'var(--warn)':'var(--danger)';return`<td class="cn" style="color:${c}">${v}</td>`;}
+
+function renderTable(){
+  let rows=FILTERED;
+  if(activeTab==='proceso')rows=rows.filter(r=>['En proceso','2ª Revisión'].includes(r.estado));
+  if(activeTab==='subsanacion')rows=rows.filter(r=>['Subsanación','Vencida'].includes(r.estado));
+  if(activeTab==='finalizado')rows=rows.filter(r=>r.estado==='Finalizado');
+  const tb=document.getElementById('tb');
+  if(!rows.length){tb.innerHTML='<tr><td colspan="13" class="empty">Sin resultados.</td></tr>';return;}
+  tb.innerHTML=rows.slice(0,150).map(r=>`<tr>
+    <td><strong>${r.nSol}</strong></td><td>${r.comercial}</td><td>${r.analista}</td><td>${r.tramite}</td><td>${etag(r.estado)}</td>
+    ${celD(r.ph_asig,3)}${celD(r.ph_bpm,5)}${celD(r.ph_rt,10)}${celD(r.ph_insp,8)}${celD(r.ph_notif,5)}${celD(r.ph_subs,15)}${celD(r.ph_2rev,8)}${celD(r.ph_total,40)}
+  </tr>`).join('');
+}
+
+function renderAnalistas(){
+  const by={};FILTERED.forEach(r=>{if(!by[r.analista])by[r.analista]=[];by[r.analista].push(r);});
+  const mx=Math.max(1,...Object.values(by).map(a=>a.length));
+  document.getElementById('tba').innerHTML=Object.entries(by).sort((a,b)=>b[1].length-a[1].length).map(([n,rows])=>{
+    const pct=Math.round((rows.length/mx)*100);
+    return`<tr><td><strong>${n}</strong></td><td class="cn">${rows.length}</td>
+      <td class="cn">${avg(rows.map(r=>r.ph_asig))??'—'}</td>
+      <td class="cn">${avg(rows.map(r=>r.ph_rt))??'—'}</td>
+      <td class="cn">${avg(rows.map(r=>r.ph_notif))??'—'}</td>
+      <td class="cn">${avg(rows.map(r=>r.ph_subs))??'—'}</td>
+      <td class="cn"><strong>${avg(rows.map(r=>r.ph_total))??'—'}</strong></td>
+      <td><div style="font-size:10px;color:var(--text3)">${rows.length} exp.</div><div class="mb"><div class="mf" style="width:${pct}%"></div></div></td>
+    </tr>`;
+  }).join('');
+}
+
+function exportCSV(){
+  const h=['N° Solicitud','Comercial','Analista','Trámite','Estado','Ingreso','Asignación','Rev.BPM','Dict.Técnico','Inspección','Notificación','Subsanación','Prórroga','2aRev','Total'];
+  const r=FILTERED.map(r=>[r.nSol,r.comercial,r.analista,r.tramite,r.estado,r.ingreso||'',r.ph_asig??'',r.ph_bpm??'',r.ph_rt??'',r.ph_insp??'',r.ph_notif??'',r.ph_subs??'',r.ph_prorr??'',r.ph_2rev??'',r.ph_total??'']);
+  const csv=[h,...r].map(x=>x.join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
+  a.download='urep_vet_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+}
+
+loadData();
+</script>
+</body>
+</html>
