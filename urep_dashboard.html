@@ -338,19 +338,31 @@ function setBanner(t,msg){
 }
 
 function parseCSV(text){
+  // Parser robusto: maneja saltos de línea dentro de celdas entrecomilladas
   const rows=[];
-  for(const line of text.split('\n')){
-    if(!line.trim())continue;
-    const cols=[];let inQ=false,cur='';
-    for(let i=0;i<line.length;i++){
-      const c=line[i];
-      if(c==='"'){inQ=!inQ;continue;}
-      if(c===','&&!inQ){cols.push(cur.trim());cur='';continue;}
-      cur+=c;
+  let cols=[], cur='', inQ=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    const next=text[i+1];
+    if(c==='"'){
+      if(inQ&&next==='"'){ cur+='"'; i++; } // comilla escapada ""
+      else inQ=!inQ;
+    } else if(c===','&&!inQ){
+      cols.push(cur.trim()); cur='';
+    } else if((c==='\n'||c==='\r')&&!inQ){
+      if(c==='\r'&&next==='\n') i++; // salto \r\n
+      if(cols.length>0||cur.trim()!==''){
+        cols.push(cur.trim());
+        rows.push(cols);
+        cols=[]; cur='';
+      }
+    } else {
+      // salto de línea DENTRO de celda entrecomillada → reemplazar por espacio
+      if((c==='\n'||c==='\r')&&inQ){ cur+=' '; if(c==='\r'&&next==='\n')i++; }
+      else cur+=c;
     }
-    cols.push(cur.trim());
-    rows.push(cols);
   }
+  if(cols.length>0||cur.trim()!==''){cols.push(cur.trim());rows.push(cols);}
   return rows;
 }
 
