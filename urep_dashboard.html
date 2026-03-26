@@ -39,22 +39,27 @@
   select:focus,input:focus{border-color:var(--accent);}
   .btn{height:34px;padding:0 16px;border-radius:7px;border:none;cursor:pointer;font-size:13px;font-weight:500;}
   .btn-p{background:var(--accent);color:white;}.btn-g{background:var(--surface2);color:var(--text2);border:1px solid var(--border);}
-  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:12px;margin-bottom:20px;}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:12px;margin-bottom:20px;}
   .kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;}
   .kl{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
-  .kv{font-size:30px;font-weight:700;line-height:1;}
+  .kv{font-size:28px;font-weight:700;line-height:1;}
   .ku{font-size:12px;color:var(--text3);margin-left:3px;font-weight:400;}
   .st{font-size:13px;font-weight:600;color:var(--text2);margin-bottom:12px;display:flex;align-items:center;gap:6px;}
   .st::before{content:'';display:block;width:3px;height:14px;background:var(--accent);border-radius:2px;}
-  .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:12px;margin-bottom:20px;}
+  /* PHASE SECTION GROUPS */
+  .ph-group{margin-bottom:24px;}
+  .ph-group-title{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;padding-left:4px;border-left:2px solid var(--border);padding-left:8px;}
+  .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;}
   .pc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
-  .ph{padding:11px 14px 9px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-  .pn{font-size:12px;font-weight:600;}
-  .badge{font-size:11px;font-weight:500;padding:2px 9px;border-radius:20px;}
+  .pc.zero-target{border-color:#B5D4F4;}
+  .ph{padding:11px 14px 9px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  .pn{font-size:12px;font-weight:600;flex:1;}
+  .badge{font-size:11px;font-weight:500;padding:2px 9px;border-radius:20px;white-space:nowrap;}
   .ok-c{background:var(--success-bg);color:var(--success);}
   .wn-c{background:var(--warn-bg);color:var(--warn);}
   .bd-c{background:var(--danger-bg);color:var(--danger);}
   .if-c{background:var(--info-bg);color:var(--info);}
+  .zero-c{background:#e6f1fb;color:#0c447c;}
   .pb{padding:11px 14px;}
   .ps{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;}
   .psv{font-size:20px;font-weight:700;line-height:1.1;}
@@ -63,6 +68,13 @@
   .pbf{height:100%;border-radius:3px;transition:width .4s;}
   .bok{background:#639922;}.bwn{background:#BA7517;}.bbd{background:#E24B4A;}.bif{background:#378ADD;}
   .pm{font-size:10px;color:var(--text3);margin-top:5px;display:flex;justify-content:space-between;}
+  /* PRORROGA CARD */
+  .prorr-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:12px;}
+  .prorr-title{font-size:12px;font-weight:600;margin-bottom:10px;color:var(--text);}
+  .prorr-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .prorr-stat{text-align:center;background:var(--surface2);border-radius:8px;padding:10px;}
+  .prorr-val{font-size:22px;font-weight:700;}
+  .prorr-lbl{font-size:10px;color:var(--text3);margin-top:2px;}
   .g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
   @media(max-width:760px){.g2{grid-template-columns:1fr;}}
   .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;}
@@ -70,8 +82,8 @@
   .ar{background:var(--surface);border:1px solid var(--border);border-left:3px solid;border-radius:var(--r);padding:10px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;}
   .ar.vencida{border-left-color:#E24B4A;}.ar.urgente{border-left-color:#BA7517;}
   .ar.activa{border-left-color:#378ADD;}.ar.subsanada{border-left-color:#639922;}
-  .as{font-size:13px;font-weight:600;}.am{font-size:12px;color:var(--text2);margin-top:2px;}
-  .ad{font-size:22px;font-weight:700;}.al{font-size:10px;color:var(--text3);}
+  .as_{font-size:13px;font-weight:600;}.am_{font-size:12px;color:var(--text2);margin-top:2px;}
+  .ad_{font-size:22px;font-weight:700;}.al_{font-size:10px;color:var(--text3);}
   .tabs{display:flex;gap:2px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:3px;width:fit-content;margin-bottom:14px;}
   .tab{padding:5px 14px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;color:var(--text3);border:none;background:none;transition:all .15s;}
   .tab.active{background:var(--surface);color:var(--text);box-shadow:var(--shadow);}
@@ -87,6 +99,7 @@
   .mf{height:100%;border-radius:3px;background:var(--accent);}
   .empty{text-align:center;padding:32px;color:var(--text3);font-size:13px;}
   .foot{font-size:11px;color:var(--text3);text-align:center;margin-top:32px;}
+  .note{font-size:11px;color:var(--info);background:var(--info-bg);border-radius:6px;padding:4px 10px;display:inline-block;margin-top:4px;}
 </style>
 </head>
 <body>
@@ -115,6 +128,13 @@
       </select>
     </div>
     <div class="fg"><div class="fl">Tipo ingreso</div><select id="f-ti"><option value="">Todos</option></select></div>
+    <div class="fg"><div class="fl">Con inspección</div>
+      <select id="f-insp">
+        <option value="">Todos</option>
+        <option value="si">Con inspección</option>
+        <option value="no">Sin inspección</option>
+      </select>
+    </div>
     <div class="fg"><div class="fl">Desde</div><input type="date" id="f-de"></div>
     <div class="fg"><div class="fl">Hasta</div><input type="date" id="f-ha"></div>
     <div style="display:flex;gap:8px;align-items:flex-end">
@@ -131,13 +151,14 @@
     <div class="kpi"><div class="kl">En subsanación</div><div class="kv" id="k3" style="color:var(--warn)">—</div></div>
     <div class="kpi"><div class="kl">Subsanación vencida</div><div class="kv" id="k4" style="color:var(--danger)">—</div></div>
     <div class="kpi"><div class="kl">Finalizados</div><div class="kv" id="k5" style="color:var(--success)">—</div></div>
+    <div class="kpi"><div class="kl">Con prórroga</div><div class="kv" id="k6" style="color:var(--warn)">—</div></div>
   </div>
 
-  <div class="st">Tiempos por fase — promedio días hábiles (excluye fines de semana y feriados SV 2026)</div>
-  <div class="pgrid" id="pgrid"></div>
+  <!-- FASES -->
+  <div id="phases-container"></div>
 
   <div class="g2">
-    <div class="card"><div class="st">Promedio días por fase</div><div class="cw"><canvas id="cf"></canvas></div></div>
+    <div class="card"><div class="st">Promedio días por fase principal</div><div class="cw"><canvas id="cf"></canvas></div></div>
     <div class="card"><div class="st">Expedientes por analista</div><div class="cw"><canvas id="ca"></canvas></div></div>
   </div>
 
@@ -157,10 +178,19 @@
     </div>
     <div class="tw"><table>
       <thead><tr>
-        <th>N° Solicitud</th><th>Nombre comercial</th><th>Analista</th><th>Trámite</th><th>Estado</th>
-        <th class="cn">Asignación</th><th class="cn">Rev. BPM</th><th class="cn">Dict. técnico</th>
-        <th class="cn">Inspección</th><th class="cn">Notificación</th><th class="cn">Subsanación</th>
-        <th class="cn">2° Dict.</th><th class="cn">Total</th>
+        <th>N° Solicitud</th><th>Nombre comercial</th><th>Analista</th><th>Trámite</th><th>Estado</th><th>Insp.</th>
+        <th class="cn">1.Asig.</th>
+        <th class="cn">2.Rev.Prel.</th>
+        <th class="cn">3.Sol.Insp.</th>
+        <th class="cn">4.Inspección</th>
+        <th class="cn">5.Dict.Téc.</th>
+        <th class="cn">6.Dict→Res.</th>
+        <th class="cn">7.Res→Notif.</th>
+        <th class="cn">8.Subsanación</th>
+        <th class="cn">9.2°Dict.</th>
+        <th class="cn">10.2°Res.</th>
+        <th class="cn">11.2°Notif.</th>
+        <th class="cn">Total</th>
       </tr></thead>
       <tbody id="tb"></tbody>
     </table></div>
@@ -170,9 +200,14 @@
     <div class="st">Rendimiento por analista</div>
     <div class="tw"><table>
       <thead><tr>
-        <th>Analista</th><th class="cn">Expedientes</th><th class="cn">Prom. asignación</th>
-        <th class="cn">Prom. dict. técnico</th><th class="cn">Prom. notificación</th>
-        <th class="cn">Prom. subsanación</th><th class="cn">Prom. total</th><th style="min-width:110px">Carga</th>
+        <th>Analista</th><th class="cn">Exp.</th>
+        <th class="cn">Asig.</th>
+        <th class="cn">Rev.Prel.</th>
+        <th class="cn">Dict.Téc.</th>
+        <th class="cn">Notif.</th>
+        <th class="cn">Subsanación</th>
+        <th class="cn">Total</th>
+        <th style="min-width:110px">Carga</th>
       </tr></thead>
       <tbody id="tba"></tbody>
     </table></div>
@@ -184,24 +219,33 @@
 <script>
 const SHEET_ID  = '1AQ6vSR9UTI4pdukdQG-VXX6_7Amr7BxKeo0ySrgPmEo';
 const SHEET_TAB = 'Tr%C3%A1mites';
-const DATA_START = 3; // datos desde fila 3
+const DATA_START = 3;
 
-// Índices de columna 0-based según tus encabezados reales
+// Índices columna 0-based
 const C = {
   estadoSol:0, nSol:1, ingreso:2, mandamiento:3, comercial:4, propietario:5,
   tramite:6, tipoIngreso:7, personaPresenta:8, comentario:9,
   fechaAsig:10, analista:11, tipoProceso:12, correo:13, regente:14,
-  estadoRev:15, fechaRevBpm:16,
-  fechaSolInsp:17, estadoInsp:18, fechaInsp:19, fechaInfInsp:20,
-  estadoDict:21, fechaDict1:22,
-  fechaEmRes1:23, fechaFirma1:24, fechaRegFirma1:25, fechaNotif1:26,
-  fechaSolProrroga:27, diasProrroga:28, ultimoDiaSubs:29, comentarioSubs:30, fechaSubs:31,
-  fechaSolReInsp:32, estadoReInsp:33, fechaReInsp:34, fechaInfReInsp:35,
-  resolucion2:36, fechaEmRes2:37, fechaFirma2:38, fechaRegFirma2:39, fechaNotif2:40,
+  estadoRev:15, fechaRevision:16,        // Col Q — Fecha Revisión preliminar
+  fechaSolInsp:17, estadoInsp:18,
+  fechaInsp:19, fechaInfInsp:20,         // Col U — Fecha Informe Inspección
+  estadoDict:21, fechaDict1:22,          // Col W — Fecha dictamen técnico
+  fechaEmRes1:23,                        // Col X — Fecha emisión resolución 1°
+  fechaFirma1:24, fechaRegFirma1:25,
+  fechaNotif1:26,                        // Col AA — Fecha notificación 1°
+  fechaSolProrr:27, diasProrr:28,
+  ultimoDiaSubs:29, comentarioSubs:30,
+  fechaSubs:31,                          // Col AF — Fecha subsanación
+  fechaSolReInsp:32, estadoReInsp:33,
+  fechaReInsp:34, fechaInfReInsp:35,
+  resolucion2:36,
+  fechaEmRes2:37,                        // Col AL — Fecha emisión 2° resolución
+  fechaFirma2:38, fechaRegFirma2:39,     // Col AN — Fecha regreso firma 2°
+  fechaNotif2:40,                        // Col AO — Fecha notificación final
   nRegistro:41
 };
 
-// Feriados El Salvador 2026 (incluye cierre 2025 y apertura 2027)
+// Feriados El Salvador 2026
 const FERIADOS = new Set([
   '2026-01-01','2026-02-01','2026-03-30','2026-03-31',
   '2026-04-01','2026-04-02','2026-04-03','2026-04-06','2026-04-07',
@@ -250,7 +294,7 @@ function avg(arr){
 function derivarEstado(r){
   const today=new Date();today.setHours(0,0,0,0);
   if(r.fechaNotif2)return 'Finalizado';
-  if(r.fechaNotif1&&!r.ultimoDiaSubs&&!r.fechaSolProrroga)return 'Finalizado';
+  if(r.fechaNotif1&&!r.ultimoDiaSubs&&!r.fechaSolProrr)return 'Finalizado';
   if(r.fechaSubs&&!r.fechaNotif2)return '2ª Revisión';
   if(r.ultimoDiaSubs&&!r.fechaSubs){
     const u=parseD(r.ultimoDiaSubs);
@@ -268,10 +312,9 @@ async function loadData(){
   const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${SHEET_TAB}`;
   try{
     const resp=await fetch(url);
-    if(!resp.ok)throw new Error(`HTTP ${resp.status} — Verifica que la Sheet sea pública (solo lectura)`);
+    if(!resp.ok)throw new Error(`HTTP ${resp.status}`);
     const text=await resp.text();
     const rows=parseCSV(text);
-    // Las primeras DATA_START-1 filas son encabezados/títulos, saltamos
     const data=rows.slice(DATA_START-1).filter(r=>r[C.nSol]&&r[C.nSol].trim()!=='');
     RAW=data.map(mapRow);
     FILTERED=[...RAW];
@@ -315,64 +358,104 @@ function g(row,idx){ const v=row[idx]; return(v!==undefined&&v!==null)?String(v)
 
 function mapRow(row){
   const today=new Date();today.setHours(0,0,0,0);
-  const ingreso       =parseD(g(row,C.ingreso));
-  const fechaAsig     =parseD(g(row,C.fechaAsig));
-  const fechaRevBpm   =parseD(g(row,C.fechaRevBpm));
-  const fechaSolInsp  =parseD(g(row,C.fechaSolInsp));
-  const fechaInfInsp  =parseD(g(row,C.fechaInfInsp));
-  const fechaDict1    =parseD(g(row,C.fechaDict1));
-  const fechaNotif1   =parseD(g(row,C.fechaNotif1));
-  const fechaSolProrr =parseD(g(row,C.fechaSolProrroga));
-  const diasProrr     =parseInt(g(row,C.diasProrroga))||null;
-  const ultimoDiaSubs =g(row,C.ultimoDiaSubs);
-  const fechaSubs     =parseD(g(row,C.fechaSubs));
-  const fechaInfReInsp=parseD(g(row,C.fechaInfReInsp));
-  const fechaDict2    =parseD(g(row,C.fechaEmRes2));
-  const fechaNotif2   =parseD(g(row,C.fechaNotif2));
 
-  // ── Fases ──────────────────────────────────────────────────────────────────
-  // F1 Asignación: Ingreso → Fecha asignación (tiempo administrativo inicial)
-  const ph_asig   = workdays(ingreso, fechaAsig);
+  // Extraer fechas
+  const ingreso        = parseD(g(row,C.ingreso));
+  const fechaAsig      = parseD(g(row,C.fechaAsig));
+  const fechaRevision  = parseD(g(row,C.fechaRevision));   // Revisión preliminar
+  const fechaSolInsp   = parseD(g(row,C.fechaSolInsp));
+  const fechaInfInsp   = parseD(g(row,C.fechaInfInsp));
+  const fechaDict1     = parseD(g(row,C.fechaDict1));       // Dictamen técnico
+  const fechaEmRes1    = parseD(g(row,C.fechaEmRes1));      // Emisión resolución 1°
+  const fechaNotif1    = parseD(g(row,C.fechaNotif1));      // Notificación 1°
+  const fechaSolProrr  = parseD(g(row,C.fechaSolProrr));
+  const diasProrr      = parseInt(g(row,C.diasProrr))||null;
+  const ultimoDiaSubs  = g(row,C.ultimoDiaSubs);
+  const fechaSubs      = parseD(g(row,C.fechaSubs));
+  const fechaEmRes2    = parseD(g(row,C.fechaEmRes2));      // Emisión 2° resolución
+  const fechaRegFirma2 = parseD(g(row,C.fechaRegFirma2));   // Regreso firma 2°
+  const fechaNotif2    = parseD(g(row,C.fechaNotif2));      // Notificación final
 
-  // F2 BPM Rev. preliminar: Asignación → Fecha revisión BPM (solo cuando aplica)
-  const ph_bpm    = fechaRevBpm ? workdays(fechaAsig, fechaRevBpm) : null;
+  // ¿Tiene inspección? → si tiene fecha de solicitud de inspección
+  const tieneInsp = !!fechaSolInsp;
 
-  // F3 Revisión técnica 1er dict.: (Rev BPM si existe, sino Asignación) → Fecha dictamen técnico
-  const ph_rt     = workdays(fechaRevBpm||fechaAsig, fechaDict1);
+  // ══════════════════════════════════════════════════════
+  // CÁLCULO DE FASES (lógica corregida)
+  // ══════════════════════════════════════════════════════
 
-  // F4 Verificación inspección: Fecha solicitud inspección → Fecha informe (corre en paralelo)
-  const ph_insp   = workdays(fechaSolInsp, fechaInfInsp);
+  // F1 · Asignación: Ingreso → Fecha Asignación
+  const ph1_asig = workdays(ingreso, fechaAsig);
 
-  // F5 Emisión resolución/Notificación: Fecha dictamen → Fecha notificación
-  const ph_notif  = workdays(fechaDict1, fechaNotif1);
+  // F2 · Revisión preliminar: Fecha Asignación → Fecha Revisión (Col Q)
+  const ph2_rev = workdays(fechaAsig, fechaRevision);
 
-  // F6 Subsanación: Fecha notificación → Fecha subsanación (o HOY si aún no subsana)
-  const ph_subs   = (fechaNotif1&&ultimoDiaSubs) ? workdays(fechaNotif1, fechaSubs||today) : null;
+  // F3 · Solicitud de inspección: Fecha Revisión → Fecha Sol. Inspección (solo si aplica)
+  const ph3_solInsp = tieneInsp ? workdays(fechaRevision, fechaSolInsp) : null;
 
-  // F7 Prórroga: días otorgados (campo directo de la bitácora)
-  const ph_prorr  = diasProrr;
+  // F4 · Inspección: Fecha Sol. Inspección → Fecha Informe Inspección (solo si aplica)
+  const ph4_insp = tieneInsp ? workdays(fechaSolInsp, fechaInfInsp) : null;
 
-  // F8 2ª Revisión técnica: Fecha subsanación → Fecha 2° dictamen
-  const ph_2rev   = workdays(fechaSubs, fechaDict2);
+  // F5 · Dictamen técnico:
+  //   CON inspección  → Fecha Informe Inspección → Fecha Dictamen
+  //   SIN inspección  → Fecha Revisión → Fecha Dictamen
+  const baseDict = tieneInsp ? fechaInfInsp : fechaRevision;
+  const ph5_dict = workdays(baseDict, fechaDict1);
 
-  // F9 Emisión 2ª resolución: Fecha 2° dictamen → Fecha notificación final
-  const ph_res2   = workdays(fechaDict2, fechaNotif2);
+  // F6 · Dictamen → Resolución 1°: Fecha Dictamen → Fecha Emisión Resolución
+  // (debe ser 0 o mínimo — lo monitoreamos)
+  const ph6_dictRes = workdays(fechaDict1, fechaEmRes1);
 
-  // Total: Ingreso → notif final (o notif1 si no hay 2do, o HOY si activo)
-  const finTotal  = fechaNotif2||fechaNotif1||today;
-  const ph_total  = workdays(ingreso, finTotal>today?today:finTotal);
+  // F7 · Resolución → Notificación 1°: Fecha Emisión Resolución → Fecha Notificación
+  // (debe ser 0 o mínimo — lo monitoreamos)
+  const ph7_resNotif = workdays(fechaEmRes1, fechaNotif1);
 
-  const obj={
-    nSol:g(row,C.nSol), comercial:g(row,C.comercial)||g(row,C.nSol),
-    analista:g(row,C.analista)||'Sin asignar', tramite:g(row,C.tramite)||'N/D',
+  // F8 · Subsanación total: Fecha Notificación → Fecha Subsanación real (o HOY si en curso)
+  // Incluye prórroga si aplica
+  const finSubs = fechaSubs || today;
+  const ph8_subs = (fechaNotif1 && ultimoDiaSubs) ? workdays(fechaNotif1, finSubs) : null;
+
+  // F8b · Prórroga — días otorgados (campo directo)
+  const ph8b_prorrDias = diasProrr;
+
+  // F8c · Prórroga — días usados: Fecha Sol. Prórroga → Fecha Subsanación real
+  const ph8c_prorrUsados = (fechaSolProrr && fechaSubs) ? workdays(fechaSolProrr, fechaSubs) : null;
+
+  // F9 · 2° Dictamen técnico: Fecha Subsanación → Fecha Emisión 2° Resolución
+  const ph9_dict2 = workdays(fechaSubs, fechaEmRes2);
+
+  // F10 · 2° Resolución → Firma: Fecha Emisión 2° Resolución → Fecha Regreso Firma
+  // (debe ser 0 — lo monitoreamos)
+  const ph10_res2 = workdays(fechaEmRes2, fechaRegFirma2);
+
+  // F11 · Firma → Notificación final: Fecha Regreso Firma → Fecha Notificación final
+  // (debe ser 0 — lo monitoreamos)
+  const ph11_notif2 = workdays(fechaRegFirma2, fechaNotif2);
+
+  // Total: Ingreso → notificación final (o notif1 sin 2do dict, o HOY si activo)
+  const finTotal = fechaNotif2 || fechaNotif1 || today;
+  const ph_total = workdays(ingreso, finTotal > today ? today : finTotal);
+
+  const obj = {
+    nSol:       g(row,C.nSol),
+    comercial:  g(row,C.comercial)||g(row,C.nSol),
+    analista:   g(row,C.analista)||'Sin asignar',
+    tramite:    g(row,C.tramite)||'N/D',
     tipoIngreso:g(row,C.tipoIngreso),
-    ingreso:fmt(ingreso), fechaAsig:fmt(fechaAsig), fechaRevBpm:fmt(fechaRevBpm),
-    fechaDict1:fmt(fechaDict1), fechaSolInsp:fmt(fechaSolInsp), fechaInfInsp:fmt(fechaInfInsp),
-    fechaNotif1:fmt(fechaNotif1), fechaSolProrr:fmt(fechaSolProrr), diasProrr,
-    ultimoDiaSubs, fechaSubs:fmt(fechaSubs), fechaDict2:fmt(fechaDict2), fechaNotif2:fmt(fechaNotif2),
-    ph_asig, ph_bpm, ph_rt, ph_insp, ph_notif, ph_subs, ph_prorr, ph_2rev, ph_res2, ph_total,
+    tieneInsp,
+    ingreso:fmt(ingreso), fechaAsig:fmt(fechaAsig),
+    fechaRevision:fmt(fechaRevision), fechaSolInsp:fmt(fechaSolInsp),
+    fechaInfInsp:fmt(fechaInfInsp), fechaDict1:fmt(fechaDict1),
+    fechaEmRes1:fmt(fechaEmRes1), fechaNotif1:fmt(fechaNotif1),
+    fechaSolProrr:fmt(fechaSolProrr), diasProrr, ultimoDiaSubs,
+    fechaSubs:fmt(fechaSubs),
+    fechaEmRes2:fmt(fechaEmRes2), fechaRegFirma2:fmt(fechaRegFirma2),
+    fechaNotif2:fmt(fechaNotif2),
+    ph1_asig, ph2_rev, ph3_solInsp, ph4_insp, ph5_dict,
+    ph6_dictRes, ph7_resNotif, ph8_subs,
+    ph8b_prorrDias, ph8c_prorrUsados,
+    ph9_dict2, ph10_res2, ph11_notif2, ph_total,
   };
-  obj.estado=derivarEstado(obj);
+  obj.estado = derivarEstado(obj);
   return obj;
 }
 
@@ -390,12 +473,15 @@ function applyFilters(){
   const tr=document.getElementById('f-tr').value;
   const es=document.getElementById('f-es').value;
   const ti=document.getElementById('f-ti').value;
+  const insp=document.getElementById('f-insp').value;
   const de=document.getElementById('f-de').value;
   const ha=document.getElementById('f-ha').value;
   FILTERED=RAW.filter(r=>{
     if(an&&r.analista!==an)return false;
     if(tr&&r.tramite!==tr)return false;
     if(ti&&r.tipoIngreso!==ti)return false;
+    if(insp==='si'&&!r.tieneInsp)return false;
+    if(insp==='no'&&r.tieneInsp)return false;
     if(es==='proceso'&&!['En proceso','2ª Revisión'].includes(r.estado))return false;
     if(es==='subsanacion'&&r.estado!=='Subsanación')return false;
     if(es==='vencida'&&r.estado!=='Vencida')return false;
@@ -408,7 +494,7 @@ function applyFilters(){
 }
 
 function clearFilters(){
-  ['f-an','f-tr','f-es','f-ti'].forEach(id=>document.getElementById(id).value='');
+  ['f-an','f-tr','f-es','f-ti','f-insp'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('f-de').value='';
   document.getElementById('f-ha').value='';
   FILTERED=[...RAW];
@@ -432,56 +518,146 @@ function renderKPIs(){
   document.getElementById('k3').textContent=FILTERED.filter(r=>r.estado==='Subsanación').length;
   document.getElementById('k4').textContent=FILTERED.filter(r=>r.estado==='Vencida').length;
   document.getElementById('k5').textContent=FILTERED.filter(r=>r.estado==='Finalizado').length;
+  document.getElementById('k6').textContent=FILTERED.filter(r=>r.diasProrr).length;
 }
 
-const PD=[
-  {k:'ph_asig',  l:'Fase asignación',             m:3,  d:'Ingreso → Asignación'},
-  {k:'ph_bpm',   l:'BPM Revisión preliminar',     m:5,  d:'Asignación → Rev. BPM'},
-  {k:'ph_rt',    l:'Revisión técnica (1er dict.)',m:10, d:'Rev. previa → Dictamen técnico'},
-  {k:'ph_insp',  l:'Verificación de inspección',  m:8,  d:'Sol. inspección → Informe'},
-  {k:'ph_notif', l:'Emisión de resolución',       m:5,  d:'Dictamen → Notificación'},
-  {k:'ph_subs',  l:'Verificación de subsanación', m:15, d:'Notificación → Subsanación (o hoy)'},
-  {k:'ph_prorr', l:'Verificación de prórroga',    m:10, d:'Días de prórroga otorgados'},
-  {k:'ph_2rev',  l:'2ª Revisión técnica',         m:8,  d:'Subsanación → 2° Dictamen'},
-  {k:'ph_res2',  l:'Emisión 2ª resolución',       m:5,  d:'2° Dictamen → Notif. final'},
-];
-const PC=['#378ADD','#1D9E75','#7F77DD','#D85A30','#BA7517','#D4537E','#639922','#888780','#185fa5'];
+const PC=['#378ADD','#1D9E75','#7F77DD','#D85A30','#185fa5','#BA7517','#444441','#D4537E','#639922','#0c447c','#3C3489'];
 
-function sc(v,m){ if(v===null||v===undefined)return'if'; const p=v/m; return p<=.7?'ok':p<=1?'wn':'bd'; }
+function sc(v,m){
+  if(v===null||v===undefined)return'if';
+  if(m===0)return v===0?'ok':'bd'; // fases que deben ser 0
+  const p=v/m; return p<=.7?'ok':p<=1?'wn':'bd';
+}
+function scBar(v,m){
+  const s=sc(v,m);
+  return s==='ok'?'bok':s==='wn'?'bwn':s==='bd'?'bbd':'bif';
+}
+
+function phCard(label, key, max, desc, color, isZeroTarget=false, count=null){
+  const vals=FILTERED.map(r=>r[key]).filter(x=>x!==null&&x!==undefined&&!isNaN(x)&&x>=0);
+  if(!vals.length)return '';
+  const p=avg(vals), mn=Math.min(...vals), mx=Math.max(...vals);
+  const s=sc(p,max);
+  const bc2=isZeroTarget?'zero-c':(s==='ok'?'ok-c':s==='wn'?'wn-c':s==='bd'?'bd-c':'if-c');
+  const pct=max>0?Math.min(100,Math.round((p/max)*100)):p===0?100:0;
+  const n=count||vals.length;
+  return `<div class="pc${isZeroTarget?' zero-target':''}">
+    <div class="ph">
+      <div class="pn">${label}</div>
+      <span class="badge ${bc2}">${p} días háb.</span>
+    </div>
+    <div class="pb">
+      <div class="ps">
+        <div><div class="psv" style="color:${color}">${p}</div><div class="psl">Promedio</div></div>
+        <div><div class="psv">${mn}</div><div class="psl">Mínimo</div></div>
+        <div><div class="psv">${mx}</div><div class="psl">Máximo</div></div>
+      </div>
+      <div class="pbar"><div class="pbf ${scBar(p,max)}" style="width:${isZeroTarget?(p===0?100:100)+'%':pct+'%'}"></div></div>
+      <div class="pm"><span>${desc}</span><span>Ref.:${max>0?max+'d':'0d ideal'} · ${n} exp.</span></div>
+      ${isZeroTarget?'<span class="note">⚡ Idealmente 0 días — verificar tiempos</span>':''}
+    </div>
+  </div>`;
+}
 
 function renderPhases(){
-  const el=document.getElementById('pgrid'); el.innerHTML='';
-  PD.forEach((ph,i)=>{
-    const vals=FILTERED.map(r=>r[ph.k]).filter(x=>x!==null&&x!==undefined&&!isNaN(x)&&x>=0);
-    if(!vals.length)return;
-    const p=avg(vals),mn=Math.min(...vals),mx=Math.max(...vals);
-    const s=sc(p,ph.m); const pct=Math.min(100,Math.round((p/ph.m)*100));
-    const bc=s==='ok'?'bok':s==='wn'?'bwn':s==='bd'?'bbd':'bif';
-    const bc2=s==='ok'?'ok-c':s==='wn'?'wn-c':s==='bd'?'bd-c':'if-c';
-    el.innerHTML+=`<div class="pc">
-      <div class="ph"><div class="pn">${ph.l}</div><span class="badge ${bc2}">${p} días háb.</span></div>
-      <div class="pb">
-        <div class="ps">
-          <div><div class="psv" style="color:${PC[i]}">${p}</div><div class="psl">Promedio</div></div>
-          <div><div class="psv">${mn}</div><div class="psl">Mínimo</div></div>
-          <div><div class="psv">${mx}</div><div class="psl">Máximo</div></div>
-        </div>
-        <div class="pbar"><div class="pbf ${bc}" style="width:${pct}%"></div></div>
-        <div class="pm"><span>${ph.d}</span><span>Ref.: ${ph.m}d · ${vals.length} exp.</span></div>
+  const el=document.getElementById('phases-container');
+
+  // Grupo 1: Proceso principal
+  let g1=`<div class="ph-group">
+    <div class="ph-group-title">Proceso principal</div>
+    <div class="pgrid">
+      ${phCard('1. Asignación','ph1_asig',3,'Ingreso → Fecha Asignación',PC[0])}
+      ${phCard('2. Revisión preliminar','ph2_rev',5,'Fecha Asignación → Fecha Revisión',PC[1])}
+      ${phCard('3. Solicitud de inspección','ph3_solInsp',5,'Fecha Revisión → Fecha Sol. Inspección',PC[2])}
+      ${phCard('4. Inspección','ph4_insp',8,'Fecha Sol. Inspección → Fecha Informe',PC[3])}
+      ${phCard('5. Dictamen técnico','ph5_dict',10,'Informe Inspección (o Rev.) → Fecha Dictamen',PC[4])}
+    </div>
+  </div>`;
+
+  // Grupo 2: Resolución y notificación 1° (deben ser 0)
+  let g2=`<div class="ph-group">
+    <div class="ph-group-title">Resolución y notificación 1° — deben ser 0 días</div>
+    <div class="pgrid">
+      ${phCard('6. Dictamen → Resolución 1°','ph6_dictRes',0,'Fecha Dictamen → Fecha Emisión Resolución',PC[5],true)}
+      ${phCard('7. Resolución → Notificación 1°','ph7_resNotif',0,'Fecha Emisión Resolución → Fecha Notificación',PC[6],true)}
+    </div>
+  </div>`;
+
+  // Grupo 3: Subsanación
+  const conProrr=FILTERED.filter(r=>r.diasProrr);
+  let g3html='';
+  if(FILTERED.some(r=>r.ph8_subs!==null)){
+    const vSubs=FILTERED.map(r=>r.ph8_subs).filter(x=>x!==null&&!isNaN(x)&&x>=0);
+    const vPDias=conProrr.map(r=>r.ph8b_prorrDias).filter(x=>x!==null&&!isNaN(x));
+    const vPUsados=conProrr.map(r=>r.ph8c_prorrUsados).filter(x=>x!==null&&!isNaN(x)&&x>=0);
+    g3html=`<div class="ph-group">
+      <div class="ph-group-title">Subsanación${conProrr.length?' ('+conProrr.length+' con prórroga)':''}</div>
+      <div class="pgrid">
+        ${phCard('8. Subsanación total','ph8_subs',15,'Fecha Notificación → Fecha Subsanación real (o hoy)',PC[7])}
+        ${conProrr.length?`<div class="pc">
+          <div class="ph"><div class="pn">8b/8c. Análisis de prórroga</div><span class="badge wn-c">${conProrr.length} exp.</span></div>
+          <div class="pb">
+            <div class="prorr-grid">
+              <div class="prorr-stat">
+                <div class="prorr-val" style="color:#BA7517">${avg(vPDias)||'—'}</div>
+                <div class="prorr-lbl">Días otorgados (promedio)</div>
+              </div>
+              <div class="prorr-stat">
+                <div class="prorr-val" style="color:#D4537E">${avg(vPUsados)||'—'}</div>
+                <div class="prorr-lbl">Días realmente usados (promedio)</div>
+              </div>
+            </div>
+            <div class="pm" style="margin-top:8px"><span>Sol. Prórroga → Fecha Subsanación</span><span>${conProrr.length} exp. con prórroga</span></div>
+          </div>
+        </div>`:''}
       </div>
     </div>`;
-  });
-  if(!el.innerHTML)el.innerHTML='<div class="empty">Sin datos suficientes.</div>';
+  }
+
+  // Grupo 4: 2° dictamen y resolución final
+  let g4=`<div class="ph-group">
+    <div class="ph-group-title">2° Dictamen y resolución final</div>
+    <div class="pgrid">
+      ${phCard('9. 2° Dictamen técnico','ph9_dict2',10,'Fecha Subsanación → Fecha Emisión 2° Resolución',PC[8])}
+      ${phCard('10. 2° Resolución → Firma','ph10_res2',0,'Fecha Emisión 2° Resolución → Fecha Regreso Firma',PC[9],true)}
+      ${phCard('11. Firma → Notificación final','ph11_notif2',0,'Fecha Regreso Firma → Fecha Notificación final',PC[10],true)}
+    </div>
+  </div>`;
+
+  el.innerHTML=`<div class="st">Tiempos por fase — días hábiles (excluye fines de semana y feriados SV 2026)</div>`+g1+g2+g3html+g4;
 }
 
 function renderCharts(){
-  const fd=PD.map(ph=>{const v=FILTERED.map(r=>r[ph.k]).filter(x=>x!==null&&!isNaN(x)&&x>=0);return v.length?avg(v):0;});
+  const phases=[
+    {k:'ph1_asig',l:'1.Asig.'},
+    {k:'ph2_rev',l:'2.Rev.Prel.'},
+    {k:'ph4_insp',l:'4.Inspección'},
+    {k:'ph5_dict',l:'5.Dict.Téc.'},
+    {k:'ph7_resNotif',l:'7.Res→Notif'},
+    {k:'ph8_subs',l:'8.Subsanación'},
+    {k:'ph9_dict2',l:'9.2°Dict.'},
+  ];
+  const fd=phases.map(ph=>{
+    const v=FILTERED.map(r=>r[ph.k]).filter(x=>x!==null&&!isNaN(x)&&x>=0);
+    return v.length?avg(v):0;
+  });
   if(chF)chF.destroy();
-  chF=new Chart(document.getElementById('cf'),{type:'bar',data:{labels:PD.map(p=>p.l.split('(')[0].trim()),datasets:[{data:fd,backgroundColor:PC,borderRadius:5,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:9}}},y:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{font:{size:10}},title:{display:true,text:'días hábiles',font:{size:10}}}}}});
+  chF=new Chart(document.getElementById('cf'),{
+    type:'bar',
+    data:{labels:phases.map(p=>p.l),datasets:[{data:fd,backgroundColor:PC,borderRadius:5,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{x:{grid:{display:false},ticks:{font:{size:10}}},
+              y:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{font:{size:10}},title:{display:true,text:'días hábiles',font:{size:10}}}}}
+  });
+
   const co={};FILTERED.forEach(r=>{co[r.analista]=(co[r.analista]||0)+1;});
   const sa=Object.entries(co).sort((a,b)=>b[1]-a[1]);
   if(chA)chA.destroy();
-  chA=new Chart(document.getElementById('ca'),{type:'doughnut',data:{labels:sa.map(x=>x[0]),datasets:[{data:sa.map(x=>x[1]),backgroundColor:PC,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:11},boxWidth:12,padding:8}}}}});
+  chA=new Chart(document.getElementById('ca'),{
+    type:'doughnut',
+    data:{labels:sa.map(x=>x[0]),datasets:[{data:sa.map(x=>x[1]),backgroundColor:PC,borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:11},boxWidth:12,padding:8}}}}
+  });
 }
 
 function renderSubs(){
@@ -502,51 +678,98 @@ function renderSubs(){
     const subsanada=!!r.fechaSubs;
     const cls=subsanada?'subsanada':vencida?'vencida':urgente?'urgente':'activa';
     const dr=ult?workdays(today,ult):null;
-    const lbl=subsanada?`Subsanó en ${dp} días háb.`:vencida?`Venció hace ${workdays(ult,today)} días háb.`:`Vence en ${dr} días háb. · Plazo: ${r.ultimoDiaSubs}`;
+    const lbl=subsanada?`Subsanó en ${dp} días háb.`
+      :vencida?`Venció hace ${workdays(ult,today)} días háb.`
+      :`Vence en ${dr} días háb. · Plazo: ${r.ultimoDiaSubs}`;
     const col=subsanada?'var(--success)':vencida?'var(--danger)':urgente?'var(--warn)':'var(--info)';
     return`<div class="ar ${cls}">
-      <div><div class="as">${r.nSol} · ${r.comercial}</div>
-      <div class="am">${r.analista} · ${r.tramite} · Notif.: ${r.fechaNotif1||'—'}${r.diasProrr?' · Prórroga: '+r.diasProrr+'d':''}</div></div>
-      <div style="text-align:right"><div class="ad" style="color:${col}">${dp??'—'}</div><div class="al">${lbl}</div></div>
+      <div>
+        <div class="as_">${r.nSol} · ${r.comercial}</div>
+        <div class="am_">${r.analista} · ${r.tramite} · Notif.: ${r.fechaNotif1||'—'}${r.diasProrr?' · Prórroga: '+r.diasProrr+'d':''}</div>
+      </div>
+      <div style="text-align:right">
+        <div class="ad_" style="color:${col}">${dp??'—'}</div>
+        <div class="al_">${lbl}</div>
+      </div>
     </div>`;
   }).join('');
 }
 
-function etag(e){const m={'Finalizado':'ok-c','En proceso':'if-c','Subsanación':'wn-c','Vencida':'bd-c','2ª Revisión':'wn-c'};return`<span class="tag ${m[e]||'if-c'}">${e}</span>`;}
-function celD(v,m){if(v===null||v===undefined)return'<td class="cn" style="color:var(--text3)">—</td>';const p=v/m;const c=p<=.7?'var(--success)':p<=1?'var(--warn)':'var(--danger)';return`<td class="cn" style="color:${c}">${v}</td>`;}
+function etag(e){
+  const m={'Finalizado':'ok-c','En proceso':'if-c','Subsanación':'wn-c','Vencida':'bd-c','2ª Revisión':'wn-c'};
+  return`<span class="tag ${m[e]||'if-c'}">${e}</span>`;
+}
+function celD(v,m){
+  if(v===null||v===undefined)return'<td class="cn" style="color:var(--text3)">—</td>';
+  let col;
+  if(m===0) col=v===0?'var(--success)':'var(--danger)';
+  else { const p=v/m; col=p<=.7?'var(--success)':p<=1?'var(--warn)':'var(--danger)'; }
+  return`<td class="cn" style="color:${col}">${v}</td>`;
+}
 
 function renderTable(){
   let rows=FILTERED;
-  if(activeTab==='proceso')rows=rows.filter(r=>['En proceso','2ª Revisión'].includes(r.estado));
+  if(activeTab==='proceso')    rows=rows.filter(r=>['En proceso','2ª Revisión'].includes(r.estado));
   if(activeTab==='subsanacion')rows=rows.filter(r=>['Subsanación','Vencida'].includes(r.estado));
-  if(activeTab==='finalizado')rows=rows.filter(r=>r.estado==='Finalizado');
+  if(activeTab==='finalizado') rows=rows.filter(r=>r.estado==='Finalizado');
   const tb=document.getElementById('tb');
-  if(!rows.length){tb.innerHTML='<tr><td colspan="13" class="empty">Sin resultados.</td></tr>';return;}
+  if(!rows.length){tb.innerHTML='<tr><td colspan="18" class="empty">Sin resultados.</td></tr>';return;}
   tb.innerHTML=rows.slice(0,150).map(r=>`<tr>
-    <td><strong>${r.nSol}</strong></td><td>${r.comercial}</td><td>${r.analista}</td><td>${r.tramite}</td><td>${etag(r.estado)}</td>
-    ${celD(r.ph_asig,3)}${celD(r.ph_bpm,5)}${celD(r.ph_rt,10)}${celD(r.ph_insp,8)}${celD(r.ph_notif,5)}${celD(r.ph_subs,15)}${celD(r.ph_2rev,8)}${celD(r.ph_total,40)}
+    <td><strong>${r.nSol}</strong></td>
+    <td>${r.comercial}</td>
+    <td>${r.analista}</td>
+    <td>${r.tramite}</td>
+    <td>${etag(r.estado)}</td>
+    <td><span class="tag ${r.tieneInsp?'ok-c':'if-c'}">${r.tieneInsp?'Sí':'No'}</span></td>
+    ${celD(r.ph1_asig,3)}
+    ${celD(r.ph2_rev,5)}
+    ${celD(r.ph3_solInsp,5)}
+    ${celD(r.ph4_insp,8)}
+    ${celD(r.ph5_dict,10)}
+    ${celD(r.ph6_dictRes,0)}
+    ${celD(r.ph7_resNotif,0)}
+    ${celD(r.ph8_subs,15)}
+    ${celD(r.ph9_dict2,10)}
+    ${celD(r.ph10_res2,0)}
+    ${celD(r.ph11_notif2,0)}
+    ${celD(r.ph_total,40)}
   </tr>`).join('');
 }
 
 function renderAnalistas(){
-  const by={};FILTERED.forEach(r=>{if(!by[r.analista])by[r.analista]=[];by[r.analista].push(r);});
+  const by={};
+  FILTERED.forEach(r=>{if(!by[r.analista])by[r.analista]=[];by[r.analista].push(r);});
   const mx=Math.max(1,...Object.values(by).map(a=>a.length));
-  document.getElementById('tba').innerHTML=Object.entries(by).sort((a,b)=>b[1].length-a[1].length).map(([n,rows])=>{
-    const pct=Math.round((rows.length/mx)*100);
-    return`<tr><td><strong>${n}</strong></td><td class="cn">${rows.length}</td>
-      <td class="cn">${avg(rows.map(r=>r.ph_asig))??'—'}</td>
-      <td class="cn">${avg(rows.map(r=>r.ph_rt))??'—'}</td>
-      <td class="cn">${avg(rows.map(r=>r.ph_notif))??'—'}</td>
-      <td class="cn">${avg(rows.map(r=>r.ph_subs))??'—'}</td>
-      <td class="cn"><strong>${avg(rows.map(r=>r.ph_total))??'—'}</strong></td>
-      <td><div style="font-size:10px;color:var(--text3)">${rows.length} exp.</div><div class="mb"><div class="mf" style="width:${pct}%"></div></div></td>
-    </tr>`;
-  }).join('');
+  document.getElementById('tba').innerHTML=Object.entries(by)
+    .sort((a,b)=>b[1].length-a[1].length)
+    .map(([n,rows])=>{
+      const pct=Math.round((rows.length/mx)*100);
+      return`<tr>
+        <td><strong>${n}</strong></td>
+        <td class="cn">${rows.length}</td>
+        <td class="cn">${avg(rows.map(r=>r.ph1_asig))??'—'}</td>
+        <td class="cn">${avg(rows.map(r=>r.ph2_rev))??'—'}</td>
+        <td class="cn">${avg(rows.map(r=>r.ph5_dict))??'—'}</td>
+        <td class="cn">${avg(rows.map(r=>r.ph7_resNotif))??'—'}</td>
+        <td class="cn">${avg(rows.map(r=>r.ph8_subs))??'—'}</td>
+        <td class="cn"><strong>${avg(rows.map(r=>r.ph_total))??'—'}</strong></td>
+        <td><div style="font-size:10px;color:var(--text3)">${rows.length} exp.</div>
+            <div class="mb"><div class="mf" style="width:${pct}%"></div></div></td>
+      </tr>`;
+    }).join('');
 }
 
 function exportCSV(){
-  const h=['N° Solicitud','Comercial','Analista','Trámite','Estado','Ingreso','Asignación','Rev.BPM','Dict.Técnico','Inspección','Notificación','Subsanación','Prórroga','2aRev','Total'];
-  const r=FILTERED.map(r=>[r.nSol,r.comercial,r.analista,r.tramite,r.estado,r.ingreso||'',r.ph_asig??'',r.ph_bpm??'',r.ph_rt??'',r.ph_insp??'',r.ph_notif??'',r.ph_subs??'',r.ph_prorr??'',r.ph_2rev??'',r.ph_total??'']);
+  const h=['N°','Comercial','Analista','Trámite','Estado','Inspección',
+    '1.Asig','2.RevPrel','3.SolInsp','4.Insp','5.Dict',
+    '6.DictRes','7.ResNotif','8.Subs','8b.ProrrDias','8c.ProrrUsados',
+    '9.Dict2','10.Res2','11.Notif2','Total'];
+  const r=FILTERED.map(r=>[
+    r.nSol,r.comercial,r.analista,r.tramite,r.estado,r.tieneInsp?'Si':'No',
+    r.ph1_asig??'',r.ph2_rev??'',r.ph3_solInsp??'',r.ph4_insp??'',r.ph5_dict??'',
+    r.ph6_dictRes??'',r.ph7_resNotif??'',r.ph8_subs??'',r.ph8b_prorrDias??'',r.ph8c_prorrUsados??'',
+    r.ph9_dict2??'',r.ph10_res2??'',r.ph11_notif2??'',r.ph_total??''
+  ]);
   const csv=[h,...r].map(x=>x.join(',')).join('\n');
   const a=document.createElement('a');
   a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
