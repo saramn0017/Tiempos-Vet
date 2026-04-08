@@ -236,9 +236,14 @@ function sumArr(arr){return arr.filter(x=>x!==null&&!isNaN(x)&&x>=0).reduce((a,b
 function detectarInconsistencias(r){
   const issues=[];
   const chk=(d1,d2,msg)=>{if(!d1||!d2)return;const a=parseD(d1),b=parseD(d2);if(a&&b&&a>b)issues.push(msg);};
+  // Secuencia completa de fechas
+  chk(r.ingreso,r.fechaAsig,'Asignación anterior al Ingreso');
+  chk(r.fechaAsig,r.fechaRev,'Revisión anterior a Asignación');
+  chk(r.fechaRev,r.fechaSolInsp,'Sol. Inspección anterior a Revisión');
+  chk(r.fechaSolInsp,r.fechaInfInsp,'Informe inspección anterior a Solicitud');
+  chk(r.fechaInfInsp,r.fechaDict1,'Dictamen anterior a Informe Inspección');
   chk(r.fechaDict1,r.fechaEmRes1,'Resolución anterior al Dictamen');
   chk(r.fechaEmRes1,r.fechaNotif1,'Notificación anterior a Resolución');
-  chk(r.fechaSolInsp,r.fechaInfInsp,'Informe inspección anterior a Solicitud');
   chk(r.fechaNotif1,r.fechaSubs,'Subsanación anterior a Notificación');
   chk(r.fechaSolReInsp,r.fechaInfReInsp,'Informe re-inspección anterior a Solicitud');
   chk(r.fechaEmRes2,r.fechaNotif2,'Notificación final anterior a Resolución final');
@@ -297,7 +302,7 @@ function mapRow(row){
   const estadoDict=g(row,C.estadoDict);
   const tieneInsp=!!fechaSolInsp;
 
-  const inconsistencias=detectarInconsistencias({fechaDict1:fmt(fechaDict1),fechaEmRes1:fmt(fechaEmRes1),fechaNotif1:fmt(fechaNotif1),fechaSolInsp:fmt(fechaSolInsp),fechaInfInsp:fmt(fechaInfInsp),fechaNotif1:fmt(fechaNotif1),fechaSubs:fmt(fechaSubs),fechaSolReInsp:fmt(fechaSolReInsp),fechaInfReInsp:fmt(fechaInfReInsp),fechaEmRes2:fmt(fechaEmRes2),fechaNotif2:fmt(fechaNotif2)});
+  const inconsistencias=detectarInconsistencias({ingreso:fmt(ingreso),fechaAsig:fmt(fechaAsig),fechaRev:fmt(fechaRev),fechaSolInsp:fmt(fechaSolInsp),fechaInfInsp:fmt(fechaInfInsp),fechaDict1:fmt(fechaDict1),fechaEmRes1:fmt(fechaEmRes1),fechaNotif1:fmt(fechaNotif1),fechaSubs:fmt(fechaSubs),fechaSolReInsp:fmt(fechaSolReInsp),fechaInfReInsp:fmt(fechaInfReInsp),fechaEmRes2:fmt(fechaEmRes2),fechaNotif2:fmt(fechaNotif2)});
   const tieneIncons=inconsistencias.length>0;
 
   // Solo calcular fases si no hay inconsistencias relevantes
@@ -315,7 +320,8 @@ function mapRow(row){
   const pendienteCierre=detectarPendienteCierre({...obj_temp,fechaNotif1:fmt(fechaNotif1)});
   const f8=(!pendienteCierre&&fechaNotif1&&ultimoDiaSubs)?workdays(fechaNotif1,fechaSubs||today):null;
   const f8b=diasProrr;
-  const f8c=(fechaSolProrr&&fechaSubs)?workdays(fechaSolProrr,fechaSubs):null;
+  // F8c solo si hay fecha REAL de subsanación — no contar si está pendiente
+  const f8c=(fechaSolProrr&&fechaSubs&&!pendienteCierre)?workdays(fechaSolProrr,fechaSubs):null;
   const f9a=(fechaSubs&&fechaSolReInsp)?workdays(fechaSubs,fechaSolReInsp):null;
   const f9b=(fechaSolReInsp&&fechaInfReInsp)?workdays(fechaSolReInsp,fechaInfReInsp):null;
   const baseRes2=fechaInfReInsp||fechaSubs;
@@ -474,13 +480,13 @@ function renderMonitor(){
   let html='';
 
   if(incons.length){
-    html+=`<div class="monitor-group"><div class="monitor-group-title mg-red">Inconsistencias en bitácora (${incons.length}) — no entran en promedios</div>`;
+    html+=`<div class="monitor-group"><div class="monitor-group-title mg-red">Inconsistencias en bitácora (${incons.length})</div>`;
     html+=incons.map(r=>`<div class="monitor-row mr-red"><div><div class="mr-sol">${r.nSol} · ${r.comercial}</div><div class="mr-meta">${r.analista}</div><div class="mr-missing">${r.inconsistencias.join(' · ')}</div></div><span class="tag bd-c">Revisar</span></div>`).join('');
     html+='</div>';
   }
 
   if(cierre.length){
-    html+=`<div class="monitor-group"><div class="monitor-group-title mg-warn">Pendientes de cierre administrativo (${cierre.length}) — no entran en promedios</div>`;
+    html+=`<div class="monitor-group"><div class="monitor-group-title mg-warn">Pendientes de cierre administrativo (${cierre.length})</div>`;
     html+=cierre.map(r=>{
       const diasVencida=workdays(parseD(r.ultimoDiaSubs),today);
       return`<div class="monitor-row mr-warn"><div><div class="mr-sol">${r.nSol} · ${r.comercial}</div><div class="mr-meta">${r.analista} · Plazo venció: ${r.ultimoDiaSubs}</div><div class="mr-missing">Falta registrar: ${r.pendienteCierre.join(' · ')}</div></div><div><div class="mr-days" style="color:var(--warn)">${diasVencida}</div><div class="mr-lbl">días háb. vencida</div></div></div>`;
