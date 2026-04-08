@@ -32,7 +32,7 @@ select,input[type=date],input[type=text]{height:34px;border:1px solid var(--bord
 select:focus,input:focus{border-color:var(--accent);}
 .btn{height:34px;padding:0 16px;border-radius:7px;border:none;cursor:pointer;font-size:13px;font-weight:500;}
 .btn-g{background:var(--surface2);color:var(--text2);border:1px solid var(--border);}
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px;margin-bottom:20px;}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px;}
 .kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;}
 .kl{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
 .kv{font-size:26px;font-weight:700;line-height:1;}
@@ -58,8 +58,6 @@ select:focus,input:focus{border-color:var(--accent);}
 .prorr-wrap{display:flex;gap:8px;margin-top:8px;}
 .prorr-half{background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:8px 12px;flex:1;text-align:center;}
 .prorr-v{font-size:18px;font-weight:700;}.prorr-l{font-size:10px;color:var(--text3);margin-top:1px;}
-/* MONITOR */
-.monitor-section{margin-bottom:16px;}
 .monitor-group{margin-bottom:14px;}
 .monitor-group-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;padding:6px 12px;border-radius:6px;margin-bottom:8px;display:inline-block;}
 .mg-red{background:var(--danger-bg);color:var(--danger);}
@@ -118,8 +116,11 @@ tbody td{padding:7px 8px;white-space:nowrap;}
     <div class="fg"><div class="fl">Trámite</div><select id="f-tr" onchange="applyFilters()"><option value="">Todos</option></select></div>
     <div class="fg"><div class="fl">Estado</div>
       <select id="f-es" onchange="applyFilters()">
-        <option value="">Todos</option><option value="proceso">En proceso</option>
-        <option value="subsanacion">En subsanación</option><option value="cierre">Pendiente cierre</option>
+        <option value="">Todos</option>
+        <option value="proceso">En proceso</option>
+        <option value="inspeccion">En inspección</option>
+        <option value="subsanacion">En subsanación</option>
+        <option value="cierre">Pendiente cierre</option>
         <option value="finalizado">Finalizado</option>
       </select>
     </div>
@@ -140,12 +141,13 @@ tbody td{padding:7px 8px;white-space:nowrap;}
     <div class="kpi"><div class="kl">Tiempo total promedio</div><div class="kv" id="k1">—<span class="ku">días háb.</span></div></div>
     <div class="kpi"><div class="kl">Tiempo UREP promedio</div><div class="kv" id="k-urep" style="color:var(--accent)">—<span class="ku">días háb.</span></div></div>
     <div class="kpi"><div class="kl">En proceso</div><div class="kv" id="k2" style="color:var(--info)">—</div></div>
-    <div class="kpi"><div class="kl">En subsanación</div><div class="kv" id="k3" style="color:var(--warn)">—</div></div>
-    <div class="kpi"><div class="kl">Pendiente cierre</div><div class="kv" id="k4" style="color:var(--danger)">—</div></div>
-    <div class="kpi"><div class="kl">Finalizados</div><div class="kv" id="k5" style="color:var(--success)">—</div></div>
-    <div class="kpi"><div class="kl">Con inconsistencias</div><div class="kv" id="k6" style="color:var(--danger)">—</div></div>
+    <div class="kpi"><div class="kl">En inspección</div><div class="kv" id="k3" style="color:var(--info)">—</div></div>
+    <div class="kpi"><div class="kl">En subsanación</div><div class="kv" id="k4" style="color:var(--warn)">—</div></div>
+    <div class="kpi"><div class="kl">Pendiente cierre</div><div class="kv" id="k5" style="color:var(--danger)">—</div></div>
+    <div class="kpi"><div class="kl">Finalizados</div><div class="kv" id="k6" style="color:var(--success)">—</div></div>
+    <div class="kpi"><div class="kl">Con inconsistencias</div><div class="kv" id="k7" style="color:var(--danger)">—</div></div>
   </div>
-  <div class="st">Tiempos por fase — promedio días hábiles (solo expedientes válidos)</div>
+  <div class="st">Tiempos por fase — promedio días hábiles</div>
   <div id="phases-container"></div>
   <div class="g2">
     <div class="card"><div class="st">Promedio por fase</div><div class="cw"><canvas id="cf"></canvas></div></div>
@@ -158,7 +160,7 @@ tbody td{padding:7px 8px;white-space:nowrap;}
       <div class="st" style="margin:0">Detalle por expediente</div>
       <button class="btn btn-g" style="font-size:12px" onclick="exportCSV()">Exportar CSV</button>
     </div>
-    <div class="table-note">Días hábiles — excluye fines de semana y feriados SV 2024·2025·2026. Los expedientes con inconsistencias o pendientes de cierre no entran en los promedios.</div>
+    <div class="table-note">Días hábiles — excluye fines de semana y feriados SV 2024·2025·2026. Expedientes con inconsistencias o pendientes de cierre no entran en promedios.</div>
     <div class="tabs">
       <button class="tab active" onclick="switchTab('all',this)">Todos</button>
       <button class="tab" onclick="switchTab('proceso',this)">En proceso</button>
@@ -191,251 +193,71 @@ tbody td{padding:7px 8px;white-space:nowrap;}
       <tbody id="tba"></tbody>
     </table></div>
   </div>
-  <div class="foot">UREP · SRS El Salvador · Días hábiles: excluye sábados, domingos y feriados oficiales SV 2024·2025·2026</div>
+  <div class="foot">UREP · SRS El Salvador · Días hábiles: excluye sábados, domingos y feriados SV 2024·2025·2026</div>
 </div>
 <script>
 const SHEET_ID='1AQ6vSR9UTI4pdukdQG-VXX6_7Amr7BxKeo0ySrgPmEo';
 const SHEET_TAB='Tr%C3%A1mites';
 const DATA_START=3;
 const C={estadoSol:0,nSol:1,ingreso:2,mandamiento:3,comercial:4,propietario:5,tramite:6,tipoIngreso:7,personaPresenta:8,comentario:9,fechaAsig:10,analista:11,tipoProceso:12,correo:13,regente:14,estadoRev:15,fechaRev:16,fechaSolInsp:17,estadoInsp:18,fechaInsp:19,fechaInfInsp:20,estadoDict:21,fechaDict1:22,fechaEmRes1:23,fechaFirma1:24,fechaRegFirma1:25,fechaNotif1:26,fechaSolProrr:27,diasProrr:28,ultimoDiaSubs:29,comentarioSubs:30,fechaSubs:31,fechaSolReInsp:32,estadoReInsp:33,fechaReInsp:34,fechaInfReInsp:35,resolucion2:36,fechaEmRes2:37,fechaFirma2:38,fechaRegFirma2:39,fechaNotif2:40,nRegistro:41};
-
-const FERIADOS=new Set([
-  // 2024
-  '2024-01-01','2024-01-02',
-  '2024-03-25','2024-03-26','2024-03-27','2024-03-28','2024-03-29',
-  '2024-04-01','2024-04-02',
-  '2024-05-01','2024-05-10',
-  '2024-06-17',
-  '2024-08-01','2024-08-02','2024-08-05','2024-08-06','2024-08-07',
-  '2024-09-15','2024-11-02',
-  '2024-12-23','2024-12-24','2024-12-25','2024-12-26','2024-12-27','2024-12-30','2024-12-31',
-  // 2025
-  '2025-04-14','2025-04-15','2025-04-16','2025-04-17','2025-04-18',
-  '2025-04-21','2025-04-22',
-  '2025-05-01','2025-06-17','2025-07-31',
-  '2025-08-01','2025-08-04','2025-08-05','2025-08-06','2025-08-07',
-  '2025-09-15',
-  '2025-12-22','2025-12-23','2025-12-24','2025-12-25','2025-12-26',
-  '2025-12-29','2025-12-30','2025-12-31',
-  // 2026
-  '2026-01-01','2026-02-01',
-  '2026-03-30','2026-03-31','2026-04-01','2026-04-02','2026-04-03','2026-04-06','2026-04-07',
-  '2026-05-01','2026-06-17','2026-07-31',
-  '2026-08-03','2026-08-04','2026-08-05','2026-08-06','2026-08-07',
-  '2026-09-15','2026-11-02',
-  '2026-12-21','2026-12-22','2026-12-23','2026-12-24','2026-12-25',
-  '2027-01-01'
-]);
-
+const FERIADOS=new Set(['2024-01-01','2024-01-02','2024-03-25','2024-03-26','2024-03-27','2024-03-28','2024-03-29','2024-04-01','2024-04-02','2024-05-01','2024-05-10','2024-06-17','2024-08-01','2024-08-02','2024-08-05','2024-08-06','2024-08-07','2024-09-15','2024-11-02','2024-12-23','2024-12-24','2024-12-25','2024-12-26','2024-12-27','2024-12-30','2024-12-31','2025-04-14','2025-04-15','2025-04-16','2025-04-17','2025-04-18','2025-04-21','2025-04-22','2025-05-01','2025-06-17','2025-07-31','2025-08-01','2025-08-04','2025-08-05','2025-08-06','2025-08-07','2025-09-15','2025-12-22','2025-12-23','2025-12-24','2025-12-25','2025-12-26','2025-12-29','2025-12-30','2025-12-31','2026-01-01','2026-02-01','2026-03-30','2026-03-31','2026-04-01','2026-04-02','2026-04-03','2026-04-06','2026-04-07','2026-05-01','2026-06-17','2026-07-31','2026-08-03','2026-08-04','2026-08-05','2026-08-06','2026-08-07','2026-09-15','2026-11-02','2026-12-21','2026-12-22','2026-12-23','2026-12-24','2026-12-25','2027-01-01']);
 function fmt(d){if(!d)return null;return d.toISOString().split('T')[0];}
 function parseD(s){if(!s||!s.trim())return null;s=s.trim();if(/^\d{4}-\d{2}-\d{2}$/.test(s))return new Date(s+'T00:00:00');if(/^\d{1,2}\/\d{1,2}\/\d{2,4}$/.test(s)){const[a,b,y]=s.split('/');const yr=y.length===2?'20'+y:y;if(parseInt(a)>12)return new Date(`${yr}-${b.padStart(2,'0')}-${a.padStart(2,'0')}T00:00:00`);return new Date(`${yr}-${a.padStart(2,'0')}-${b.padStart(2,'0')}T00:00:00`);}const t=new Date(s);return isNaN(t)?null:t;}
 function workdays(d1,d2){if(!d1||!d2)return null;const a=new Date(d1);a.setHours(0,0,0,0);const b=new Date(d2);b.setHours(0,0,0,0);if(a>=b)return 0;let days=0;const cur=new Date(a);cur.setDate(cur.getDate()+1);while(cur<=b){const w=cur.getDay();if(w!==0&&w!==6&&!FERIADOS.has(fmt(cur)))days++;cur.setDate(cur.getDate()+1);}return days;}
 function avg(arr){const v=arr.filter(x=>x!==null&&x!==undefined&&!isNaN(x)&&x>=0);return v.length?Math.round(v.reduce((a,b)=>a+b,0)/v.length):null;}
 function sumArr(arr){return arr.filter(x=>x!==null&&!isNaN(x)&&x>=0).reduce((a,b)=>a+b,0);}
-
-function detectarInconsistencias(r){
-  const issues=[];
-  const chk=(d1,d2,msg)=>{if(!d1||!d2)return;const a=parseD(d1),b=parseD(d2);if(a&&b&&a>b)issues.push(msg);};
-  // Secuencia completa de fechas
-  chk(r.ingreso,r.fechaAsig,'Asignación anterior al Ingreso');
-  chk(r.fechaAsig,r.fechaRev,'Revisión anterior a Asignación');
-  chk(r.fechaRev,r.fechaSolInsp,'Sol. Inspección anterior a Revisión');
-  chk(r.fechaSolInsp,r.fechaInfInsp,'Informe inspección anterior a Solicitud');
-  chk(r.fechaInfInsp,r.fechaDict1,'Dictamen anterior a Informe Inspección');
-  chk(r.fechaDict1,r.fechaEmRes1,'Resolución anterior al Dictamen');
-  chk(r.fechaEmRes1,r.fechaNotif1,'Notificación anterior a Resolución');
-  chk(r.fechaNotif1,r.fechaSubs,'Subsanación anterior a Notificación');
-  chk(r.fechaSolReInsp,r.fechaInfReInsp,'Informe re-inspección anterior a Solicitud');
-  chk(r.fechaEmRes2,r.fechaNotif2,'Notificación final anterior a Resolución final');
-  return issues;
-}
-
-function detectarPendienteCierre(r){
-  const today=new Date();today.setHours(0,0,0,0);
-  if(!r.ultimoDiaSubs||r.fechaSubs)return null;
-  const ult=parseD(r.ultimoDiaSubs);
-  if(!ult||ult>=today)return null;
-  if(r.fechaNotif2)return null;
-  // Venció y no tiene notificación final — pendiente de cierre
-  const faltantes=[];
-  if(!r.fechaEmRes2)faltantes.push('Resolución (col AK)');
-  if(!r.fechaNotif2)faltantes.push('Notificación final (col AO)');
-  return faltantes;
-}
-
-function derivarEstado(r){
-  const today=new Date();today.setHours(0,0,0,0);
-  const obs=(r.estadoDict||'').toUpperCase()==='OBSERVADO';
-  if(!obs)return r.fechaNotif1?'Finalizado':'En proceso';
-  if(r.fechaNotif2)return'Finalizado';
-  if(r.fechaSubs&&!r.fechaNotif2)return'En proceso';
-  if(r.ultimoDiaSubs&&!r.fechaSubs){
-    const u=parseD(r.ultimoDiaSubs);
-    if(u&&u<today){
-      if(!r.fechaNotif2)return'Pendiente cierre';
-    }
-    return'En subsanación';
-  }
-  return'En proceso';
-}
-
+function parseCSV(text){const rows=[];let cols=[],cur='',inQ=false;for(let i=0;i<text.length;i++){const c=text[i],next=text[i+1];if(c==='"'){if(inQ&&next==='"'){cur+='"';i++;}else inQ=!inQ;}else if(c===','&&!inQ){cols.push(cur.trim());cur='';}else if((c==='\n'||c==='\r')&&!inQ){if(c==='\r'&&next==='\n')i++;if(cols.length>0||cur.trim()!==''){cols.push(cur.trim());rows.push(cols);cols=[];cur='';}}else{if((c==='\n'||c==='\r')&&inQ){cur+=' ';if(c==='\r'&&next==='\n')i++;}else cur+=c;}}if(cols.length>0||cur.trim()!==''){cols.push(cur.trim());rows.push(cols);}return rows;}
+function detectarInconsistencias(r){const issues=[];const chk=(d1,d2,msg)=>{if(!d1||!d2)return;const a=parseD(d1),b=parseD(d2);if(a&&b&&a>b)issues.push(msg);};chk(r.ingreso,r.fechaAsig,'Asignación anterior al Ingreso');chk(r.fechaAsig,r.fechaRev,'Revisión anterior a Asignación');chk(r.fechaSolInsp,r.fechaInfInsp,'Informe inspección anterior a Solicitud');chk(r.fechaInfInsp,r.fechaDict1,'Dictamen anterior a Informe Inspección');chk(r.fechaDict1,r.fechaEmRes1,'Resolución anterior al Dictamen');chk(r.fechaEmRes1,r.fechaNotif1,'Notificación anterior a Resolución');chk(r.fechaNotif1,r.fechaSubs,'Subsanación anterior a Notificación');chk(r.fechaSolReInsp,r.fechaInfReInsp,'Informe re-inspección anterior a Solicitud');chk(r.fechaEmRes2,r.fechaNotif2,'Notificación final anterior a Resolución final');return issues;}
+function detectarPendienteCierre(r){const today=new Date();today.setHours(0,0,0,0);if(!r.ultimoDiaSubs||r.fechaSubs)return null;const ult=parseD(r.ultimoDiaSubs);if(!ult||ult>=today)return null;if(r.fechaNotif2)return null;const faltantes=[];if(!r.fechaEmRes2)faltantes.push('Fecha de resolución');if(!r.fechaNotif2)faltantes.push('Notificación final');return faltantes;}
+function derivarEstado(r){const today=new Date();today.setHours(0,0,0,0);const obs=(r.estadoDict||'').toUpperCase()==='OBSERVADO';if(!obs)return r.fechaNotif1?'Finalizado':'En proceso';if(r.fechaNotif2)return'Finalizado';if(r.fechaSolReInsp&&!r.fechaInfReInsp&&!r.fechaNotif2)return'En inspección';if(r.fechaSolInsp&&!r.fechaInfInsp&&!r.fechaNotif1)return'En inspección';if(r.fechaSubs&&!r.fechaNotif2)return'En proceso';if(r.ultimoDiaSubs&&!r.fechaSubs){const u=parseD(r.ultimoDiaSubs);if(u&&u<today){if(!r.fechaNotif2)return'Pendiente cierre';}return'En subsanación';}return'En proceso';}
 function g(row,idx){const v=row[idx];return(v!==undefined&&v!==null)?String(v).trim():'';}
-
 function mapRow(row){
   const today=new Date();today.setHours(0,0,0,0);
-  const ingreso=parseD(g(row,C.ingreso));
-  const fechaAsig=parseD(g(row,C.fechaAsig));
-  const fechaRev=parseD(g(row,C.fechaRev));
-  const fechaSolInsp=parseD(g(row,C.fechaSolInsp));
-  const fechaInfInsp=parseD(g(row,C.fechaInfInsp));
-  const fechaDict1=parseD(g(row,C.fechaDict1));
-  const fechaEmRes1=parseD(g(row,C.fechaEmRes1));
-  const fechaNotif1=parseD(g(row,C.fechaNotif1));
-  const fechaSolProrr=parseD(g(row,C.fechaSolProrr));
-  const diasProrr=parseInt(g(row,C.diasProrr))||null;
-  const ultimoDiaSubs=g(row,C.ultimoDiaSubs);
-  const fechaSubs=parseD(g(row,C.fechaSubs));
-  const fechaSolReInsp=parseD(g(row,C.fechaSolReInsp));
-  const fechaInfReInsp=parseD(g(row,C.fechaInfReInsp));
-  const fechaEmRes2=parseD(g(row,C.fechaEmRes2));
-  const fechaNotif2=parseD(g(row,C.fechaNotif2));
-  const estadoDict=g(row,C.estadoDict);
-  const tieneInsp=!!fechaSolInsp;
-
+  const ingreso=parseD(g(row,C.ingreso));const fechaAsig=parseD(g(row,C.fechaAsig));const fechaRev=parseD(g(row,C.fechaRev));
+  const fechaSolInsp=parseD(g(row,C.fechaSolInsp));const fechaInfInsp=parseD(g(row,C.fechaInfInsp));
+  const fechaDict1=parseD(g(row,C.fechaDict1));const fechaEmRes1=parseD(g(row,C.fechaEmRes1));const fechaNotif1=parseD(g(row,C.fechaNotif1));
+  const fechaSolProrr=parseD(g(row,C.fechaSolProrr));const ultimoDiaSubs=g(row,C.ultimoDiaSubs);const fechaSubs=parseD(g(row,C.fechaSubs));
+  const fechaSolReInsp=parseD(g(row,C.fechaSolReInsp));const fechaInfReInsp=parseD(g(row,C.fechaInfReInsp));
+  const fechaEmRes2=parseD(g(row,C.fechaEmRes2));const fechaNotif2=parseD(g(row,C.fechaNotif2));
+  const estadoDict=g(row,C.estadoDict);const tieneInsp=!!fechaSolInsp;
   const inconsistencias=detectarInconsistencias({ingreso:fmt(ingreso),fechaAsig:fmt(fechaAsig),fechaRev:fmt(fechaRev),fechaSolInsp:fmt(fechaSolInsp),fechaInfInsp:fmt(fechaInfInsp),fechaDict1:fmt(fechaDict1),fechaEmRes1:fmt(fechaEmRes1),fechaNotif1:fmt(fechaNotif1),fechaSubs:fmt(fechaSubs),fechaSolReInsp:fmt(fechaSolReInsp),fechaInfReInsp:fmt(fechaInfReInsp),fechaEmRes2:fmt(fechaEmRes2),fechaNotif2:fmt(fechaNotif2)});
   const tieneIncons=inconsistencias.length>0;
-
-  // Solo calcular fases si no hay inconsistencias relevantes
+  const pendienteCierre=detectarPendienteCierre({ultimoDiaSubs,fechaSubs:fmt(fechaSubs),fechaNotif2:fmt(fechaNotif2),fechaEmRes2:fmt(fechaEmRes2),fechaNotif1:fmt(fechaNotif1)});
   const f1=workdays(ingreso,fechaAsig);
   const f2=workdays(fechaAsig,fechaRev);
   const f3=tieneInsp?workdays(fechaRev,fechaSolInsp):null;
   const f4=tieneInsp?workdays(fechaSolInsp,fechaInfInsp):null;
   const baseDict=tieneInsp?fechaInfInsp:fechaRev;
   const f5=workdays(baseDict,fechaDict1);
-  // F6 solo si no hay inconsistencia dict->res
   const f6=(!inconsistencias.some(i=>i.includes('Resolución anterior')))?workdays(fechaDict1,fechaEmRes1):null;
   const f7=(!inconsistencias.some(i=>i.includes('Notificación anterior a Resolución')))?workdays(fechaEmRes1,fechaNotif1):null;
-  // F8 solo si no es pendiente de cierre
-  const obj_temp={ultimoDiaSubs,fechaSubs:fmt(fechaSubs),fechaNotif2:fmt(fechaNotif2),fechaEmRes2:fmt(fechaEmRes2)};
-  const pendienteCierre=detectarPendienteCierre({...obj_temp,fechaNotif1:fmt(fechaNotif1)});
   const f8=(!pendienteCierre&&fechaNotif1&&ultimoDiaSubs)?workdays(fechaNotif1,fechaSubs||today):null;
-  // F8b = días otorgados = workdays(Sol.Prórroga → Último día subsanación)
   const f8b=(fechaSolProrr&&ultimoDiaSubs)?workdays(fechaSolProrr,parseD(ultimoDiaSubs)):null;
-  // F8c = días usados = workdays(Sol.Prórroga → Fecha Subsanación real) — solo si ya subsanó
   const f8c=(fechaSolProrr&&fechaSubs)?workdays(fechaSolProrr,fechaSubs):null;
   const f9a=(fechaSubs&&fechaSolReInsp)?workdays(fechaSubs,fechaSolReInsp):null;
   const f9b=(fechaSolReInsp&&fechaInfReInsp)?workdays(fechaSolReInsp,fechaInfReInsp):null;
   const baseRes2=fechaInfReInsp||fechaSubs;
   const f10=baseRes2?workdays(baseRes2,fechaEmRes2):null;
   const f11=fechaEmRes2?workdays(fechaEmRes2,fechaNotif2):null;
-
-  // T.UREP y T.Total solo si no hay inconsistencias y no es pendiente de cierre
   const esValido=!tieneIncons&&!pendienteCierre;
   const t_urep=esValido?sumArr([f1,f2,f3,f5,f6,f7,f9a,f10,f11]):null;
   const finTotal=fechaNotif2||fechaNotif1||today;
   const t_total=esValido?workdays(ingreso,finTotal>today?today:finTotal):null;
-
-  const obj={
-    nSol:g(row,C.nSol),comercial:g(row,C.comercial)||g(row,C.nSol),
-    analista:g(row,C.analista)||'Sin asignar',tramite:g(row,C.tramite)||'N/D',
-    estadoDict,tieneInsp,esValido,tieneIncons,pendienteCierre,
-    ingreso:fmt(ingreso),fechaAsig:fmt(fechaAsig),fechaRev:fmt(fechaRev),
-    fechaSolInsp:fmt(fechaSolInsp),fechaInfInsp:fmt(fechaInfInsp),
-    fechaDict1:fmt(fechaDict1),fechaEmRes1:fmt(fechaEmRes1),fechaNotif1:fmt(fechaNotif1),
-    fechaSolProrr:fmt(fechaSolProrr),diasProrr,ultimoDiaSubs,
-    fechaSubs:fmt(fechaSubs),fechaSolReInsp:fmt(fechaSolReInsp),
-    fechaInfReInsp:fmt(fechaInfReInsp),fechaEmRes2:fmt(fechaEmRes2),fechaNotif2:fmt(fechaNotif2),
-    f1,f2,f3,f4,f5,f6,f7,f8,f8b,f8c,f9a,f9b,f10,f11,t_urep,t_total,
-    inconsistencias
-  };
-  obj.estado=derivarEstado(obj);
-  return obj;
+  const obj={nSol:g(row,C.nSol),comercial:g(row,C.comercial)||g(row,C.nSol),analista:g(row,C.analista)||'Sin asignar',tramite:g(row,C.tramite)||'N/D',estadoDict,tieneInsp,esValido,tieneIncons,pendienteCierre,ingreso:fmt(ingreso),fechaAsig:fmt(fechaAsig),fechaRev:fmt(fechaRev),fechaSolInsp:fmt(fechaSolInsp),fechaInfInsp:fmt(fechaInfInsp),fechaDict1:fmt(fechaDict1),fechaEmRes1:fmt(fechaEmRes1),fechaNotif1:fmt(fechaNotif1),fechaSolProrr:fmt(fechaSolProrr),ultimoDiaSubs,fechaSubs:fmt(fechaSubs),fechaSolReInsp:fmt(fechaSolReInsp),fechaInfReInsp:fmt(fechaInfReInsp),fechaEmRes2:fmt(fechaEmRes2),fechaNotif2:fmt(fechaNotif2),f1,f2,f3,f4,f5,f6,f7,f8,f8b,f8c,f9a,f9b,f10,f11,t_urep,t_total,inconsistencias};
+  obj.estado=derivarEstado(obj);return obj;
 }
-
-function parseCSV(text){const rows=[];let cols=[],cur='',inQ=false;for(let i=0;i<text.length;i++){const c=text[i],next=text[i+1];if(c==='"'){if(inQ&&next==='"'){cur+='"';i++;}else inQ=!inQ;}else if(c===','&&!inQ){cols.push(cur.trim());cur='';}else if((c==='\n'||c==='\r')&&!inQ){if(c==='\r'&&next==='\n')i++;if(cols.length>0||cur.trim()!==''){cols.push(cur.trim());rows.push(cols);cols=[];cur='';}}else{if((c==='\n'||c==='\r')&&inQ){cur+=' ';if(c==='\r'&&next==='\n')i++;}else cur+=c;}}if(cols.length>0||cur.trim()!==''){cols.push(cur.trim());rows.push(cols);}return rows;}
-
 let RAW=[],FILTERED=[],activeTab='all',chF=null,chA=null;
-
-async function loadData(){
-  setBanner('loading','Conectando con Google Sheets...');
-  document.getElementById('sdot').style.background='#9a9892';
-  const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${SHEET_TAB}`;
-  try{
-    const resp=await fetch(url);
-    if(!resp.ok)throw new Error(`HTTP ${resp.status}`);
-    const text=await resp.text();
-    const rows=parseCSV(text);
-    const data=rows.slice(DATA_START-1).filter(r=>r[C.nSol]&&r[C.nSol].trim()!=='');
-    RAW=data.map(mapRow);
-    FILTERED=[...RAW];
-    populateFilters();
-    renderAll();
-    setBanner('ok',`✓ ${RAW.length} expedientes cargados · ${new Date().toLocaleString('es-SV')}`);
-    document.getElementById('sdot').style.background='#639922';
-    document.getElementById('slbl').textContent='Google Sheets en vivo';
-    document.getElementById('ulbl').textContent=new Date().toLocaleTimeString('es-SV');
-  }catch(e){
-    setBanner('error',`Error: ${e.message}`);
-    document.getElementById('sdot').style.background='#E24B4A';
-  }
-}
-
+async function loadData(){setBanner('loading','Conectando con Google Sheets...');document.getElementById('sdot').style.background='#9a9892';const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${SHEET_TAB}`;try{const resp=await fetch(url);if(!resp.ok)throw new Error(`HTTP ${resp.status}`);const text=await resp.text();const rows=parseCSV(text);const data=rows.slice(DATA_START-1).filter(r=>r[C.nSol]&&r[C.nSol].trim()!=='');RAW=data.map(mapRow);FILTERED=[...RAW];populateFilters();renderAll();setBanner('ok',`✓ ${RAW.length} expedientes cargados · ${new Date().toLocaleString('es-SV')}`);document.getElementById('sdot').style.background='#639922';document.getElementById('slbl').textContent='Google Sheets en vivo';document.getElementById('ulbl').textContent=new Date().toLocaleTimeString('es-SV');}catch(e){setBanner('error',`Error: ${e.message}`);document.getElementById('sdot').style.background='#E24B4A';}}
 function setBanner(t,msg){const b=document.getElementById('banner');b.className=`banner b-${t}`;b.innerHTML=(t==='loading'?'<div class="spin"></div>':'')+`<span>${msg}</span>`+(t==='ok'?`<button class="btn-xs" onclick="loadData()" style="margin-left:auto">↺ Actualizar</button>`:'');}
 function populateFilters(){const an=[...new Set(RAW.map(r=>r.analista).filter(Boolean))].sort();const tr=[...new Set(RAW.map(r=>r.tramite).filter(Boolean))].sort();document.getElementById('f-an').innerHTML='<option value="">Todos</option>'+an.map(a=>`<option>${a}</option>`).join('');document.getElementById('f-tr').innerHTML='<option value="">Todos</option>'+tr.map(t=>`<option>${t}</option>`).join('');}
-
-function applyFilters(){
-  const nsol=document.getElementById('f-nsol').value.trim().toUpperCase();
-  const an=document.getElementById('f-an').value;
-  const tr=document.getElementById('f-tr').value;
-  const es=document.getElementById('f-es').value;
-  const insp=document.getElementById('f-insp').value;
-  const de=document.getElementById('f-de').value;
-  const ha=document.getElementById('f-ha').value;
-  FILTERED=RAW.filter(r=>{
-    if(nsol&&!r.nSol.toUpperCase().includes(nsol))return false;
-    if(an&&r.analista!==an)return false;
-    if(tr&&r.tramite!==tr)return false;
-    if(insp==='si'&&!r.tieneInsp)return false;
-    if(insp==='no'&&r.tieneInsp)return false;
-    if(es==='proceso'&&r.estado!=='En proceso')return false;
-    if(es==='subsanacion'&&r.estado!=='En subsanación')return false;
-    if(es==='cierre'&&r.estado!=='Pendiente cierre')return false;
-    if(es==='finalizado'&&r.estado!=='Finalizado')return false;
-    if(de&&r.ingreso&&r.ingreso<de)return false;
-    if(ha&&r.ingreso&&r.ingreso>ha)return false;
-    return true;
-  });
-  renderAll();
-}
-
+function applyFilters(){const nsol=document.getElementById('f-nsol').value.trim().toUpperCase();const an=document.getElementById('f-an').value;const tr=document.getElementById('f-tr').value;const es=document.getElementById('f-es').value;const insp=document.getElementById('f-insp').value;const de=document.getElementById('f-de').value;const ha=document.getElementById('f-ha').value;FILTERED=RAW.filter(r=>{if(nsol&&!r.nSol.toUpperCase().includes(nsol))return false;if(an&&r.analista!==an)return false;if(tr&&r.tramite!==tr)return false;if(insp==='si'&&!r.tieneInsp)return false;if(insp==='no'&&r.tieneInsp)return false;if(es==='proceso'&&r.estado!=='En proceso')return false;if(es==='inspeccion'&&r.estado!=='En inspección')return false;if(es==='subsanacion'&&r.estado!=='En subsanación')return false;if(es==='cierre'&&r.estado!=='Pendiente cierre')return false;if(es==='finalizado'&&r.estado!=='Finalizado')return false;if(de&&r.ingreso&&r.ingreso<de)return false;if(ha&&r.ingreso&&r.ingreso>ha)return false;return true;});renderAll();}
 function clearFilters(){document.getElementById('f-nsol').value='';['f-an','f-tr','f-es','f-insp'].forEach(id=>document.getElementById(id).value='');document.getElementById('f-de').value='';document.getElementById('f-ha').value='';document.getElementById('tbl-search').value='';FILTERED=[...RAW];renderAll();}
 function switchTab(t,el){activeTab=t;document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));el.classList.add('active');renderTable();}
 function renderAll(){renderKPIs();renderPhases();renderCharts();renderMonitor();renderTable();renderAnalistas();}
-
-function renderKPIs(){
-  document.getElementById('k0').textContent=FILTERED.length;
-  const validos=FILTERED.filter(r=>r.esValido);
-  const tots=validos.map(r=>r.t_total).filter(x=>x!==null&&!isNaN(x));
-  document.getElementById('k1').innerHTML=(avg(tots)||'—')+'<span class="ku">días háb.</span>';
-  const ureps=validos.map(r=>r.t_urep).filter(x=>x!==null&&!isNaN(x)&&x>0);
-  document.getElementById('k-urep').innerHTML=(avg(ureps)||'—')+'<span class="ku">días háb.</span>';
-  document.getElementById('k2').textContent=FILTERED.filter(r=>r.estado==='En proceso').length;
-  document.getElementById('k3').textContent=FILTERED.filter(r=>r.estado==='En subsanación').length;
-  document.getElementById('k4').textContent=FILTERED.filter(r=>r.estado==='Pendiente cierre').length;
-  document.getElementById('k5').textContent=FILTERED.filter(r=>r.estado==='Finalizado').length;
-  document.getElementById('k6').textContent=FILTERED.filter(r=>r.tieneIncons).length;
-}
-
+function renderKPIs(){document.getElementById('k0').textContent=FILTERED.length;const validos=FILTERED.filter(r=>r.esValido);const tots=validos.map(r=>r.t_total).filter(x=>x!==null&&!isNaN(x));document.getElementById('k1').innerHTML=(avg(tots)||'—')+'<span class="ku">días háb.</span>';const ureps=validos.map(r=>r.t_urep).filter(x=>x!==null&&!isNaN(x)&&x>0);document.getElementById('k-urep').innerHTML=(avg(ureps)||'—')+'<span class="ku">días háb.</span>';document.getElementById('k2').textContent=FILTERED.filter(r=>r.estado==='En proceso').length;document.getElementById('k3').textContent=FILTERED.filter(r=>r.estado==='En inspección').length;document.getElementById('k4').textContent=FILTERED.filter(r=>r.estado==='En subsanación').length;document.getElementById('k5').textContent=FILTERED.filter(r=>r.estado==='Pendiente cierre').length;document.getElementById('k6').textContent=FILTERED.filter(r=>r.estado==='Finalizado').length;document.getElementById('k7').textContent=FILTERED.filter(r=>r.tieneIncons).length;}
 function pAvg(key){return avg(FILTERED.filter(r=>r.esValido).map(r=>r[key]).filter(x=>x!==null&&!isNaN(x)&&x>=0));}
 function pCnt(key){return FILTERED.filter(r=>r.esValido&&r[key]!==null&&r[key]!==undefined&&!isNaN(r[key])&&r[key]>=0).length;}
-
-function miniCard(label,key,max,desc,isZero,color){
-  const v=pAvg(key);if(v===null)return'';
-  const pct=max>0?Math.min(100,Math.round((v/max)*100)):v===0?100:50;
-  let fc;if(isZero)fc=v===0?'fill-ok':'fill-bd';else{const p=v/max;fc=p<=.7?'fill-ok':p<=1?'fill-wn':'fill-bd';}
-  return`<div class="pmc"><div class="pmc-name">${label}</div><div class="pmc-val" style="color:${color}">${v}<span class="pmc-unit">días</span></div><div class="pmc-desc">${desc}</div><div class="pmc-bar"><div class="pmc-fill ${fc}" style="width:${pct}%"></div></div>${isZero?'<div class="zero-note">Idealmente 0 días</div>':''}<div style="font-size:10px;color:var(--text3);margin-top:3px">${pCnt(key)} exp.</div></div>`;
-}
-
+function miniCard(label,key,max,desc,isZero,color){const v=pAvg(key);if(v===null)return'';const pct=max>0?Math.min(100,Math.round((v/max)*100)):v===0?100:50;let fc;if(isZero)fc=v===0?'fill-ok':'fill-bd';else{const p=v/max;fc=p<=.7?'fill-ok':p<=1?'fill-wn':'fill-bd';}return`<div class="pmc"><div class="pmc-name">${label}</div><div class="pmc-val" style="color:${color}">${v}<span class="pmc-unit">días</span></div><div class="pmc-desc">${desc}</div><div class="pmc-bar"><div class="pmc-fill ${fc}" style="width:${pct}%"></div></div>${isZero?'<div class="zero-note">Idealmente 0 días</div>':''}<div style="font-size:10px;color:var(--text3);margin-top:3px">${pCnt(key)} exp.</div></div>`;}
 function renderPhases(){
   const el=document.getElementById('phases-container');
   const validos=FILTERED.filter(r=>r.esValido);
@@ -443,9 +265,9 @@ function renderPhases(){
   const avgI=avg(validos.filter(r=>r.tieneInsp).map(r=>sumArr([r.f4,r.f9b])).filter(x=>x>0));
   const avgS=avg(validos.filter(r=>r.f8!==null).map(r=>r.f8).filter(x=>x!==null&&x>=0));
   const avgT=avg(validos.map(r=>r.t_total).filter(x=>x!==null&&x>0));
-  const conProrr=validos.filter(r=>r.diasProrr);
+  const conProrr=validos.filter(r=>r.f8b!==null);
   const vPD=conProrr.map(r=>r.f8b).filter(x=>x!==null&&!isNaN(x));
-  const vPU=conProrr.map(r=>r.f8c).filter(x=>x!==null&&!isNaN(x)&&x>=0);
+  const vPU=conProrr.filter(r=>r.f8c!==null).map(r=>r.f8c).filter(x=>x!==null&&!isNaN(x)&&x>=0);
   const prCard=conProrr.length?`<div class="pmc" style="min-width:200px"><div class="pmc-name">Prórroga (${conProrr.length} exp.)</div><div class="prorr-wrap"><div class="prorr-half"><div class="prorr-v" style="color:#BA7517">${avg(vPD)||'—'}</div><div class="prorr-l">Días otorgados</div></div><div class="prorr-half"><div class="prorr-v" style="color:#D4537E">${avg(vPU)||'—'}</div><div class="prorr-l">Días usados</div></div></div></div>`:'';
   el.innerHTML=
     `<div class="tgroup"><div class="tgroup-header"><div class="tgroup-title" style="color:var(--accent)">Tiempo UREP</div><div class="tgroup-avg" style="color:var(--accent)">${avgU||'—'} días háb. promedio</div></div><div class="tgroup-body">${miniCard('1. Asignación','f1',3,'Ingreso → Asignación',false,'#378ADD')}${miniCard('2. Revisión preliminar','f2',5,'Asignación → Fecha Revisión',false,'#1D9E75')}${miniCard('3. Solicitud inspección','f3',3,'Fecha Revisión → Sol. Inspección',false,'#7F77DD')}${miniCard('5. Dictamen técnico','f5',10,'Inf. Insp. (o Rev.) → Dictamen',false,'#185fa5')}${miniCard('6. Resolución 1°','f6',0,'Dictamen → Emisión Resolución',true,'#BA7517')}${miniCard('7. Notificación 1°','f7',0,'Emisión Resolución → Notificación',true,'#BA7517')}${miniCard('9a. Sol. re-inspección','f9a',3,'Subsanación → Sol. Re-Inspección',false,'#639922')}${miniCard('10. Resolución final','f10',5,'Subs./Inf.ReInsp → Res. Final',false,'#0c447c')}${miniCard('11. Notificación final','f11',0,'Res. Final → Notificación Final',true,'#BA7517')}</div></div>`+
@@ -453,101 +275,28 @@ function renderPhases(){
     `<div class="tgroup"><div class="tgroup-header"><div class="tgroup-title" style="color:#854f0b">Tiempo regulado (subsanación)</div><div class="tgroup-avg" style="color:#854f0b">${avgS||'—'} días háb. promedio</div></div><div class="tgroup-body">${miniCard('8. Subsanación total','f8',15,'Notificación → Fecha Subsanación real',false,'#D4537E')}${prCard}</div></div>`+
     `<div class="tgroup"><div class="tgroup-header"><div class="tgroup-title" style="color:var(--text2)">Resumen de tiempos</div><div class="tgroup-avg">${avgT||'—'} días háb. total promedio</div></div><div class="tgroup-summary"><div class="ts-item">UREP: <span class="ts-val" style="color:var(--accent)">${avgU||'—'} días</span></div><div class="ts-item">Inspecciones: <span class="ts-val" style="color:#D85A30">${avgI||'—'} días</span></div><div class="ts-item">Subsanación: <span class="ts-val" style="color:#854f0b">${avgS||'—'} días</span></div><div class="ts-item">Total: <span class="ts-val">${avgT||'—'} días</span></div></div></div>`;
 }
-
 const PC=['#378ADD','#1D9E75','#7F77DD','#D85A30','#185fa5','#BA7517','#D4537E','#639922','#0c447c'];
-
-function renderCharts(){
-  const validos=FILTERED.filter(r=>r.esValido);
-  const phases=[{k:'f1',l:'Asig.'},{k:'f2',l:'Rev.Prel.'},{k:'f3',l:'Sol.Insp.'},{k:'f4',l:'Inspección'},{k:'f5',l:'Dict.'},{k:'f7',l:'Notif.1°'},{k:'f8',l:'Subsanación'},{k:'f10',l:'Res.Final'}];
-  const fd=phases.map(ph=>{const v=validos.map(r=>r[ph.k]).filter(x=>x!==null&&!isNaN(x)&&x>=0);return v.length?avg(v):0;});
-  if(chF)chF.destroy();
-  chF=new Chart(document.getElementById('cf'),{type:'bar',data:{labels:phases.map(p=>p.l),datasets:[{data:fd,backgroundColor:PC,borderRadius:5,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{font:{size:10}},title:{display:true,text:'días hábiles',font:{size:10}}}}}});
-  const co={};FILTERED.forEach(r=>{co[r.analista]=(co[r.analista]||0)+1;});
-  const sa=Object.entries(co).sort((a,b)=>b[1]-a[1]);
-  if(chA)chA.destroy();
-  chA=new Chart(document.getElementById('ca'),{type:'doughnut',data:{labels:sa.map(x=>x[0]),datasets:[{data:sa.map(x=>x[1]),backgroundColor:PC,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:11},boxWidth:12,padding:8}}}}});
-}
-
+function renderCharts(){const validos=FILTERED.filter(r=>r.esValido);const phases=[{k:'f1',l:'Asig.'},{k:'f2',l:'Rev.Prel.'},{k:'f3',l:'Sol.Insp.'},{k:'f4',l:'Inspección'},{k:'f5',l:'Dict.'},{k:'f7',l:'Notif.1°'},{k:'f8',l:'Subsanación'},{k:'f10',l:'Res.Final'}];const fd=phases.map(ph=>{const v=validos.map(r=>r[ph.k]).filter(x=>x!==null&&!isNaN(x)&&x>=0);return v.length?avg(v):0;});if(chF)chF.destroy();chF=new Chart(document.getElementById('cf'),{type:'bar',data:{labels:phases.map(p=>p.l),datasets:[{data:fd,backgroundColor:PC,borderRadius:5,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{font:{size:10}},title:{display:true,text:'días hábiles',font:{size:10}}}}}});const co={};FILTERED.forEach(r=>{co[r.analista]=(co[r.analista]||0)+1;});const sa=Object.entries(co).sort((a,b)=>b[1]-a[1]);if(chA)chA.destroy();chA=new Chart(document.getElementById('ca'),{type:'doughnut',data:{labels:sa.map(x=>x[0]),datasets:[{data:sa.map(x=>x[1]),backgroundColor:PC,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:11},boxWidth:12,padding:8}}}}});}
 function renderMonitor(){
   const today=new Date();today.setHours(0,0,0,0);
   const el=document.getElementById('monitor');
-  // Grupo 1: Inconsistencias
   const incons=FILTERED.filter(r=>r.tieneIncons);
-  // Grupo 2: Pendientes de cierre
   const cierre=FILTERED.filter(r=>r.pendienteCierre&&r.pendienteCierre.length>0).sort((a,b)=>(parseD(a.ultimoDiaSubs)||0)-(parseD(b.ultimoDiaSubs)||0));
-  // Grupo 3: En subsanación vigente
+  const enInsp=FILTERED.filter(r=>r.estado==='En inspección').sort((a,b)=>(parseD(a.fechaSolInsp||a.fechaSolReInsp)||0)-(parseD(b.fechaSolInsp||b.fechaSolReInsp)||0));
   const subsActivas=FILTERED.filter(r=>r.estado==='En subsanación').sort((a,b)=>(parseD(a.ultimoDiaSubs)||0)-(parseD(b.ultimoDiaSubs)||0));
-
   let html='';
-
-  if(incons.length){
-    html+=`<div class="monitor-group"><div class="monitor-group-title mg-red">Inconsistencias en bitácora (${incons.length})</div>`;
-    html+=incons.map(r=>`<div class="monitor-row mr-red"><div><div class="mr-sol">${r.nSol} · ${r.comercial}</div><div class="mr-meta">${r.analista}</div><div class="mr-missing">${r.inconsistencias.join(' · ')}</div></div><span class="tag bd-c">Revisar</span></div>`).join('');
-    html+='</div>';
-  }
-
-  if(cierre.length){
-    html+=`<div class="monitor-group"><div class="monitor-group-title mg-warn">Pendientes de cierre administrativo (${cierre.length})</div>`;
-    html+=cierre.map(r=>{
-      const diasVencida=workdays(parseD(r.ultimoDiaSubs),today);
-      return`<div class="monitor-row mr-warn"><div><div class="mr-sol">${r.nSol} · ${r.comercial}</div><div class="mr-meta">${r.analista} · Plazo venció: ${r.ultimoDiaSubs}</div><div class="mr-missing">Falta registrar: ${r.pendienteCierre.join(' · ')}</div></div><div><div class="mr-days" style="color:var(--warn)">${diasVencida}</div><div class="mr-lbl">días háb. vencida</div></div></div>`;
-    }).join('');
-    html+='</div>';
-  }
-
-  if(subsActivas.length){
-    html+=`<div class="monitor-group"><div class="monitor-group-title mg-blue">En subsanación — plazo vigente (${subsActivas.length})</div>`;
-    html+=subsActivas.map(r=>{
-      const ult=parseD(r.ultimoDiaSubs);
-      const diasRest=workdays(today,ult);
-      const diasTrans=workdays(parseD(r.fechaNotif1),today);
-      const urgente=diasRest<=3;
-      return`<div class="monitor-row ${urgente?'mr-warn':'mr-blue'}"><div><div class="mr-sol">${r.nSol} · ${r.comercial}</div><div class="mr-meta">${r.analista} · Notificado: ${r.fechaNotif1}${r.diasProrr?' · Prórroga: '+r.diasProrr+'d':''} · Plazo: ${r.ultimoDiaSubs}</div></div><div><div class="mr-days" style="color:${urgente?'var(--warn)':'var(--info)'}">${diasRest}</div><div class="mr-lbl">días háb. restantes</div><div class="mr-lbl">${diasTrans} días transcurridos</div></div></div>`;
-    }).join('');
-    html+='</div>';
-  }
-
+  if(incons.length){html+=`<div class="monitor-group"><div class="monitor-group-title mg-red">Inconsistencias en bitácora (${incons.length})</div>`;html+=incons.map(r=>`<div class="monitor-row mr-red"><div><div class="mr-sol">${r.nSol} · ${r.comercial}</div><div class="mr-meta">${r.analista}</div><div class="mr-missing">${r.inconsistencias.join(' · ')}</div></div><span class="tag bd-c">Revisar</span></div>`).join('');html+='</div>';}
+  if(cierre.length){html+=`<div class="monitor-group"><div class="monitor-group-title mg-warn">Pendientes de cierre administrativo (${cierre.length})</div>`;html+=cierre.map(r=>{const diasVencida=workdays(parseD(r.ultimoDiaSubs),today);return`<div class="monitor-row mr-warn"><div><div class="mr-sol">${r.nSol} · ${r.comercial}</div><div class="mr-meta">${r.analista} · Plazo venció: ${r.ultimoDiaSubs}</div><div class="mr-missing">Falta registrar: ${r.pendienteCierre.join(' · ')}</div></div><div><div class="mr-days" style="color:var(--warn)">${diasVencida}</div><div class="mr-lbl">días háb. vencida</div></div></div>`;}).join('');html+='</div>';}
+  if(enInsp.length){html+=`<div class="monitor-group"><div class="monitor-group-title mg-blue">En inspección (${enInsp.length})</div>`;html+=enInsp.map(r=>{const esReInsp=!!r.fechaSolReInsp&&!r.fechaInfReInsp;const fechaSol=esReInsp?r.fechaSolReInsp:r.fechaSolInsp;const dias=workdays(parseD(fechaSol),today);return`<div class="monitor-row mr-blue"><div><div class="mr-sol">${r.nSol} · ${r.comercial}</div><div class="mr-meta">${r.analista} · ${esReInsp?'Re-inspección':'Inspección'} · Sol.: ${fechaSol||'—'}</div></div><div><div class="mr-days" style="color:var(--info)">${dias??'—'}</div><div class="mr-lbl">días háb. transcurridos</div></div></div>`;}).join('');html+='</div>';}
+  if(subsActivas.length){html+=`<div class="monitor-group"><div class="monitor-group-title mg-blue">En subsanación — plazo vigente (${subsActivas.length})</div>`;html+=subsActivas.map(r=>{const ult=parseD(r.ultimoDiaSubs);const diasRest=workdays(today,ult);const diasTrans=workdays(parseD(r.fechaNotif1),today);const urgente=diasRest<=3;return`<div class="monitor-row ${urgente?'mr-warn':'mr-blue'}"><div><div class="mr-sol">${r.nSol} · ${r.comercial}</div><div class="mr-meta">${r.analista} · Notificado: ${r.fechaNotif1}${r.diasProrr?' · Prórroga: '+r.diasProrr+'d':''} · Plazo: ${r.ultimoDiaSubs}</div></div><div><div class="mr-days" style="color:${urgente?'var(--warn)':'var(--info)'}">${diasRest}</div><div class="mr-lbl">días háb. restantes</div><div class="mr-lbl">${diasTrans} días transcurridos</div></div></div>`;}).join('');html+='</div>';}
   if(!html)html='<div class="empty">No hay alertas activas.</div>';
   el.innerHTML=html;
 }
-
-function etag(e){const m={'Finalizado':'ok-c','En proceso':'if-c','En subsanación':'wn-c','Pendiente cierre':'bd-c'};return`<span class="tag ${m[e]||'if-c'}">${e}</span>`;}
+function etag(e){const m={'Finalizado':'ok-c','En proceso':'if-c','En inspección':'if-c','En subsanación':'wn-c','Pendiente cierre':'bd-c'};return`<span class="tag ${m[e]||'if-c'}">${e}</span>`;}
 function celD(v,max,valid=true){if(!valid||v===null||v===undefined)return'<td class="cn" style="color:var(--text3)">—</td>';let col;if(max===0)col=v===0?'var(--success)':'var(--danger)';else{const p=v/max;col=p<=.7?'var(--success)':p<=1?'var(--warn)':'var(--danger)';}return`<td class="cn" style="color:${col}">${v}</td>`;}
-
-function renderTable(){
-  let rows=FILTERED;
-  if(activeTab==='proceso')rows=rows.filter(r=>r.estado==='En proceso');
-  if(activeTab==='subsanacion')rows=rows.filter(r=>['En subsanación','Pendiente cierre'].includes(r.estado));
-  if(activeTab==='finalizado')rows=rows.filter(r=>r.estado==='Finalizado');
-  const q=(document.getElementById('tbl-search').value||'').trim().toUpperCase();
-  if(q)rows=rows.filter(r=>r.nSol.toUpperCase().includes(q));
-  const tb=document.getElementById('tb');
-  if(!rows.length){tb.innerHTML='<tr><td colspan="19" class="empty">Sin resultados.</td></tr>';return;}
-  tb.innerHTML=rows.slice(0,1000).map(r=>{
-    const cls=r.tieneIncons?'tr-incons':r.pendienteCierre?'tr-cierre':'';
-    const v=r.esValido;
-    return`<tr class="${cls}"><td><strong>${r.nSol}</strong></td><td>${r.comercial}</td><td>${r.analista}</td><td>${etag(r.estado)}${r.tieneIncons?'<span class="tag bd-c" style="margin-left:3px">!</span>':''}</td><td><span class="tag ${r.tieneInsp?'ok-c':'if-c'}">${r.tieneInsp?'Sí':'No'}</span></td>${celD(r.f1,3,v)}${celD(r.f2,5,v)}${celD(r.f3,3,v)}${celD(r.f4,8,v)}${celD(r.f5,10,v)}${celD(r.f6,0,v)}${celD(r.f7,0,v)}${celD(r.f8,15,v)}${celD(r.f9a,3,v)}${celD(r.f9b,8,v)}${celD(r.f10,5,v)}${celD(r.f11,0,v)}<td class="cn" style="color:var(--accent);font-weight:700">${r.t_urep??'—'}</td><td class="cn" style="font-weight:700">${r.t_total??'—'}</td></tr>`;
-  }).join('');
-}
-
-function renderAnalistas(){
-  const by={};FILTERED.forEach(r=>{if(!by[r.analista])by[r.analista]=[];by[r.analista].push(r);});
-  const mx=Math.max(1,...Object.values(by).map(a=>a.length));
-  document.getElementById('tba').innerHTML=Object.entries(by).sort((a,b)=>b[1].length-a[1].length).map(([n,rows])=>{
-    const pct=Math.round((rows.length/mx)*100);
-    const validos=rows.filter(r=>r.esValido);
-    const u=avg(validos.map(r=>r.t_urep).filter(x=>x!==null&&x>0));
-    const t=avg(validos.map(r=>r.t_total).filter(x=>x!==null&&x>0));
-    return`<tr><td><strong>${n}</strong></td><td class="cn">${rows.length}</td><td class="cn" style="color:var(--accent)">${u??'—'}</td><td class="cn"><strong>${t??'—'}</strong></td><td><div style="font-size:10px;color:var(--text3)">${rows.length} exp.</div><div class="mb"><div class="mf" style="width:${pct}%"></div></div></td></tr>`;
-  }).join('');
-}
-
-function exportCSV(){
-  const h=['N°','Comercial','Analista','Estado','Insp.','Inconsistencias','F1','F2','F3','F4','F5','F6','F7','F8','F8b','F8c','F9a','F9b','F10','F11','T.UREP','T.Total'];
-  const r=FILTERED.map(r=>[r.nSol,r.comercial,r.analista,r.estado,r.tieneInsp?'Si':'No',r.inconsistencias.join(';'),r.f1??'',r.f2??'',r.f3??'',r.f4??'',r.f5??'',r.f6??'',r.f7??'',r.f8??'',r.f8b??'',r.f8c??'',r.f9a??'',r.f9b??'',r.f10??'',r.f11??'',r.t_urep??'',r.t_total??'']);
-  const csv=[h,...r].map(x=>x.join(',')).join('\n');
-  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);a.download='urep_vet_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
-}
+function renderTable(){let rows=FILTERED;if(activeTab==='proceso')rows=rows.filter(r=>r.estado==='En proceso');if(activeTab==='subsanacion')rows=rows.filter(r=>['En subsanación','Pendiente cierre','En inspección'].includes(r.estado));if(activeTab==='finalizado')rows=rows.filter(r=>r.estado==='Finalizado');const q=(document.getElementById('tbl-search').value||'').trim().toUpperCase();if(q)rows=rows.filter(r=>r.nSol.toUpperCase().includes(q));const tb=document.getElementById('tb');if(!rows.length){tb.innerHTML='<tr><td colspan="19" class="empty">Sin resultados.</td></tr>';return;}tb.innerHTML=rows.slice(0,1000).map(r=>{const cls=r.tieneIncons?'tr-incons':r.pendienteCierre?'tr-cierre':'';const v=r.esValido;return`<tr class="${cls}"><td><strong>${r.nSol}</strong></td><td>${r.comercial}</td><td>${r.analista}</td><td>${etag(r.estado)}${r.tieneIncons?'<span class="tag bd-c" style="margin-left:3px">!</span>':''}</td><td><span class="tag ${r.tieneInsp?'ok-c':'if-c'}">${r.tieneInsp?'Sí':'No'}</span></td>${celD(r.f1,3,v)}${celD(r.f2,5,v)}${celD(r.f3,3,v)}${celD(r.f4,8,v)}${celD(r.f5,10,v)}${celD(r.f6,0,v)}${celD(r.f7,0,v)}${celD(r.f8,15,v)}${celD(r.f9a,3,v)}${celD(r.f9b,8,v)}${celD(r.f10,5,v)}${celD(r.f11,0,v)}<td class="cn" style="color:var(--accent);font-weight:700">${r.t_urep??'—'}</td><td class="cn" style="font-weight:700">${r.t_total??'—'}</td></tr>`;}).join('');}
+function renderAnalistas(){const by={};FILTERED.forEach(r=>{if(!by[r.analista])by[r.analista]=[];by[r.analista].push(r);});const mx=Math.max(1,...Object.values(by).map(a=>a.length));document.getElementById('tba').innerHTML=Object.entries(by).sort((a,b)=>b[1].length-a[1].length).map(([n,rows])=>{const pct=Math.round((rows.length/mx)*100);const validos=rows.filter(r=>r.esValido);const u=avg(validos.map(r=>r.t_urep).filter(x=>x!==null&&x>0));const t=avg(validos.map(r=>r.t_total).filter(x=>x!==null&&x>0));return`<tr><td><strong>${n}</strong></td><td class="cn">${rows.length}</td><td class="cn" style="color:var(--accent)">${u??'—'}</td><td class="cn"><strong>${t??'—'}</strong></td><td><div style="font-size:10px;color:var(--text3)">${rows.length} exp.</div><div class="mb"><div class="mf" style="width:${pct}%"></div></div></td></tr>`;}).join('');}
+function exportCSV(){const h=['N°','Comercial','Analista','Estado','Insp.','Inconsistencias','F1','F2','F3','F4','F5','F6','F7','F8','F8b','F8c','F9a','F9b','F10','F11','T.UREP','T.Total'];const r=FILTERED.map(r=>[r.nSol,r.comercial,r.analista,r.estado,r.tieneInsp?'Si':'No',r.inconsistencias.join(';'),r.f1??'',r.f2??'',r.f3??'',r.f4??'',r.f5??'',r.f6??'',r.f7??'',r.f8??'',r.f8b??'',r.f8c??'',r.f9a??'',r.f9b??'',r.f10??'',r.f11??'',r.t_urep??'',r.t_total??'']);const csv=[h,...r].map(x=>x.join(',')).join('\n');const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);a.download='urep_vet_'+new Date().toISOString().slice(0,10)+'.csv';a.click();}
 loadData();
 </script>
 </body>
