@@ -206,7 +206,36 @@ function parseD(s){if(!s||!s.trim())return null;s=s.trim();if(/^\d{4}-\d{2}-\d{2
 function workdays(d1,d2){if(!d1||!d2)return null;const a=new Date(d1);a.setHours(0,0,0,0);const b=new Date(d2);b.setHours(0,0,0,0);if(a>=b)return 0;let days=0;const cur=new Date(a);cur.setDate(cur.getDate()+1);while(cur<=b){const w=cur.getDay();if(w!==0&&w!==6&&!FERIADOS.has(fmt(cur)))days++;cur.setDate(cur.getDate()+1);}return days;}
 function avg(arr){const v=arr.filter(x=>x!==null&&x!==undefined&&!isNaN(x)&&x>=0);return v.length?Math.round(v.reduce((a,b)=>a+b,0)/v.length):null;}
 function sumArr(arr){return arr.filter(x=>x!==null&&!isNaN(x)&&x>=0).reduce((a,b)=>a+b,0);}
-function parseCSV(text){const rows=[];let cols=[],cur='',inQ=false;for(let i=0;i<text.length;i++){const c=text[i],next=text[i+1];if(c==='"'){if(inQ&&next==='"'){cur+='"';i++;}else inQ=!inQ;}else if(c===','&&!inQ){cols.push(cur.trim());cur='';}else if((c==='\n'||c==='\r')&&!inQ){if(c==='\r'&&next==='\n')i++;if(cols.length>0||cur.trim()!==''){cols.push(cur.trim());rows.push(cols);cols=[];cur='';}}else{if((c==='\n'||c==='\r')&&inQ){cur+=' ';if(c==='\r'&&next==='\n')i++;}else cur+=c;}}if(cols.length>0||cur.trim()!==''){cols.push(cur.trim());rows.push(cols);}return rows;}
+function parseCSV(text){
+  const rows=[];let cols=[],cur='',inQ=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i],next=text[i+1];
+    if(c==='"'){if(inQ&&next==='"'){cur+='"';i++;}else inQ=!inQ;}
+    else if(c===','&&!inQ){cols.push(cur.trim());cur='';}
+    else if((c==='\n'||c==='\r')&&!inQ){
+      if(c==='\r'&&next==='\n')i++;
+      if(cols.length>0||cur.trim()!==''){
+        cols.push(cur.trim());
+        // Si la fila tiene al menos 2 columnas Y la segunda parece un N° solicitud válido, es fila nueva
+        // Si no, es continuación de la fila anterior (salto de línea sin comillas)
+        const segundaCol=cols[1]||'';
+        const esFilaNueva=rows.length===0||/^E-\d{3}-\d{4}$/.test(segundaCol)||cols.length>=10;
+        if(esFilaNueva){rows.push(cols);}
+        else if(rows.length>0){
+          // Pegar el contenido al último campo de la fila anterior
+          const lastRow=rows[rows.length-1];
+          lastRow[lastRow.length-1]=(lastRow[lastRow.length-1]+' '+cols.join(' ')).trim();
+        }
+        cols=[];cur='';
+      }
+    }else{
+      if((c==='\n'||c==='\r')&&inQ){cur+=' ';if(c==='\r'&&next==='\n')i++;}
+      else cur+=c;
+    }
+  }
+  if(cols.length>0||cur.trim()!==''){cols.push(cur.trim());rows.push(cols);}
+  return rows;
+}
 function detectarInconsistencias(r){const issues=[];const chk=(d1,d2,msg)=>{if(!d1||!d2)return;const a=parseD(d1),b=parseD(d2);if(a&&b&&a>b)issues.push(msg);};chk(r.ingreso,r.fechaAsig,'Asignación anterior al Ingreso');chk(r.fechaAsig,r.fechaRev,'Revisión anterior a Asignación');chk(r.fechaSolInsp,r.fechaInfInsp,'Informe inspección anterior a Solicitud');chk(r.fechaInfInsp,r.fechaDict1,'Dictamen anterior a Informe Inspección');chk(r.fechaDict1,r.fechaEmRes1,'Resolución anterior al Dictamen');chk(r.fechaEmRes1,r.fechaNotif1,'Notificación anterior a Resolución');chk(r.fechaNotif1,r.fechaSubs,'Subsanación anterior a Notificación');chk(r.fechaSolReInsp,r.fechaInfReInsp,'Informe re-inspección anterior a Solicitud');chk(r.fechaEmRes2,r.fechaNotif2,'Notificación final anterior a Resolución final');return issues;}
 function detectarPendienteCierre(r){const today=new Date();today.setHours(0,0,0,0);if(!r.ultimoDiaSubs||r.fechaSubs)return null;const ult=parseD(r.ultimoDiaSubs);if(!ult||ult>=today)return null;if(r.fechaNotif2)return null;const faltantes=[];if(!r.fechaEmRes2)faltantes.push('Fecha de resolución');if(!r.fechaNotif2)faltantes.push('Notificación final');return faltantes;}
 function derivarEstado(r){const today=new Date();today.setHours(0,0,0,0);const obs=(r.estadoDict||'').toUpperCase()==='OBSERVADO';if(!obs)return r.fechaNotif1?'Finalizado':'En proceso';if(r.fechaNotif2)return'Finalizado';if(r.fechaSolReInsp&&!r.fechaInfReInsp&&!r.fechaNotif2)return'En inspección';if(r.fechaSolInsp&&!r.fechaInfInsp&&!r.fechaNotif1)return'En inspección';if(r.fechaSubs&&!r.fechaNotif2)return'En proceso';if(r.ultimoDiaSubs&&!r.fechaSubs){const u=parseD(r.ultimoDiaSubs);if(u&&u<today){if(!r.fechaNotif2)return'Pendiente cierre';}return'En subsanación';}return'En proceso';}
