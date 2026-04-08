@@ -119,7 +119,6 @@ tbody td{padding:7px 8px;white-space:nowrap;}
     <div class="fg"><div class="fl">Estado</div>
       <select id="f-es" onchange="applyFilters()">
         <option value="">Todos</option><option value="proceso">En proceso</option>
-        <option value="inspeccion">En inspección</option>
         <option value="subsanacion">En subsanación</option><option value="cierre">Pendiente cierre</option>
         <option value="finalizado">Finalizado</option>
       </select>
@@ -141,11 +140,10 @@ tbody td{padding:7px 8px;white-space:nowrap;}
     <div class="kpi"><div class="kl">Tiempo total promedio</div><div class="kv" id="k1">—<span class="ku">días háb.</span></div></div>
     <div class="kpi"><div class="kl">Tiempo UREP promedio</div><div class="kv" id="k-urep" style="color:var(--accent)">—<span class="ku">días háb.</span></div></div>
     <div class="kpi"><div class="kl">En proceso</div><div class="kv" id="k2" style="color:var(--info)">—</div></div>
-    <div class="kpi"><div class="kl">En inspección</div><div class="kv" id="k3" style="color:var(--info)">—</div></div>
-    <div class="kpi"><div class="kl">En subsanación</div><div class="kv" id="k4" style="color:var(--warn)">—</div></div>
-    <div class="kpi"><div class="kl">Pendiente cierre</div><div class="kv" id="k5" style="color:var(--danger)">—</div></div>
-    <div class="kpi"><div class="kl">Finalizados</div><div class="kv" id="k6" style="color:var(--success)">—</div></div>
-    <div class="kpi"><div class="kl">Con inconsistencias</div><div class="kv" id="k7" style="color:var(--danger)">—</div></div>
+    <div class="kpi"><div class="kl">En subsanación</div><div class="kv" id="k3" style="color:var(--warn)">—</div></div>
+    <div class="kpi"><div class="kl">Pendiente cierre</div><div class="kv" id="k4" style="color:var(--danger)">—</div></div>
+    <div class="kpi"><div class="kl">Finalizados</div><div class="kv" id="k5" style="color:var(--success)">—</div></div>
+    <div class="kpi"><div class="kl">Con inconsistencias</div><div class="kv" id="k6" style="color:var(--danger)">—</div></div>
   </div>
   <div class="st">Tiempos por fase — promedio días hábiles (solo expedientes válidos)</div>
   <div id="phases-container"></div>
@@ -258,9 +256,10 @@ function detectarPendienteCierre(r){
   const ult=parseD(r.ultimoDiaSubs);
   if(!ult||ult>=today)return null;
   if(r.fechaNotif2)return null;
+  // Venció y no tiene notificación final — pendiente de cierre
   const faltantes=[];
-  if(!r.fechaEmRes2)faltantes.push('Fecha de resolución');
-  if(!r.fechaNotif2)faltantes.push('Notificación final');
+  if(!r.fechaEmRes2)faltantes.push('Resolución (col AK)');
+  if(!r.fechaNotif2)faltantes.push('Notificación final (col AO)');
   return faltantes;
 }
 
@@ -269,10 +268,6 @@ function derivarEstado(r){
   const obs=(r.estadoDict||'').toUpperCase()==='OBSERVADO';
   if(!obs)return r.fechaNotif1?'Finalizado':'En proceso';
   if(r.fechaNotif2)return'Finalizado';
-  // En re-inspección
-  if(r.fechaSolReInsp&&!r.fechaInfReInsp&&!r.fechaNotif2)return'En inspección';
-  // En inspección
-  if(r.fechaSolInsp&&!r.fechaInfInsp&&!r.fechaNotif1)return'En inspección';
   if(r.fechaSubs&&!r.fechaNotif2)return'En proceso';
   if(r.ultimoDiaSubs&&!r.fechaSubs){
     const u=parseD(r.ultimoDiaSubs);
@@ -403,7 +398,6 @@ function applyFilters(){
     if(insp==='si'&&!r.tieneInsp)return false;
     if(insp==='no'&&r.tieneInsp)return false;
     if(es==='proceso'&&r.estado!=='En proceso')return false;
-    if(es==='inspeccion'&&r.estado!=='En inspección')return false;
     if(es==='subsanacion'&&r.estado!=='En subsanación')return false;
     if(es==='cierre'&&r.estado!=='Pendiente cierre')return false;
     if(es==='finalizado'&&r.estado!=='Finalizado')return false;
@@ -426,11 +420,10 @@ function renderKPIs(){
   const ureps=validos.map(r=>r.t_urep).filter(x=>x!==null&&!isNaN(x)&&x>0);
   document.getElementById('k-urep').innerHTML=(avg(ureps)||'—')+'<span class="ku">días háb.</span>';
   document.getElementById('k2').textContent=FILTERED.filter(r=>r.estado==='En proceso').length;
-  document.getElementById('k3').textContent=FILTERED.filter(r=>r.estado==='En inspección').length;
-  document.getElementById('k4').textContent=FILTERED.filter(r=>r.estado==='En subsanación').length;
-  document.getElementById('k5').textContent=FILTERED.filter(r=>r.estado==='Pendiente cierre').length;
-  document.getElementById('k6').textContent=FILTERED.filter(r=>r.estado==='Finalizado').length;
-  document.getElementById('k7').textContent=FILTERED.filter(r=>r.tieneIncons).length;
+  document.getElementById('k3').textContent=FILTERED.filter(r=>r.estado==='En subsanación').length;
+  document.getElementById('k4').textContent=FILTERED.filter(r=>r.estado==='Pendiente cierre').length;
+  document.getElementById('k5').textContent=FILTERED.filter(r=>r.estado==='Finalizado').length;
+  document.getElementById('k6').textContent=FILTERED.filter(r=>r.tieneIncons).length;
 }
 
 function pAvg(key){return avg(FILTERED.filter(r=>r.esValido).map(r=>r[key]).filter(x=>x!==null&&!isNaN(x)&&x>=0));}
@@ -482,9 +475,7 @@ function renderMonitor(){
   const incons=FILTERED.filter(r=>r.tieneIncons);
   // Grupo 2: Pendientes de cierre
   const cierre=FILTERED.filter(r=>r.pendienteCierre&&r.pendienteCierre.length>0).sort((a,b)=>(parseD(a.ultimoDiaSubs)||0)-(parseD(b.ultimoDiaSubs)||0));
-  // Grupo 3: En inspección (inspección o re-inspección)
-  const enInsp=FILTERED.filter(r=>r.estado==='En inspección').sort((a,b)=>(parseD(a.fechaSolInsp||a.fechaSolReInsp)||0)-(parseD(b.fechaSolInsp||b.fechaSolReInsp)||0));
-  // Grupo 4: En subsanación vigente
+  // Grupo 3: En subsanación vigente
   const subsActivas=FILTERED.filter(r=>r.estado==='En subsanación').sort((a,b)=>(parseD(a.ultimoDiaSubs)||0)-(parseD(b.ultimoDiaSubs)||0));
 
   let html='';
@@ -500,17 +491,6 @@ function renderMonitor(){
     html+=cierre.map(r=>{
       const diasVencida=workdays(parseD(r.ultimoDiaSubs),today);
       return`<div class="monitor-row mr-warn"><div><div class="mr-sol">${r.nSol} · ${r.comercial}</div><div class="mr-meta">${r.analista} · Plazo venció: ${r.ultimoDiaSubs}</div><div class="mr-missing">Falta registrar: ${r.pendienteCierre.join(' · ')}</div></div><div><div class="mr-days" style="color:var(--warn)">${diasVencida}</div><div class="mr-lbl">días háb. vencida</div></div></div>`;
-    }).join('');
-    html+='</div>';
-  }
-
-  if(enInsp.length){
-    html+=`<div class="monitor-group"><div class="monitor-group-title mg-blue">En inspección (${enInsp.length})</div>`;
-    html+=enInsp.map(r=>{
-      const esReInsp=!!r.fechaSolReInsp&&!r.fechaInfReInsp;
-      const fechaSol=esReInsp?r.fechaSolReInsp:r.fechaSolInsp;
-      const dias=workdays(parseD(fechaSol),today);
-      return`<div class="monitor-row mr-blue"><div><div class="mr-sol">${r.nSol} · ${r.comercial}</div><div class="mr-meta">${r.analista} · ${esReInsp?'Re-inspección':'Inspección'} · Sol.: ${fechaSol||'—'}</div></div><div><div class="mr-days" style="color:var(--info)">${dias??'—'}</div><div class="mr-lbl">días háb. transcurridos</div></div></div>`;
     }).join('');
     html+='</div>';
   }
@@ -531,7 +511,7 @@ function renderMonitor(){
   el.innerHTML=html;
 }
 
-function etag(e){const m={'Finalizado':'ok-c','En proceso':'if-c','En inspección':'if-c','En subsanación':'wn-c','Pendiente cierre':'bd-c'};return`<span class="tag ${m[e]||'if-c'}">${e}</span>`;}
+function etag(e){const m={'Finalizado':'ok-c','En proceso':'if-c','En subsanación':'wn-c','Pendiente cierre':'bd-c'};return`<span class="tag ${m[e]||'if-c'}">${e}</span>`;}
 function celD(v,max,valid=true){if(!valid||v===null||v===undefined)return'<td class="cn" style="color:var(--text3)">—</td>';let col;if(max===0)col=v===0?'var(--success)':'var(--danger)';else{const p=v/max;col=p<=.7?'var(--success)':p<=1?'var(--warn)':'var(--danger)';}return`<td class="cn" style="color:${col}">${v}</td>`;}
 
 function renderTable(){
