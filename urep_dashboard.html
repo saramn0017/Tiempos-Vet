@@ -320,8 +320,9 @@ function mapRow(row){
   const pendienteCierre=detectarPendienteCierre({...obj_temp,fechaNotif1:fmt(fechaNotif1)});
   const f8=(!pendienteCierre&&fechaNotif1&&ultimoDiaSubs)?workdays(fechaNotif1,fechaSubs||today):null;
   const f8b=diasProrr;
-  // F8c solo si hay fecha REAL de subsanación — no contar si está pendiente
-  const f8c=(fechaSolProrr&&fechaSubs&&!pendienteCierre)?workdays(fechaSolProrr,fechaSubs):null;
+  // F8c = días usados del plazo de prórroga = diasOtorgados - días que sobraron
+  const f8c=(diasProrr&&fechaSubs&&ultimoDiaSubs)?
+    Math.max(0, diasProrr - workdays(fechaSubs, parseD(ultimoDiaSubs))):null;
   const f9a=(fechaSubs&&fechaSolReInsp)?workdays(fechaSubs,fechaSolReInsp):null;
   const f9b=(fechaSolReInsp&&fechaInfReInsp)?workdays(fechaSolReInsp,fechaInfReInsp):null;
   const baseRes2=fechaInfReInsp||fechaSubs;
