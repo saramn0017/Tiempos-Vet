@@ -256,7 +256,7 @@ function detectarInconsistencias(r){
   if(r.fechaSubs&&!r.fechaNotif1)issues.push('Tiene subsanación pero falta fecha de notificación');
   if(r.fechaInfInsp&&!r.fechaSolInsp)issues.push('Tiene informe inspección pero falta fecha de solicitud');
   if(r.fechaInfReInsp&&!r.fechaSolReInsp)issues.push('Tiene informe re-inspección pero falta fecha de solicitud');
-  if(r.fechaEmRes2&&!r.fechaSubs)issues.push('Tiene resolución final pero falta fecha de subsanación');
+  if(r.fechaEmRes2&&!r.fechaSubs){const res2=(r.resolucion2||'').toUpperCase();if(res2!=='ARCHIVADO'&&res2!=='DESFAVORABLE')issues.push('Tiene resolución final pero falta fecha de subsanación');}
   if(r.fechaNotif2&&!r.fechaEmRes2)issues.push('Tiene notificación final pero falta fecha de resolución final');
   // Inspección sin informe pero con dictamen (error de captura)
   if(r.fechaSolInsp&&!r.fechaInfInsp&&r.fechaDict1)issues.push('Tiene dictamen pero falta informe de inspección');
@@ -264,11 +264,13 @@ function detectarInconsistencias(r){
   return issues;
 }
 function detectarInactividad(r,today){
-  // Solo expedientes activos (no finalizados)
-  if(r.fechaNotif2||(!((r.estadoDict||'').toUpperCase()==='OBSERVADO')&&r.fechaNotif1))return null;
+  // Solo si el balón está en UREP — excluir En inspección, En subsanación, Pendiente cierre
+  const estadoActual=r.estado||'';
+  if(['En inspección','En subsanación','Pendiente cierre','Finalizado'].includes(estadoActual))return null;
+  if(r.fechaNotif2)return null;
+  if(!((r.estadoDict||'').toUpperCase()==='OBSERVADO')&&r.fechaNotif1)return null;
   // Buscar la última fecha UREP registrada
   const fechasUrep=[
-    {f:r.fechaNotif2,label:'Notificación final'},
     {f:r.fechaEmRes2,label:'Resolución final'},
     {f:r.fechaSubs,label:'Subsanación'},
     {f:r.fechaNotif1,label:'Notificación 1°'},
@@ -284,7 +286,23 @@ function detectarInactividad(r,today){
   return null;
 }
 function detectarPendienteCierre(r){const today=new Date();today.setHours(0,0,0,0);if(!r.ultimoDiaSubs||r.fechaSubs)return null;const ult=parseD(r.ultimoDiaSubs);if(!ult||ult>=today)return null;if(r.fechaNotif2)return null;const faltantes=[];if(!r.fechaEmRes2)faltantes.push('Fecha de resolución');if(!r.fechaNotif2)faltantes.push('Notificación final');return faltantes;}
-function derivarEstado(r){const today=new Date();today.setHours(0,0,0,0);const obs=(r.estadoDict||'').toUpperCase()==='OBSERVADO';if(!obs)return r.fechaNotif1?'Finalizado':'En proceso';if(r.fechaNotif2)return'Finalizado';if(r.fechaSolReInsp&&!r.fechaInfReInsp&&!r.fechaNotif2&&!r.fechaEmRes2)return'En inspección';if(r.fechaSolInsp&&!r.fechaInfInsp&&!r.fechaNotif1&&!r.fechaDict1)return'En inspección';if(r.fechaSubs&&!r.fechaNotif2)return'En proceso';if(r.ultimoDiaSubs&&!r.fechaSubs){const u=parseD(r.ultimoDiaSubs);if(u&&u<today){if(!r.fechaNotif2)return'Pendiente cierre';}return'En subsanación';}return'En proceso';}
+function derivarEstado(r){
+  const today=new Date();today.setHours(0,0,0,0);
+  const obs=(r.estadoDict||'').toUpperCase()==='OBSERVADO';
+  // Primero verificar si está en inspección — antes de revisar estado dictamen
+  if(r.fechaSolReInsp&&!r.fechaInfReInsp&&!r.fechaEmRes2)return'En inspección';
+  if(r.fechaSolInsp&&!r.fechaInfInsp&&!r.fechaDict1)return'En inspección';
+  // Luego flujo normal
+  if(!obs)return r.fechaNotif1?'Finalizado':'En proceso';
+  if(r.fechaNotif2)return'Finalizado';
+  if(r.fechaSubs&&!r.fechaNotif2)return'En proceso';
+  if(r.ultimoDiaSubs&&!r.fechaSubs){
+    const u=parseD(r.ultimoDiaSubs);
+    if(u&&u<today){if(!r.fechaNotif2)return'Pendiente cierre';}
+    return'En subsanación';
+  }
+  return'En proceso';
+}
 function g(row,idx){const v=row[idx];return(v!==undefined&&v!==null)?String(v).trim():'';}
 function mapRow(row){
   const today=new Date();today.setHours(0,0,0,0);
@@ -295,11 +313,10 @@ function mapRow(row){
   const fechaSolReInsp=parseD(g(row,C.fechaSolReInsp));const fechaInfReInsp=parseD(g(row,C.fechaInfReInsp));
   const fechaEmRes2=parseD(g(row,C.fechaEmRes2));const fechaNotif2=parseD(g(row,C.fechaNotif2));
   const estadoDict=g(row,C.estadoDict);const tieneInsp=!!fechaSolInsp;
-  const inconsistencias=detectarInconsistencias({ingreso:fmt(ingreso),fechaAsig:fmt(fechaAsig),fechaRev:fmt(fechaRev),fechaSolInsp:fmt(fechaSolInsp),fechaInfInsp:fmt(fechaInfInsp),fechaDict1:fmt(fechaDict1),fechaEmRes1:fmt(fechaEmRes1),fechaNotif1:fmt(fechaNotif1),fechaSubs:fmt(fechaSubs),fechaSolReInsp:fmt(fechaSolReInsp),fechaInfReInsp:fmt(fechaInfReInsp),fechaEmRes2:fmt(fechaEmRes2),fechaNotif2:fmt(fechaNotif2)});
+  const inconsistencias=detectarInconsistencias({ingreso:fmt(ingreso),fechaAsig:fmt(fechaAsig),fechaRev:fmt(fechaRev),fechaSolInsp:fmt(fechaSolInsp),fechaInfInsp:fmt(fechaInfInsp),fechaDict1:fmt(fechaDict1),fechaEmRes1:fmt(fechaEmRes1),fechaNotif1:fmt(fechaNotif1),fechaSubs:fmt(fechaSubs),fechaSolReInsp:fmt(fechaSolReInsp),fechaInfReInsp:fmt(fechaInfReInsp),fechaEmRes2:fmt(fechaEmRes2),fechaNotif2:fmt(fechaNotif2),resolucion2:g(row,C.resolucion2)});
   const tieneIncons=inconsistencias.length>0;
   const pendienteCierre=detectarPendienteCierre({ultimoDiaSubs,fechaSubs:fmt(fechaSubs),fechaNotif2:fmt(fechaNotif2),fechaEmRes2:fmt(fechaEmRes2),fechaNotif1:fmt(fechaNotif1)});
   const today2=new Date();today2.setHours(0,0,0,0);
-  const inactividad=detectarInactividad({estadoDict,fechaNotif2:fmt(fechaNotif2),fechaEmRes2:fmt(fechaEmRes2),fechaSubs:fmt(fechaSubs),fechaNotif1:fmt(fechaNotif1),fechaEmRes1:fmt(fechaEmRes1),fechaDict1:fmt(fechaDict1),fechaRev:fmt(fechaRev),fechaAsig:fmt(fechaAsig)},today2);
   // F4: si tiene dictamen pero no informe → inconsistencia, F4=null
   const inspSinInforme=fechaSolInsp&&!fechaInfInsp&&fechaDict1;
   const f1=workdays(ingreso,fechaAsig);
@@ -322,8 +339,10 @@ function mapRow(row){
   const t_urep=esValido?sumArr([f1,f2,f3,f5,f6,f7,f9a,f10,f11]):null;
   const finTotal=fechaNotif2||fechaNotif1||today;
   const t_total=esValido?workdays(ingreso,finTotal>today?today:finTotal):null;
-  const obj={nSol:g(row,C.nSol),comercial:g(row,C.comercial)||g(row,C.nSol),analista:g(row,C.analista)||'Sin asignar',tramite:g(row,C.tramite)||'N/D',estadoDict,tieneInsp,esValido,tieneIncons,pendienteCierre,inactividad,ingreso:fmt(ingreso),fechaAsig:fmt(fechaAsig),fechaRev:fmt(fechaRev),fechaSolInsp:fmt(fechaSolInsp),fechaInfInsp:fmt(fechaInfInsp),fechaDict1:fmt(fechaDict1),fechaEmRes1:fmt(fechaEmRes1),fechaNotif1:fmt(fechaNotif1),fechaSolProrr:fmt(fechaSolProrr),ultimoDiaSubs,fechaSubs:fmt(fechaSubs),fechaSolReInsp:fmt(fechaSolReInsp),fechaInfReInsp:fmt(fechaInfReInsp),fechaEmRes2:fmt(fechaEmRes2),fechaNotif2:fmt(fechaNotif2),f1,f2,f3,f4,f5,f6,f7,f8,f8b,f8c,f9a,f9b,f10,f11,t_urep,t_total,inconsistencias};
-  obj.estado=derivarEstado(obj);return obj;
+  const obj={nSol:g(row,C.nSol),comercial:g(row,C.comercial)||g(row,C.nSol),analista:g(row,C.analista)||'Sin asignar',tramite:g(row,C.tramite)||'N/D',estadoDict,tieneInsp,esValido,tieneIncons,pendienteCierre,ingreso:fmt(ingreso),fechaAsig:fmt(fechaAsig),fechaRev:fmt(fechaRev),fechaSolInsp:fmt(fechaSolInsp),fechaInfInsp:fmt(fechaInfInsp),fechaDict1:fmt(fechaDict1),fechaEmRes1:fmt(fechaEmRes1),fechaNotif1:fmt(fechaNotif1),fechaSolProrr:fmt(fechaSolProrr),ultimoDiaSubs,fechaSubs:fmt(fechaSubs),fechaSolReInsp:fmt(fechaSolReInsp),fechaInfReInsp:fmt(fechaInfReInsp),fechaEmRes2:fmt(fechaEmRes2),fechaNotif2:fmt(fechaNotif2),f1,f2,f3,f4,f5,f6,f7,f8,f8b,f8c,f9a,f9b,f10,f11,t_urep,t_total,inconsistencias};
+  obj.estado=derivarEstado(obj);
+  obj.inactividad=detectarInactividad(obj,today2);
+  return obj;
 }
 let RAW=[],FILTERED=[],activeTab='all',chF=null,chA=null;
 async function loadData(){setBanner('loading','Conectando con Google Sheets...');document.getElementById('sdot').style.background='#9a9892';const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${SHEET_TAB}`;try{const resp=await fetch(url);if(!resp.ok)throw new Error(`HTTP ${resp.status}`);const text=await resp.text();const rows=parseCSV(text);const data=rows.filter(r=>r[C.nSol]&&r[C.nSol].trim()!==''&&r[C.nSol].trim()!=='Número de solicitud');RAW=data.map(mapRow);FILTERED=[...RAW];populateFilters();renderAll();setBanner('ok',`✓ ${RAW.length} expedientes cargados · ${new Date().toLocaleString('es-SV')}`);document.getElementById('sdot').style.background='#639922';document.getElementById('slbl').textContent='Google Sheets en vivo';document.getElementById('ulbl').textContent=new Date().toLocaleTimeString('es-SV');}catch(e){setBanner('error',`Error: ${e.message}`);document.getElementById('sdot').style.background='#E24B4A';}}
