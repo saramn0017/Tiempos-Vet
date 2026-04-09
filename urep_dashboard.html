@@ -237,9 +237,54 @@ function parseCSV(text){
   if(cols.length>0||cur.trim()!==''){cols.push(cur.trim());rows.push(cols);}
   return rows;
 }
-function detectarInconsistencias(r){const issues=[];const chk=(d1,d2,msg)=>{if(!d1||!d2)return;const a=parseD(d1),b=parseD(d2);if(a&&b&&a>b)issues.push(msg);};chk(r.ingreso,r.fechaAsig,'Asignación anterior al Ingreso');chk(r.fechaAsig,r.fechaRev,'Revisión anterior a Asignación');chk(r.fechaSolInsp,r.fechaInfInsp,'Informe inspección anterior a Solicitud');chk(r.fechaInfInsp,r.fechaDict1,'Dictamen anterior a Informe Inspección');chk(r.fechaDict1,r.fechaEmRes1,'Resolución anterior al Dictamen');chk(r.fechaEmRes1,r.fechaNotif1,'Notificación anterior a Resolución');chk(r.fechaNotif1,r.fechaSubs,'Subsanación anterior a Notificación');chk(r.fechaSolReInsp,r.fechaInfReInsp,'Informe re-inspección anterior a Solicitud');chk(r.fechaEmRes2,r.fechaNotif2,'Notificación final anterior a Resolución final');return issues;}
+function detectarInconsistencias(r){
+  const issues=[];
+  // Fechas al revés
+  const chk=(d1,d2,msg)=>{if(!d1||!d2)return;const a=parseD(d1),b=parseD(d2);if(a&&b&&a>b)issues.push(msg);};
+  chk(r.ingreso,r.fechaAsig,'Asignación anterior al Ingreso');
+  chk(r.fechaAsig,r.fechaRev,'Revisión anterior a Asignación');
+  chk(r.fechaSolInsp,r.fechaInfInsp,'Informe inspección anterior a Solicitud');
+  chk(r.fechaInfInsp,r.fechaDict1,'Dictamen anterior a Informe Inspección');
+  chk(r.fechaDict1,r.fechaEmRes1,'Resolución anterior al Dictamen');
+  chk(r.fechaEmRes1,r.fechaNotif1,'Notificación anterior a Resolución');
+  chk(r.fechaNotif1,r.fechaSubs,'Subsanación anterior a Notificación');
+  chk(r.fechaSolReInsp,r.fechaInfReInsp,'Informe re-inspección anterior a Solicitud');
+  chk(r.fechaEmRes2,r.fechaNotif2,'Notificación final anterior a Resolución final');
+  // Fase posterior sin fase anterior
+  if(r.fechaEmRes1&&!r.fechaDict1)issues.push('Tiene resolución pero falta fecha de dictamen');
+  if(r.fechaNotif1&&!r.fechaEmRes1)issues.push('Tiene notificación pero falta fecha de resolución');
+  if(r.fechaSubs&&!r.fechaNotif1)issues.push('Tiene subsanación pero falta fecha de notificación');
+  if(r.fechaInfInsp&&!r.fechaSolInsp)issues.push('Tiene informe inspección pero falta fecha de solicitud');
+  if(r.fechaInfReInsp&&!r.fechaSolReInsp)issues.push('Tiene informe re-inspección pero falta fecha de solicitud');
+  if(r.fechaEmRes2&&!r.fechaSubs)issues.push('Tiene resolución final pero falta fecha de subsanación');
+  if(r.fechaNotif2&&!r.fechaEmRes2)issues.push('Tiene notificación final pero falta fecha de resolución final');
+  // Inspección sin informe pero con dictamen (error de captura)
+  if(r.fechaSolInsp&&!r.fechaInfInsp&&r.fechaDict1)issues.push('Tiene dictamen pero falta informe de inspección');
+  if(r.fechaSolReInsp&&!r.fechaInfReInsp&&r.fechaEmRes2)issues.push('Tiene resolución final pero falta informe de re-inspección');
+  return issues;
+}
+function detectarInactividad(r,today){
+  // Solo expedientes activos (no finalizados)
+  if(r.fechaNotif2||(!((r.estadoDict||'').toUpperCase()==='OBSERVADO')&&r.fechaNotif1))return null;
+  // Buscar la última fecha UREP registrada
+  const fechasUrep=[
+    {f:r.fechaNotif2,label:'Notificación final'},
+    {f:r.fechaEmRes2,label:'Resolución final'},
+    {f:r.fechaSubs,label:'Subsanación'},
+    {f:r.fechaNotif1,label:'Notificación 1°'},
+    {f:r.fechaEmRes1,label:'Resolución 1°'},
+    {f:r.fechaDict1,label:'Dictamen técnico'},
+    {f:r.fechaRev,label:'Revisión preliminar'},
+    {f:r.fechaAsig,label:'Asignación'},
+  ].filter(x=>x.f);
+  if(!fechasUrep.length)return null;
+  const ultima=fechasUrep[0];
+  const dias=workdays(parseD(ultima.f),today);
+  if(dias>=15)return{label:ultima.label,fecha:ultima.f,dias};
+  return null;
+}
 function detectarPendienteCierre(r){const today=new Date();today.setHours(0,0,0,0);if(!r.ultimoDiaSubs||r.fechaSubs)return null;const ult=parseD(r.ultimoDiaSubs);if(!ult||ult>=today)return null;if(r.fechaNotif2)return null;const faltantes=[];if(!r.fechaEmRes2)faltantes.push('Fecha de resolución');if(!r.fechaNotif2)faltantes.push('Notificación final');return faltantes;}
-function derivarEstado(r){const today=new Date();today.setHours(0,0,0,0);const obs=(r.estadoDict||'').toUpperCase()==='OBSERVADO';if(!obs)return r.fechaNotif1?'Finalizado':'En proceso';if(r.fechaNotif2)return'Finalizado';if(r.fechaSolReInsp&&!r.fechaInfReInsp&&!r.fechaNotif2)return'En inspección';if(r.fechaSolInsp&&!r.fechaInfInsp&&!r.fechaNotif1)return'En inspección';if(r.fechaSubs&&!r.fechaNotif2)return'En proceso';if(r.ultimoDiaSubs&&!r.fechaSubs){const u=parseD(r.ultimoDiaSubs);if(u&&u<today){if(!r.fechaNotif2)return'Pendiente cierre';}return'En subsanación';}return'En proceso';}
+function derivarEstado(r){const today=new Date();today.setHours(0,0,0,0);const obs=(r.estadoDict||'').toUpperCase()==='OBSERVADO';if(!obs)return r.fechaNotif1?'Finalizado':'En proceso';if(r.fechaNotif2)return'Finalizado';if(r.fechaSolReInsp&&!r.fechaInfReInsp&&!r.fechaNotif2&&!r.fechaEmRes2)return'En inspección';if(r.fechaSolInsp&&!r.fechaInfInsp&&!r.fechaNotif1&&!r.fechaDict1)return'En inspección';if(r.fechaSubs&&!r.fechaNotif2)return'En proceso';if(r.ultimoDiaSubs&&!r.fechaSubs){const u=parseD(r.ultimoDiaSubs);if(u&&u<today){if(!r.fechaNotif2)return'Pendiente cierre';}return'En subsanación';}return'En proceso';}
 function g(row,idx){const v=row[idx];return(v!==undefined&&v!==null)?String(v).trim():'';}
 function mapRow(row){
   const today=new Date();today.setHours(0,0,0,0);
@@ -253,11 +298,15 @@ function mapRow(row){
   const inconsistencias=detectarInconsistencias({ingreso:fmt(ingreso),fechaAsig:fmt(fechaAsig),fechaRev:fmt(fechaRev),fechaSolInsp:fmt(fechaSolInsp),fechaInfInsp:fmt(fechaInfInsp),fechaDict1:fmt(fechaDict1),fechaEmRes1:fmt(fechaEmRes1),fechaNotif1:fmt(fechaNotif1),fechaSubs:fmt(fechaSubs),fechaSolReInsp:fmt(fechaSolReInsp),fechaInfReInsp:fmt(fechaInfReInsp),fechaEmRes2:fmt(fechaEmRes2),fechaNotif2:fmt(fechaNotif2)});
   const tieneIncons=inconsistencias.length>0;
   const pendienteCierre=detectarPendienteCierre({ultimoDiaSubs,fechaSubs:fmt(fechaSubs),fechaNotif2:fmt(fechaNotif2),fechaEmRes2:fmt(fechaEmRes2),fechaNotif1:fmt(fechaNotif1)});
+  const today2=new Date();today2.setHours(0,0,0,0);
+  const inactividad=detectarInactividad({estadoDict,fechaNotif2:fmt(fechaNotif2),fechaEmRes2:fmt(fechaEmRes2),fechaSubs:fmt(fechaSubs),fechaNotif1:fmt(fechaNotif1),fechaEmRes1:fmt(fechaEmRes1),fechaDict1:fmt(fechaDict1),fechaRev:fmt(fechaRev),fechaAsig:fmt(fechaAsig)},today2);
+  // F4: si tiene dictamen pero no informe → inconsistencia, F4=null
+  const inspSinInforme=fechaSolInsp&&!fechaInfInsp&&fechaDict1;
   const f1=workdays(ingreso,fechaAsig);
   const f2=workdays(fechaAsig,fechaRev);
   const f3=tieneInsp?workdays(fechaRev,fechaSolInsp):null;
-  const f4=tieneInsp?workdays(fechaSolInsp,fechaInfInsp):null;
-  const baseDict=tieneInsp?fechaInfInsp:fechaRev;
+  const f4=(tieneInsp&&!inspSinInforme)?workdays(fechaSolInsp,fechaInfInsp):null;
+  const baseDict=(!inspSinInforme&&tieneInsp)?fechaInfInsp:fechaRev;
   const f5=workdays(baseDict,fechaDict1);
   const f6=(!inconsistencias.some(i=>i.includes('Resolución anterior')))?workdays(fechaDict1,fechaEmRes1):null;
   const f7=(!inconsistencias.some(i=>i.includes('Notificación anterior a Resolución')))?workdays(fechaEmRes1,fechaNotif1):null;
@@ -273,7 +322,7 @@ function mapRow(row){
   const t_urep=esValido?sumArr([f1,f2,f3,f5,f6,f7,f9a,f10,f11]):null;
   const finTotal=fechaNotif2||fechaNotif1||today;
   const t_total=esValido?workdays(ingreso,finTotal>today?today:finTotal):null;
-  const obj={nSol:g(row,C.nSol),comercial:g(row,C.comercial)||g(row,C.nSol),analista:g(row,C.analista)||'Sin asignar',tramite:g(row,C.tramite)||'N/D',estadoDict,tieneInsp,esValido,tieneIncons,pendienteCierre,ingreso:fmt(ingreso),fechaAsig:fmt(fechaAsig),fechaRev:fmt(fechaRev),fechaSolInsp:fmt(fechaSolInsp),fechaInfInsp:fmt(fechaInfInsp),fechaDict1:fmt(fechaDict1),fechaEmRes1:fmt(fechaEmRes1),fechaNotif1:fmt(fechaNotif1),fechaSolProrr:fmt(fechaSolProrr),ultimoDiaSubs,fechaSubs:fmt(fechaSubs),fechaSolReInsp:fmt(fechaSolReInsp),fechaInfReInsp:fmt(fechaInfReInsp),fechaEmRes2:fmt(fechaEmRes2),fechaNotif2:fmt(fechaNotif2),f1,f2,f3,f4,f5,f6,f7,f8,f8b,f8c,f9a,f9b,f10,f11,t_urep,t_total,inconsistencias};
+  const obj={nSol:g(row,C.nSol),comercial:g(row,C.comercial)||g(row,C.nSol),analista:g(row,C.analista)||'Sin asignar',tramite:g(row,C.tramite)||'N/D',estadoDict,tieneInsp,esValido,tieneIncons,pendienteCierre,inactividad,ingreso:fmt(ingreso),fechaAsig:fmt(fechaAsig),fechaRev:fmt(fechaRev),fechaSolInsp:fmt(fechaSolInsp),fechaInfInsp:fmt(fechaInfInsp),fechaDict1:fmt(fechaDict1),fechaEmRes1:fmt(fechaEmRes1),fechaNotif1:fmt(fechaNotif1),fechaSolProrr:fmt(fechaSolProrr),ultimoDiaSubs,fechaSubs:fmt(fechaSubs),fechaSolReInsp:fmt(fechaSolReInsp),fechaInfReInsp:fmt(fechaInfReInsp),fechaEmRes2:fmt(fechaEmRes2),fechaNotif2:fmt(fechaNotif2),f1,f2,f3,f4,f5,f6,f7,f8,f8b,f8c,f9a,f9b,f10,f11,t_urep,t_total,inconsistencias};
   obj.estado=derivarEstado(obj);return obj;
 }
 let RAW=[],FILTERED=[],activeTab='all',chF=null,chA=null;
@@ -314,9 +363,11 @@ function renderMonitor(){
   const cierre=FILTERED.filter(r=>r.pendienteCierre&&r.pendienteCierre.length>0).sort((a,b)=>(parseD(a.ultimoDiaSubs)||0)-(parseD(b.ultimoDiaSubs)||0));
   const enInsp=FILTERED.filter(r=>r.estado==='En inspección').sort((a,b)=>(parseD(a.fechaSolInsp||a.fechaSolReInsp)||0)-(parseD(b.fechaSolInsp||b.fechaSolReInsp)||0));
   const subsActivas=FILTERED.filter(r=>r.estado==='En subsanación').sort((a,b)=>(parseD(a.ultimoDiaSubs)||0)-(parseD(b.ultimoDiaSubs)||0));
+  const inactivos=FILTERED.filter(r=>r.inactividad&&!r.tieneIncons&&!r.pendienteCierre).sort((a,b)=>b.inactividad.dias-a.inactividad.dias);
   let html='';
   if(incons.length){html+=`<div class="monitor-group"><div class="monitor-group-title mg-red">Inconsistencias en bitácora (${incons.length})</div>`;html+=incons.map(r=>`<div class="monitor-row mr-red"><div><div class="mr-sol">${r.nSol} · ${r.comercial}</div><div class="mr-meta">${r.analista}</div><div class="mr-missing">${r.inconsistencias.join(' · ')}</div></div><span class="tag bd-c">Revisar</span></div>`).join('');html+='</div>';}
   if(cierre.length){html+=`<div class="monitor-group"><div class="monitor-group-title mg-warn">Pendientes de cierre administrativo (${cierre.length})</div>`;html+=cierre.map(r=>{const diasVencida=workdays(parseD(r.ultimoDiaSubs),today);return`<div class="monitor-row mr-warn"><div><div class="mr-sol">${r.nSol} · ${r.comercial}</div><div class="mr-meta">${r.analista} · Plazo venció: ${r.ultimoDiaSubs}</div><div class="mr-missing">Falta registrar: ${r.pendienteCierre.join(' · ')}</div></div><div><div class="mr-days" style="color:var(--warn)">${diasVencida}</div><div class="mr-lbl">días háb. vencida</div></div></div>`;}).join('');html+='</div>';}
+  if(inactivos.length){html+=`<div class="monitor-group"><div class="monitor-group-title mg-warn">Sin movimiento UREP +15 días hábiles (${inactivos.length})</div>`;html+=inactivos.map(r=>`<div class="monitor-row mr-warn"><div><div class="mr-sol">${r.nSol} · ${r.comercial}</div><div class="mr-meta">${r.analista} · Última fecha: ${r.inactividad.label} · ${r.inactividad.fecha}</div></div><div><div class="mr-days" style="color:var(--warn)">${r.inactividad.dias}</div><div class="mr-lbl">días háb. sin movimiento</div></div></div>`).join('');html+='</div>';}
   if(enInsp.length){html+=`<div class="monitor-group"><div class="monitor-group-title mg-blue">En inspección (${enInsp.length})</div>`;html+=enInsp.map(r=>{const esReInsp=!!r.fechaSolReInsp&&!r.fechaInfReInsp;const fechaSol=esReInsp?r.fechaSolReInsp:r.fechaSolInsp;const dias=workdays(parseD(fechaSol),today);return`<div class="monitor-row mr-blue"><div><div class="mr-sol">${r.nSol} · ${r.comercial}</div><div class="mr-meta">${r.analista} · ${esReInsp?'Re-inspección':'Inspección'} · Sol.: ${fechaSol||'—'}</div></div><div><div class="mr-days" style="color:var(--info)">${dias??'—'}</div><div class="mr-lbl">días háb. transcurridos</div></div></div>`;}).join('');html+='</div>';}
   if(subsActivas.length){html+=`<div class="monitor-group"><div class="monitor-group-title mg-blue">En subsanación — plazo vigente (${subsActivas.length})</div>`;html+=subsActivas.map(r=>{const ult=parseD(r.ultimoDiaSubs);const diasRest=workdays(today,ult);const diasTrans=workdays(parseD(r.fechaNotif1),today);const urgente=diasRest<=3;return`<div class="monitor-row ${urgente?'mr-warn':'mr-blue'}"><div><div class="mr-sol">${r.nSol} · ${r.comercial}</div><div class="mr-meta">${r.analista} · Notificado: ${r.fechaNotif1}${r.diasProrr?' · Prórroga: '+r.diasProrr+'d':''} · Plazo: ${r.ultimoDiaSubs}</div></div><div><div class="mr-days" style="color:${urgente?'var(--warn)':'var(--info)'}">${diasRest}</div><div class="mr-lbl">días háb. restantes</div><div class="mr-lbl">${diasTrans} días transcurridos</div></div></div>`;}).join('');html+='</div>';}
   if(!html)html='<div class="empty">No hay alertas activas.</div>';
