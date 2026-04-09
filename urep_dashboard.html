@@ -251,37 +251,43 @@ function detectarInconsistencias(r){
   chk(r.fechaNotif1,r.fechaSubs,'Subsanación anterior a Notificación');
   chk(r.fechaSolReInsp,r.fechaInfReInsp,'Informe re-inspección anterior a Solicitud');
   chk(r.fechaEmRes2,r.fechaNotif2,'Notificación final anterior a Resolución final');
-  // Fase posterior sin fase anterior
+  // Fase posterior sin fase anterior — con excepciones para casos válidos
+  const estadoDictUp=(r.estadoDict||'').toUpperCase();
+  const resolucion2Up=(r.resolucion2||'').toUpperCase();
+  const esTerminado=['DESISTIDO','IMPROCEDENTE','DESFAVORABLE','ARCHIVADO'].includes(estadoDictUp)||
+                    ['ARCHIVADO','DESFAVORABLE'].includes(resolucion2Up);
   if(r.fechaEmRes1&&!r.fechaDict1)issues.push('Tiene resolución pero falta fecha de dictamen');
   if(r.fechaNotif1&&!r.fechaEmRes1)issues.push('Tiene notificación pero falta fecha de resolución');
   if(r.fechaSubs&&!r.fechaNotif1)issues.push('Tiene subsanación pero falta fecha de notificación');
   if(r.fechaInfInsp&&!r.fechaSolInsp)issues.push('Tiene informe inspección pero falta fecha de solicitud');
   if(r.fechaInfReInsp&&!r.fechaSolReInsp)issues.push('Tiene informe re-inspección pero falta fecha de solicitud');
-  if(r.fechaEmRes2&&!r.fechaSubs){const res2=(r.resolucion2||'').toUpperCase();if(res2!=='ARCHIVADO'&&res2!=='DESFAVORABLE')issues.push('Tiene resolución final pero falta fecha de subsanación');}
+  if(r.fechaEmRes2&&!r.fechaSubs&&!esTerminado)issues.push('Tiene resolución final pero falta fecha de subsanación');
   if(r.fechaNotif2&&!r.fechaEmRes2)issues.push('Tiene notificación final pero falta fecha de resolución final');
-  // Inspección sin informe pero con dictamen (error de captura)
-  if(r.fechaSolInsp&&!r.fechaInfInsp&&r.fechaDict1)issues.push('Tiene dictamen pero falta informe de inspección');
-  if(r.fechaSolReInsp&&!r.fechaInfReInsp&&r.fechaEmRes2)issues.push('Tiene resolución final pero falta informe de re-inspección');
+  // Inspección sin informe pero con dictamen (error de captura) — solo si no está terminado
+  if(r.fechaSolInsp&&!r.fechaInfInsp&&r.fechaDict1&&!esTerminado)issues.push('Tiene dictamen pero falta informe de inspección');
+  if(r.fechaSolReInsp&&!r.fechaInfReInsp&&r.fechaEmRes2&&!esTerminado)issues.push('Tiene resolución final pero falta informe de re-inspección');
   return issues;
 }
 function detectarInactividad(r,today){
-  // Solo si el balón está en UREP — excluir En inspección, En subsanación, Pendiente cierre
-  const estadoActual=r.estado||'';
-  if(['En inspección','En subsanación','Pendiente cierre','Finalizado'].includes(estadoActual))return null;
-  if(r.fechaNotif2)return null;
-  if(!((r.estadoDict||'').toUpperCase()==='OBSERVADO')&&r.fechaNotif1)return null;
-  // Buscar la última fecha UREP registrada
-  const fechasUrep=[
-    {f:r.fechaEmRes2,label:'Resolución final'},
-    {f:r.fechaSubs,label:'Subsanación'},
-    {f:r.fechaNotif1,label:'Notificación 1°'},
-    {f:r.fechaEmRes1,label:'Resolución 1°'},
-    {f:r.fechaDict1,label:'Dictamen técnico'},
-    {f:r.fechaRev,label:'Revisión preliminar'},
-    {f:r.fechaAsig,label:'Asignación'},
+  if(['Inconsistencia','Finalizado','En subsanación','Pendiente cierre'].includes(r.estado))return null;
+  // Determinar si el siguiente paso es de UREP según la última fecha registrada
+  // y cuál es esa última fecha
+  const checks=[
+    {f:r.fechaInfReInsp, label:'Informe re-inspección', siguienteUrep:true},
+    {f:r.fechaEmRes2,    label:'Resolución final',      siguienteUrep:true},
+    {f:r.fechaSolReInsp, label:'Sol. re-inspección',    siguienteUrep:false}, // siguiente: inspecciones
+    {f:r.fechaSubs,      label:'Subsanación',           siguienteUrep:true},
+    {f:r.fechaNotif1,    label:'Notificación 1°',       siguienteUrep:false}, // siguiente: regulado
+    {f:r.fechaEmRes1,    label:'Resolución 1°',         siguienteUrep:true},
+    {f:r.fechaDict1,     label:'Dictamen técnico',      siguienteUrep:true},
+    {f:r.fechaInfInsp,   label:'Informe inspección',    siguienteUrep:true},
+    {f:r.fechaSolInsp,   label:'Sol. inspección',       siguienteUrep:false}, // siguiente: inspecciones
+    {f:r.fechaRev,       label:'Revisión preliminar',   siguienteUrep:true},
+    {f:r.fechaAsig,      label:'Asignación',            siguienteUrep:true},
   ].filter(x=>x.f);
-  if(!fechasUrep.length)return null;
-  const ultima=fechasUrep[0];
+  if(!checks.length)return null;
+  const ultima=checks[0];
+  if(!ultima.siguienteUrep)return null; // siguiente paso no es de UREP
   const dias=workdays(parseD(ultima.f),today);
   if(dias>=15)return{label:ultima.label,fecha:ultima.f,dias};
   return null;
