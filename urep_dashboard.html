@@ -336,12 +336,16 @@ function mapRow(row){
   const f5=workdays(baseDict,fechaDict1);
   const f6=(!inconsistencias.some(i=>i.includes('Resolución anterior')))?workdays(fechaDict1,fechaEmRes1):null;
   const f7=(!inconsistencias.some(i=>i.includes('Notificación anterior a Resolución')))?workdays(fechaEmRes1,fechaNotif1):null;
-  const f8=(!pendienteCierre&&fechaNotif1&&ultimoDiaSubs)?workdays(fechaNotif1,fechaSubs||today):null;
+  const estadoDictUp2=(estadoDict||'').toUpperCase();
+  const res2Up=(g(row,C.resolucion2)||'').toUpperCase();
+  const cierresinSubs=['DESISTIDO','IMPROCEDENTE','DESFAVORABLE','ARCHIVADO'].includes(estadoDictUp2)||
+                      ['ARCHIVADO','DESFAVORABLE'].includes(res2Up);
+  const f8=(!pendienteCierre&&fechaNotif1&&ultimoDiaSubs&&!cierresinSubs)?workdays(fechaNotif1,fechaSubs||today):null;
   const f8b=(fechaSolProrr&&ultimoDiaSubs)?workdays(fechaSolProrr,parseD(ultimoDiaSubs)):null;
   const f8c=(fechaSolProrr&&fechaSubs)?workdays(fechaSolProrr,fechaSubs):null;
   const f9a=(fechaSubs&&fechaSolReInsp)?workdays(fechaSubs,fechaSolReInsp):null;
   const f9b=(fechaSolReInsp&&fechaInfReInsp)?workdays(fechaSolReInsp,fechaInfReInsp):null;
-  const baseRes2=fechaInfReInsp||fechaSubs;
+  const baseRes2=fechaInfReInsp||fechaSubs||(cierresinSubs&&ultimoDiaSubs?parseD(ultimoDiaSubs):null);
   const f10=baseRes2?workdays(baseRes2,fechaEmRes2):null;
   const f11=fechaEmRes2?workdays(fechaEmRes2,fechaNotif2):null;
   const esValido=!tieneIncons&&!pendienteCierre;
