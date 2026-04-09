@@ -216,15 +216,16 @@ function parseCSV(text){
       if(c==='\r'&&next==='\n')i++;
       if(cols.length>0||cur.trim()!==''){
         cols.push(cur.trim());
-        // Si la fila tiene al menos 2 columnas Y la segunda parece un N° solicitud válido, es fila nueva
-        // Si no, es continuación de la fila anterior (salto de línea sin comillas)
-        const segundaCol=cols[1]||'';
-        const esFilaNueva=rows.length===0||/^E-\d{3}-\d{4}$/.test(segundaCol)||cols.length>=10;
-        if(esFilaNueva){rows.push(cols);}
-        else if(rows.length>0){
-          // Pegar el contenido al último campo de la fila anterior
+        // Col B (índice 1) siempre tiene N° solicitud tipo E-XXX-XXXX
+        // Si no lo tiene, esta fila es un fragmento roto — pegar a la anterior
+        const colB=(cols[1]||'').trim();
+        const esFilaValida=rows.length===0||colB!==''||colB==='Número de solicitud';
+        if(esFilaValida){
+          rows.push(cols);
+        }else if(rows.length>0){
+          // Pegar fragmento al primer campo de la fila anterior que tenga contenido largo
           const lastRow=rows[rows.length-1];
-          lastRow[lastRow.length-1]=(lastRow[lastRow.length-1]+' '+cols.join(' ')).trim();
+          lastRow[0]=(lastRow[0]+' '+cols.join(' ')).trim();
         }
         cols=[];cur='';
       }
