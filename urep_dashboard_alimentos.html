@@ -328,7 +328,6 @@ const C = {
   resolucion:     21, // Resolución
   fechaRes:       22, // Fecha de Resolución
   fechaNotif:     23, // Fecha de Notificación al Regulado
-  fechaInvalida:  24, // Fecha inválida detectada por Apps Script
 };
 
 // Tipos de establecimiento que son TABACO
@@ -462,10 +461,6 @@ function esExpedito(tipoEstab, fechaIngreso){
 function detectarInconsistencias(r){
   const issues = [];
 
-  // Fecha inválida detectada por Apps Script
-  if(r.fechaInvalida && r.fechaInvalida.trim()!=='' && r.fechaInvalida.trim()!=='Fecha inválida detectada')
-    issues.push('Fecha inválida en bitácora: '+r.fechaInvalida);
-
   const chk = (d1,d2,msg) => {
     if(!d1||!d2) return;
     const a=parseD(d1), b=parseD(d2);
@@ -596,7 +591,6 @@ function mapRow(row){
   const tipoEstab     = g(row, C.tipoEstab);
   const resolucion    = g(row, C.resolucion);
   const diasProrr     = g(row, C.diasProrr);
-  const fechaInvalida = g(row, C.fechaInvalida);
 
   const categoria = esTabaco(tipoEstab) ? 'tabaco' : 'alimentos';
   const expedito  = esExpedito(tipoEstab, ingreso);
@@ -607,7 +601,7 @@ function mapRow(row){
     fechaSubs:fmt(fechaSubs), fechaPermProv:fmt(fechaPermProv),
     fechaSolInsp:fmt(fechaSolInsp), fechaInfInsp:fmt(fechaInfInsp),
     fechaRes:fmt(fechaRes), fechaNotif:fmt(fechaNotif),
-    resolucion, fechaMaxSubs, fechaInvalida
+    resolucion, fechaMaxSubs
   });
 
   // Si la única inconsistencia es "tiene informe pero falta sol. inspección" → categoría aparte
