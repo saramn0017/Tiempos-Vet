@@ -117,12 +117,13 @@ select:focus,input:focus{border-color:var(--accent);}
 .mg-warn{background:var(--warn-bg);color:var(--warn);}
 .mg-blue{background:var(--info-bg);color:var(--info);}
 .mg-green{background:var(--success-bg);color:var(--success);}
+.mg-yellow{background:#fef9e7;color:#856404;}
 .monitor-row{background:var(--surface);border:1px solid var(--border);border-left:3px solid;border-radius:var(--r);padding:10px 14px;margin-bottom:6px;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:6px;}
 .mr-red{border-left-color:#E24B4A;}
 .mr-warn{border-left-color:#BA7517;}
 .mr-blue{border-left-color:#378ADD;}
-.mr-yellow{border-left-color:#d4a017;}
 .mr-green{border-left-color:#3b6d11;}
+.mr-yellow{border-left-color:#d4a017;}
 .mr-sol{font-size:13px;font-weight:600;}
 .mr-meta{font-size:12px;color:var(--text2);margin-top:2px;}
 .mr-missing{font-size:11px;color:var(--danger);margin-top:3px;}
@@ -149,9 +150,8 @@ tbody td{padding:7px 8px;white-space:nowrap;}
 .wn-c{background:var(--warn-bg);color:var(--warn);}
 .bd-c{background:var(--danger-bg);color:var(--danger);}
 .if-c{background:var(--info-bg);color:var(--info);}
-.yw-c{background:#fef9e7;color:#856404;}
-.mg-yellow{background:#fef9e7;color:#856404;}
 .tb-c{background:var(--tobacco-bg);color:var(--tobacco);}
+.yw-c{background:#fef9e7;color:#856404;}
 .mb{height:5px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:3px;}
 .mf{height:100%;border-radius:3px;background:var(--accent);}
 .empty{text-align:center;padding:32px;color:var(--text3);font-size:13px;}
@@ -259,8 +259,8 @@ tbody td{padding:7px 8px;white-space:nowrap;}
       <button class="tab active" onclick="switchTab('all',this)">Todos</button>
       <button class="tab" onclick="switchTab('proceso',this)">En proceso</button>
       <button class="tab" onclick="switchTab('subsanacion',this)">Subsanación</button>
-      <button class="tab" onclick="switchTab('finalizado',this)">Finalizados</button>
       <button class="tab" onclick="switchTab('soloInsp',this)">Sin sol. insp.</button>
+      <button class="tab" onclick="switchTab('finalizado',this)">Finalizados</button>
     </div>
     <div style="margin-bottom:10px"><input type="text" id="tbl-search" placeholder="🔍 Buscar por número de solicitud..." oninput="renderTable()" style="max-width:300px;height:30px;font-size:12px;"></div>
     <div class="tw"><table>
@@ -478,51 +478,33 @@ function detectarInconsistencias(r){
   // Si es DESISTIDO o INVÁLIDO → cierre válido en cualquier etapa, no verificamos cadena
   if(esCierreValidoSinFechas) return issues;
 
-  // Fechas en orden incorrecto — todas se evalúan independientemente
-  chk(r.ingreso,      r.fechaAsig,     'Asignación anterior al Ingreso');
-  chk(r.fechaAsig,    r.fechaObserv,   'Observación anterior a Asignación');
-  chk(r.fechaObserv,  r.fechaSubs,     'Subsanación anterior a Observación');
-  chk(r.fechaSubs,    r.fechaPermProv, 'Permiso Provisional anterior a Subsanación');
-  chk(r.fechaPermProv,r.fechaSolInsp,  'Sol. Inspección anterior a Permiso Provisional');
-  chk(r.fechaSolInsp, r.fechaInfInsp,  'Informe Inspección anterior a Sol. Inspección');
-  chk(r.fechaInfInsp, r.fechaRes,      'Resolución anterior a Informe Inspección');
-  chk(r.fechaRes,     r.fechaNotif,    'Notificación anterior a Resolución');
+  // Fechas en orden incorrecto — todas independientes
+  chk(r.ingreso,       r.fechaAsig,     'Asignación anterior al Ingreso');
+  chk(r.fechaAsig,     r.fechaObserv,   'Observación anterior a Asignación');
+  chk(r.fechaObserv,   r.fechaSubs,     'Subsanación anterior a Observación');
+  chk(r.fechaSubs,     r.fechaPermProv, 'Permiso Provisional anterior a Subsanación');
+  chk(r.fechaPermProv, r.fechaSolInsp,  'Sol. Inspección anterior a Permiso Provisional');
+  chk(r.fechaSolInsp,  r.fechaInfInsp,  'Informe Inspección anterior a Sol. Inspección');
+  chk(r.fechaInfInsp,  r.fechaRes,      'Resolución anterior a Informe Inspección');
+  chk(r.fechaRes,      r.fechaNotif,    'Notificación anterior a Resolución');
 
-  // Cadena completa — cada regla corre independientemente, reporta todas las que faltan
-
-  // Tiene notificación → debe tener resolución
+  // Cadena completa — cada regla independiente, reporta todas las que faltan
   if(r.fechaNotif && !r.fechaRes)
     issues.push('Tiene notificación pero falta fecha de resolución');
-
-  // Tiene resolución
-  if(r.fechaRes){
-    if(r.fechaSolInsp && !r.fechaInfInsp)
-      issues.push('Tiene resolución pero falta informe de inspección');
-    if(!r.fechaSolInsp && !r.fechaPermProv)
-      issues.push('Tiene resolución pero falta Permiso Provisional');
-  }
-
-  // Tiene informe → debe tener sol. inspección
+  if(r.fechaRes && r.fechaSolInsp && !r.fechaInfInsp)
+    issues.push('Tiene resolución pero falta informe de inspección');
+  if(r.fechaRes && !r.fechaSolInsp && !r.fechaPermProv)
+    issues.push('Tiene resolución pero falta Permiso Provisional');
   if(r.fechaInfInsp && !r.fechaSolInsp)
     issues.push('Tiene informe de inspección pero falta Sol. Inspección');
-
-  // Tiene sol. inspección → debe tener permiso provisional
   if(r.fechaSolInsp && !r.fechaPermProv)
     issues.push('Tiene Sol. Inspección pero falta Permiso Provisional');
-
-  // Tiene sol. inspección + observación → debe tener subsanación
   if(r.fechaSolInsp && r.fechaObserv && !r.fechaSubs)
     issues.push('Tiene Sol. Inspección pero falta fecha de subsanación');
-
-  // Tiene permiso provisional + observación → debe tener subsanación
   if(r.fechaPermProv && r.fechaObserv && !r.fechaSubs)
     issues.push('Tiene Permiso Provisional pero falta fecha de subsanación');
-
-  // Tiene subsanación → debe tener observación
   if(r.fechaSubs && !r.fechaObserv)
     issues.push('Tiene subsanación pero falta fecha de observación');
-
-  // Tiene observación → debe tener asignación
   if(r.fechaObserv && !r.fechaAsig)
     issues.push('Tiene observación pero falta fecha de asignación');
 
@@ -544,16 +526,17 @@ function detectarPendienteCierre(r){
 
 // ── Inactividad UREP +15 días ─────────────────────────────────
 function detectarInactividad(r, today){
-  if(['Inconsistencia','Finalizado','En subsanación','Pendiente cierre','En inspección'].includes(r.estado)) return null;
+  if(['Inconsistencia','Finalizado','En subsanación','Pendiente cierre','En inspección','Sin sol. inspección'].includes(r.estado)) return null;
+  // Orden cronológico inverso — la más reciente primero
   const checks = [
-    {f:r.fechaNotif,     label:'Notificación',          siguienteUrep:false},
-    {f:r.fechaRes,       label:'Resolución',             siguienteUrep:false},
-    {f:r.fechaInfInsp,   label:'Informe inspección',     siguienteUrep:true},
-    {f:r.fechaSolInsp,   label:'Sol. inspección',        siguienteUrep:false},
-    {f:r.fechaPermProv,  label:'Permiso Provisional',    siguienteUrep:true},
-    {f:r.fechaSubs,      label:'Subsanación',            siguienteUrep:true},
-    {f:r.fechaObserv,    label:'Observación',            siguienteUrep:false},
-    {f:r.fechaAsig,      label:'Asignación',             siguienteUrep:true},
+    {f:r.fechaNotif,    label:'Notificación',         siguienteUrep:false},
+    {f:r.fechaRes,      label:'Resolución',            siguienteUrep:false},
+    {f:r.fechaInfInsp,  label:'Informe inspección',    siguienteUrep:true},
+    {f:r.fechaSolInsp,  label:'Sol. inspección',       siguienteUrep:false},
+    {f:r.fechaPermProv, label:'Permiso Provisional',   siguienteUrep:true},
+    {f:r.fechaSubs,     label:'Subsanación',           siguienteUrep:true},
+    {f:r.fechaObserv,   label:'Observación',           siguienteUrep:false},
+    {f:r.fechaAsig,     label:'Asignación',            siguienteUrep:true},
   ].filter(x=>x.f);
   if(!checks.length) return null;
   const ultima = checks[0];
@@ -578,7 +561,7 @@ function derivarEstado(r){
   // Inconsistencia
   if(r.tieneIncons) return 'Inconsistencia';
 
-  // Pendiente cierre — tiene prioridad sobre cualquier estado de resolución
+  // Pendiente cierre tiene prioridad sobre cualquier estado de resolución
   if(r.pendienteCierre && r.pendienteCierre.length > 0) return 'Pendiente cierre';
 
   // En inspección: tiene sol. inspección pero no informe
@@ -676,7 +659,6 @@ function mapRow(row){
   const f8 = fechaRes ? workdays(fechaRes, fechaNotif) : null;
 
   // ── Tiempos consolidados ───────────────────────────────────
-  // soloFaltaSolInsp entra en promedios pero F6 será null
   const esValido = !tieneIncons && !pendienteCierre;
 
   // T. UREP = F1 + F2 + F4 + F5 + F7 + F8
