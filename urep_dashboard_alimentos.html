@@ -306,7 +306,7 @@ function parseCSV(text){
       if(cols.length>0||cur.trim()!==''){
         cols.push(cur.trim());
         const colA=(cols[0]||'').trim();
-        const esValida=/^UREP/i.test(colA)||colA==='Número de Solicitud';
+        const esValida=colA!==''&&colA!=='Número de Solicitud'&&cols.length>3||colA==='Número de Solicitud';
         if(esValida){rows.push(cols);}
         cols=[];cur='';
       }
