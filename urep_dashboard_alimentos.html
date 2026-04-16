@@ -10,7 +10,7 @@
   --bg:#f5f4f0;--surface:#fff;--surface2:#f9f8f5;--border:#e2e0d8;
   --text:#1a1a18;--text2:#5a5956;--text3:#9a9892;
   --accent:#2a6e3f;--accent2:#1a4f2d;
-  --tobacco:#7c4f1e;--tobacco-bg:#fdf0e3;
+  --tobacco:#7c4f1e;--tobacco-bg:#fdf0e3;--tobacco-border:#e8c99a;
   --success:#3b6d11;--success-bg:#eaf3de;
   --warn:#854f0b;--warn-bg:#faeeda;
   --danger:#a32d2d;--danger-bg:#fcebeb;
@@ -19,15 +19,21 @@
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;}
+
+/* HEADER */
 .hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100;}
 .hbrand{display:flex;align-items:center;gap:10px;}
 .hlogo{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;}
 .hlogo svg{width:18px;height:18px;fill:white;}
-.htitle{font-size:15px;font-weight:600;}.hsub{font-size:11px;color:var(--text3);}
+.htitle{font-size:15px;font-weight:600;}
+.hsub{font-size:11px;color:var(--text3);}
 .hmeta{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text3);}
 .sdot{width:7px;height:7px;border-radius:50%;animation:pulse 2s infinite;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
 .wrap{max-width:1400px;margin:0 auto;padding:20px 24px 48px;}
+
+/* BANNER */
 .banner{border-radius:var(--r);padding:11px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px;font-size:13px;flex-wrap:wrap;}
 .b-loading{background:var(--info-bg);color:var(--info);border:1px solid #B5D4F4;}
 .b-ok{background:var(--success-bg);color:var(--success);border:1px solid #C0DD97;}
@@ -35,6 +41,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .spin{width:16px;height:16px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:sp .7s linear infinite;flex-shrink:0;}
 @keyframes sp{to{transform:rotate(360deg)}}
 .btn-xs{height:28px;padding:0 12px;border-radius:6px;border:1px solid currentColor;background:transparent;color:inherit;font-size:12px;font-weight:500;cursor:pointer;}
+
+/* FILTERS */
 .filters{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:20px;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;}
 .fg{display:flex;flex-direction:column;gap:4px;min-width:140px;flex:1;}
 .fl{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;}
@@ -42,24 +50,46 @@ select,input[type=date],input[type=text]{height:34px;border:1px solid var(--bord
 select:focus,input:focus{border-color:var(--accent);}
 .btn{height:34px;padding:0 16px;border-radius:7px;border:none;cursor:pointer;font-size:13px;font-weight:500;}
 .btn-g{background:var(--surface2);color:var(--text2);border:1px solid var(--border);}
+
+/* KPIS */
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:20px;}
 .kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;}
 .kl{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
 .kv{font-size:24px;font-weight:700;line-height:1;}
 .ku{font-size:11px;color:var(--text3);margin-left:3px;font-weight:400;}
+
+/* SECTION TITLE */
 .st{font-size:13px;font-weight:600;color:var(--text2);margin-bottom:12px;display:flex;align-items:center;gap:6px;}
 .st::before{content:'';display:block;width:3px;height:14px;background:var(--accent);border-radius:2px;}
+
+/* CATEGORY TABS */
+.cat-tabs{display:flex;gap:0;margin-bottom:20px;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;background:var(--surface);}
+.cat-tab{flex:1;padding:10px 16px;font-size:13px;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--text3);transition:all .2s;text-align:center;border-right:1px solid var(--border);}
+.cat-tab:last-child{border-right:none;}
+.cat-tab.active-alim{background:var(--success-bg);color:var(--success);font-weight:600;}
+.cat-tab.active-tab{background:var(--tobacco-bg);color:var(--tobacco);font-weight:600;}
+.cat-tab.active-all{background:var(--info-bg);color:var(--info);font-weight:600;}
+
+/* INSP SUBTABS */
+.insp-tabs{display:flex;gap:2px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:3px;width:fit-content;margin-bottom:16px;}
+.insp-tab{padding:5px 14px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;color:var(--text3);border:none;background:none;}
+.insp-tab.active{background:var(--surface);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.06);}
+
+/* PHASES */
 .tgroup{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:12px;overflow:hidden;}
 .tgroup-header{padding:11px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;}
 .tgroup-header:hover{background:var(--surface2);}
-.tgroup-title{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
+.tgroup-title{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;gap:8px;}
 .tgroup-avg{font-size:13px;font-weight:700;}
 .tgroup-body{padding:12px 16px;display:flex;flex-wrap:wrap;gap:10px;}
 .tgroup-summary{padding:10px 16px;background:var(--surface2);border-top:1px solid var(--border);display:flex;gap:20px;flex-wrap:wrap;}
 .tgroup-collapsed .tgroup-body,.tgroup-collapsed .tgroup-summary{display:none;}
 .collapse-icon{font-size:10px;color:var(--text3);transition:transform .2s;}
 .tgroup-collapsed .collapse-icon{transform:rotate(-90deg);}
-.ts-item{font-size:12px;color:var(--text2);}.ts-val{font-weight:600;}
+.ts-item{font-size:12px;color:var(--text2);}
+.ts-val{font-weight:600;}
+
+/* MINI CARDS */
 .pmc{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:11px 14px;min-width:150px;flex:1;}
 .pmc-name{font-size:11px;color:var(--text3);margin-bottom:5px;font-weight:500;}
 .pmc-val{font-size:22px;font-weight:700;line-height:1;}
@@ -71,22 +101,35 @@ select:focus,input:focus{border-color:var(--accent);}
 .zero-note{font-size:10px;color:var(--info);margin-top:3px;}
 .prorr-wrap{display:flex;gap:8px;margin-top:8px;}
 .prorr-half{background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:8px 12px;flex:1;text-align:center;}
-.prorr-v{font-size:18px;font-weight:700;}.prorr-l{font-size:10px;color:var(--text3);margin-top:1px;}
+.prorr-v{font-size:18px;font-weight:700;}
+.prorr-l{font-size:10px;color:var(--text3);margin-top:1px;}
+
+/* CHARTS */
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
 @media(max-width:760px){.g2{grid-template-columns:1fr;}}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;}
 .cw{position:relative;height:220px;}
+
+/* MONITOR */
 .monitor-group{margin-bottom:14px;}
 .monitor-group-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;padding:6px 12px;border-radius:6px;margin-bottom:8px;display:inline-block;}
 .mg-red{background:var(--danger-bg);color:var(--danger);}
 .mg-warn{background:var(--warn-bg);color:var(--warn);}
 .mg-blue{background:var(--info-bg);color:var(--info);}
-.mg-yellow{background:#fef9e7;color:#856404;}
+.mg-green{background:var(--success-bg);color:var(--success);}
 .monitor-row{background:var(--surface);border:1px solid var(--border);border-left:3px solid;border-radius:var(--r);padding:10px 14px;margin-bottom:6px;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:6px;}
-.mr-red{border-left-color:#E24B4A;}.mr-warn{border-left-color:#BA7517;}.mr-blue{border-left-color:#378ADD;}.mr-yellow{border-left-color:#d4a017;}
-.mr-sol{font-size:13px;font-weight:600;}.mr-meta{font-size:12px;color:var(--text2);margin-top:2px;}
+.mr-red{border-left-color:#E24B4A;}
+.mr-warn{border-left-color:#BA7517;}
+.mr-blue{border-left-color:#378ADD;}
+.mr-yellow{border-left-color:#d4a017;}
+.mr-green{border-left-color:#3b6d11;}
+.mr-sol{font-size:13px;font-weight:600;}
+.mr-meta{font-size:12px;color:var(--text2);margin-top:2px;}
 .mr-missing{font-size:11px;color:var(--danger);margin-top:3px;}
-.mr-days{font-size:20px;font-weight:700;text-align:right;}.mr-lbl{font-size:10px;color:var(--text3);text-align:right;}
+.mr-days{font-size:20px;font-weight:700;text-align:right;}
+.mr-lbl{font-size:10px;color:var(--text3);text-align:right;}
+
+/* TABLE */
 .tabs{display:flex;gap:2px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:3px;width:fit-content;margin-bottom:10px;}
 .tab{padding:5px 14px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;color:var(--text3);border:none;background:none;}
 .tab.active{background:var(--surface);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.06);}
@@ -106,14 +149,17 @@ tbody td{padding:7px 8px;white-space:nowrap;}
 .wn-c{background:var(--warn-bg);color:var(--warn);}
 .bd-c{background:var(--danger-bg);color:var(--danger);}
 .if-c{background:var(--info-bg);color:var(--info);}
-.tb-c{background:var(--tobacco-bg);color:var(--tobacco);}
 .yw-c{background:#fef9e7;color:#856404;}
+.mg-yellow{background:#fef9e7;color:#856404;}
+.tb-c{background:var(--tobacco-bg);color:var(--tobacco);}
 .mb{height:5px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:3px;}
 .mf{height:100%;border-radius:3px;background:var(--accent);}
 .empty{text-align:center;padding:32px;color:var(--text3);font-size:13px;}
 .table-note{font-size:11px;color:var(--text3);margin-bottom:8px;font-style:italic;}
 .foot{font-size:11px;color:var(--text3);text-align:center;margin-top:32px;}
-.cat-badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;}
+
+/* BADGE CATEGORIA */
+.cat-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;}
 .cat-alim{background:var(--success-bg);color:var(--success);}
 .cat-tab{background:var(--tobacco-bg);color:var(--tobacco);}
 </style>
@@ -129,10 +175,13 @@ tbody td{padding:7px 8px;white-space:nowrap;}
     <span id="slbl">Cargando...</span><span>·</span><span id="ulbl">—</span>
   </div>
 </div>
+
 <div class="wrap">
   <div class="banner b-loading" id="banner"><div class="spin"></div><span id="bmsg">Conectando con Google Sheets...</span></div>
+
+  <!-- FILTROS -->
   <div class="filters">
-    <div class="fg"><div class="fl">N° Solicitud</div><input type="text" id="f-nsol" placeholder="Ej: UREP-001-2025" oninput="applyFilters()"></div>
+    <div class="fg"><div class="fl">N° Solicitud</div><input type="text" id="f-nsol" placeholder="Ej: E-085-2025" oninput="applyFilters()"></div>
     <div class="fg"><div class="fl">Analista</div><select id="f-an" onchange="applyFilters()"><option value="">Todos</option></select></div>
     <div class="fg"><div class="fl">Trámite</div><select id="f-tr" onchange="applyFilters()"><option value="">Todos</option></select></div>
     <div class="fg"><div class="fl">Estado</div>
@@ -168,6 +217,8 @@ tbody td{padding:7px 8px;white-space:nowrap;}
       <button class="btn btn-g" onclick="loadData()">↺</button>
     </div>
   </div>
+
+  <!-- KPIs -->
   <div class="kpis">
     <div class="kpi"><div class="kl">Total expedientes</div><div class="kv" id="k0">—</div></div>
     <div class="kpi"><div class="kl">Tiempo total promedio</div><div class="kv" id="k1">—<span class="ku">días háb.</span></div></div>
@@ -182,14 +233,22 @@ tbody td{padding:7px 8px;white-space:nowrap;}
     <div class="kpi"><div class="kl">Inconsistencias</div><div class="kv" id="k7" style="color:var(--danger)">—</div></div>
     <div class="kpi"><div class="kl">Sin sol. inspección</div><div class="kv" id="k8" style="color:#856404">—</div></div>
   </div>
+
+  <!-- TIEMPOS POR FASE -->
   <div class="st">Tiempos por fase — promedio días hábiles</div>
   <div id="phases-container"></div>
+
+  <!-- GRÁFICOS -->
   <div class="g2">
     <div class="card"><div class="st">Promedio por fase</div><div class="cw"><canvas id="cf"></canvas></div></div>
     <div class="card"><div class="st">Expedientes por analista</div><div class="cw"><canvas id="ca"></canvas></div></div>
   </div>
+
+  <!-- MONITOR -->
   <div class="st">Monitor de seguimiento</div>
   <div id="monitor" style="margin-bottom:20px"></div>
+
+  <!-- TABLA DETALLE -->
   <div class="card" style="margin-bottom:16px">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
       <div class="st" style="margin:0">Detalle por expediente</div>
@@ -207,14 +266,22 @@ tbody td{padding:7px 8px;white-space:nowrap;}
     <div class="tw"><table>
       <thead><tr>
         <th>N° Solicitud</th><th>Establecimiento</th><th>Analista</th><th>Cat.</th><th>Estado</th><th>Insp.</th>
-        <th class="cn">1.Asig.</th><th class="cn">2.Observ.</th><th class="cn">3.Subs.</th>
-        <th class="cn">4.P.Prov.</th><th class="cn">5.Sol.Insp.</th><th class="cn">6.Inspección</th>
-        <th class="cn">7.Resolución</th><th class="cn">8.Notif.</th>
-        <th class="cn" style="color:var(--accent)">T.UREP</th><th class="cn">T.Total</th>
+        <th class="cn">1.Asig.</th>
+        <th class="cn">2.Observ.</th>
+        <th class="cn">3.Subs.</th>
+        <th class="cn">4.P.Prov.</th>
+        <th class="cn">5.Sol.Insp.</th>
+        <th class="cn">6.Inspección</th>
+        <th class="cn">7.Resolución</th>
+        <th class="cn">8.Notif.</th>
+        <th class="cn" style="color:var(--accent)">T.UREP</th>
+        <th class="cn">T.Total</th>
       </tr></thead>
       <tbody id="tb"></tbody>
     </table></div>
   </div>
+
+  <!-- TABLA ANALISTAS -->
   <div class="card">
     <div class="st">Rendimiento por analista</div>
     <div class="tw"><table>
@@ -226,37 +293,70 @@ tbody td{padding:7px 8px;white-space:nowrap;}
       <tbody id="tba"></tbody>
     </table></div>
   </div>
+
   <div class="foot">UREP · SRS El Salvador · Días hábiles: excluye sábados, domingos y feriados SV 2024·2025·2026</div>
 </div>
+
 <script>
-const SHEET_ID='1AQ6vSR9UTI4pdukdQG-VXX6_7Amr7BxKeo0ySrgPmEo';
-const SHEET_TAB='Alimentos';
-const C={
-  nSol:0,ingreso:1,tramite:2,establecimiento:3,formaIngreso:4,
-  fechaAsig:5,analista:6,tipoEstab:7,fechaObserv:8,
-  solProrr:9,fechaRecProrr:10,resProrr:11,diasProrr:12,
-  fechaMaxSubs:13,fechaSubs:14,fechaPermProv:15,
-  fechaSolInsp:16,fechaInsp:17,fechaReInsp1:18,fechaReInsp2:19,
-  fechaInfInsp:20,resolucion:21,fechaRes:22,fechaNotif:23,
-  fechaInvalida:24
+const SHEET_ID = '1AQ6vSR9UTI4pdukdQG-VXX6_7Amr7BxKeo0ySrgPmEo';
+const SHEET_TAB = 'Alimentos';
+const DATA_START = 2; // encabezados en fila 1, datos desde fila 2
+
+// Índices de columnas (base 0) en la hoja "Alimentos"
+const C = {
+  nSol:           0,  // Número de Solicitud
+  ingreso:        1,  // Fecha de Ingreso
+  tramite:        2,  // Nombre del Trámite
+  establecimiento:3,  // Nombre Establecimiento
+  formaIngreso:   4,  // Forma de Ingreso
+  fechaAsig:      5,  // Fecha de Asignación
+  analista:       6,  // Analista Encargado
+  tipoEstab:      7,  // Tipo de Establecimiento
+  fechaObserv:    8,  // Fecha de Observación
+  solProrr:       9,  // Solicitó Prórroga
+  fechaRecProrr:  10, // Fecha Recepción Prórroga
+  resProrr:       11, // Resolución de Prórroga
+  diasProrr:      12, // Prórroga de Subsanación (días hábiles)
+  fechaMaxSubs:   13, // Fecha Máxima de Subsanación
+  fechaSubs:      14, // Fecha de Subsanación
+  fechaPermProv:  15, // Fecha de Permiso Provisional
+  fechaSolInsp:   16, // Fecha de Solicitud de Inspección
+  fechaInsp:      17, // Fecha de Inspección
+  fechaReInsp1:   18, // Fecha de 1a Re-Inspección
+  fechaReInsp2:   19, // Fecha de 2a Re-Inspección
+  fechaInfInsp:   20, // Fecha de Informe de Inspección
+  resolucion:     21, // Resolución
+  fechaRes:       22, // Fecha de Resolución
+  fechaNotif:     23, // Fecha de Notificación al Regulado
+  fechaInvalida:  24, // Fecha inválida detectada por Apps Script
 };
 
-const EXPEDITOS_SIEMPRE=[
+// Tipos de establecimiento que son TABACO
+const TIPOS_TABACO = ['tabaco'];
+
+// Expeditos SIEMPRE (nunca llevan inspección)
+const EXPEDITOS_SIEMPRE = [
   'fábricas de alimentos - permiso común',
   'envasadoras de agua - permiso común',
   'permiso sanitario de los cafetines que funcionan al interior de los centros educativos',
   'manejo y conservación de alimentos en el establecimiento educativo (refrigerio escolar en centros educativos)',
 ];
-const EXPEDITOS_DESDE_2025=[
+
+// Expeditos desde 30/06/2025
+const EXPEDITOS_DESDE_2025 = [
   'kiosco, cafetín, chalet - permiso común',
   'sala de venta de alimentos - permiso común',
   'molino de nixtamal - permiso común',
 ];
-const FECHA_CORTE_EXPEDITOS=new Date('2025-06-30T00:00:00');
-const CIERRE_VALIDO_SIN_FECHAS=['desistido','inválido','invalido'];
-const REQUIEREN_FECHAS_CIERRE=['desfavorable','archivado','improcedente'];
+const FECHA_CORTE_EXPEDITOS = new Date('2025-06-30T00:00:00');
 
-const FERIADOS=new Set([
+// Resoluciones que son cierre válido en cualquier etapa (sin requerir más fechas)
+const CIERRE_VALIDO = ['desistido', 'inválido', 'invalido'];
+// Resoluciones que requieren fechas de cierre
+const CIERRE_CON_FECHAS = ['desfavorable', 'archivado', 'improcedente'];
+
+// ── FERIADOS SV 2024·2025·2026 ────────────────────────────────
+const FERIADOS = new Set([
   '2024-01-01','2024-01-02','2024-03-25','2024-03-26','2024-03-27','2024-03-28','2024-03-29',
   '2024-04-01','2024-04-02','2024-05-01','2024-05-10','2024-06-17','2024-08-01','2024-08-02',
   '2024-08-05','2024-08-06','2024-08-07','2024-09-15','2024-11-02','2024-12-23','2024-12-24',
@@ -271,30 +371,50 @@ const FERIADOS=new Set([
   '2026-12-23','2026-12-24','2026-12-25','2027-01-01'
 ]);
 
-function fmt(d){return d?d.toISOString().split('T')[0]:null;}
+function fmt(d){ return d ? d.toISOString().split('T')[0] : null; }
+
 function parseD(s){
-  if(!s||!s.trim())return null;s=s.trim();
-  if(/^\d{4}-\d{2}-\d{2}$/.test(s))return new Date(s+'T00:00:00');
+  if(!s || !s.trim()) return null;
+  s = s.trim();
+  if(/^\d{4}-\d{2}-\d{2}$/.test(s)) return new Date(s+'T00:00:00');
   if(/^\d{1,2}\/\d{1,2}\/\d{2,4}$/.test(s)){
-    const[a,b,y]=s.split('/');const yr=y.length===2?'20'+y:y;
-    if(parseInt(a)>12)return new Date(`${yr}-${b.padStart(2,'0')}-${a.padStart(2,'0')}T00:00:00`);
+    const [a,b,y] = s.split('/');
+    const yr = y.length===2 ? '20'+y : y;
+    if(parseInt(a)>12) return new Date(`${yr}-${b.padStart(2,'0')}-${a.padStart(2,'0')}T00:00:00`);
     return new Date(`${yr}-${a.padStart(2,'0')}-${b.padStart(2,'0')}T00:00:00`);
   }
-  const t=new Date(s);return isNaN(t)?null:t;
+  const t = new Date(s);
+  return isNaN(t) ? null : t;
 }
-function workdays(d1,d2){
-  if(!d1||!d2)return null;
-  const a=new Date(d1);a.setHours(0,0,0,0);
-  const b=new Date(d2);b.setHours(0,0,0,0);
-  if(a>=b)return 0;
-  let days=0;const cur=new Date(a);cur.setDate(cur.getDate()+1);
-  while(cur<=b){const w=cur.getDay();if(w!==0&&w!==6&&!FERIADOS.has(fmt(cur)))days++;cur.setDate(cur.getDate()+1);}
+
+function workdays(d1, d2){
+  if(!d1 || !d2) return null;
+  const a = new Date(d1); a.setHours(0,0,0,0);
+  const b = new Date(d2); b.setHours(0,0,0,0);
+  if(a >= b) return 0;
+  let days = 0;
+  const cur = new Date(a);
+  cur.setDate(cur.getDate()+1);
+  while(cur <= b){
+    const w = cur.getDay();
+    if(w!==0 && w!==6 && !FERIADOS.has(fmt(cur))) days++;
+    cur.setDate(cur.getDate()+1);
+  }
   return days;
 }
-function avg(arr){const v=arr.filter(x=>x!==null&&x!==undefined&&!isNaN(x)&&x>=0);return v.length?Math.round(v.reduce((a,b)=>a+b,0)/v.length):null;}
-function sumArr(arr){return arr.filter(x=>x!==null&&!isNaN(x)&&x>=0).reduce((a,b)=>a+b,0);}
-function g(row,idx){const v=row[idx];return(v!==undefined&&v!==null)?String(v).trim():'';}
 
+function avg(arr){
+  const v = arr.filter(x => x!==null && x!==undefined && !isNaN(x) && x>=0);
+  return v.length ? Math.round(v.reduce((a,b)=>a+b,0)/v.length) : null;
+}
+
+function sumArr(arr){
+  return arr.filter(x => x!==null && !isNaN(x) && x>=0).reduce((a,b)=>a+b,0);
+}
+
+function g(row, idx){ const v=row[idx]; return (v!==undefined&&v!==null)?String(v).trim():''; }
+
+// ── Parser CSV ────────────────────────────────────────────────
 function parseCSV(text){
   const rows=[];let cols=[],cur='',inQ=false;
   for(let i=0;i<text.length;i++){
@@ -306,212 +426,320 @@ function parseCSV(text){
       if(cols.length>0||cur.trim()!==''){
         cols.push(cur.trim());
         const colA=(cols[0]||'').trim();
-        const esValida=colA!==''&&colA!=='Número de Solicitud'&&cols.length>3||colA==='Número de Solicitud';
+        const esValida=rows.length===0||colA!==''||colA==='Número de Solicitud';
         if(esValida){rows.push(cols);}
+        else if(rows.length>0){const lr=rows[rows.length-1];lr[0]=(lr[0]+' '+cols.join(' ')).trim();}
         cols=[];cur='';
       }
-    }else{if((c==='\n'||c==='\r')&&inQ){cur+=' ';if(c==='\r'&&next==='\n')i++;}else cur+=c;}
+    }else{
+      if((c==='\n'||c==='\r')&&inQ){cur+=' ';if(c==='\r'&&next==='\n')i++;}
+      else cur+=c;
+    }
   }
   if(cols.length>0||cur.trim()!==''){cols.push(cur.trim());rows.push(cols);}
   return rows;
 }
 
-function esTabaco(t){return t.toLowerCase().includes('tabaco');}
-function esExpedito(tipoEstab,fechaIngreso){
-  const te=tipoEstab.toLowerCase();
-  if(EXPEDITOS_SIEMPRE.some(e=>te.includes(e.toLowerCase())||e.toLowerCase().includes(te)))return true;
-  if(esTabaco(tipoEstab)&&fechaIngreso&&fechaIngreso>=FECHA_CORTE_EXPEDITOS)return true;
-  if(fechaIngreso&&fechaIngreso>=FECHA_CORTE_EXPEDITOS){
-    if(EXPEDITOS_DESDE_2025.some(e=>te.includes(e.toLowerCase())||e.toLowerCase().includes(te)))return true;
+// ── Clasificación ─────────────────────────────────────────────
+function esTabaco(tipoEstab){
+  return TIPOS_TABACO.some(t => tipoEstab.toLowerCase().includes(t));
+}
+
+function esExpedito(tipoEstab, fechaIngreso){
+  const te = tipoEstab.toLowerCase();
+  // Siempre expedito
+  if(EXPEDITOS_SIEMPRE.some(e => te.includes(e.toLowerCase()) || e.toLowerCase().includes(te))) return true;
+  // Tabaco siempre expedito (desde 2025)
+  if(esTabaco(tipoEstab) && fechaIngreso && fechaIngreso >= FECHA_CORTE_EXPEDITOS) return true;
+  // Expeditos desde 30/06/2025
+  if(fechaIngreso && fechaIngreso >= FECHA_CORTE_EXPEDITOS){
+    if(EXPEDITOS_DESDE_2025.some(e => te.includes(e.toLowerCase()) || e.toLowerCase().includes(te))) return true;
   }
   return false;
 }
 
+// ── Detección de inconsistencias ─────────────────────────────
 function detectarInconsistencias(r){
-  const issues=[];
-  const resUp=(r.resolucion||'').toLowerCase().trim();
-  const esCierreValidoSinFechas=CIERRE_VALIDO_SIN_FECHAS.includes(resUp);
+  const issues = [];
 
-  if(r.fechaInvalida && r.fechaInvalida.trim()!=='' && r.fechaInvalida.trim()!=='Fecha inválida detectada') issues.push('Fecha inválida en bitácora: '+r.fechaInvalida);
+  // Fecha inválida detectada por Apps Script
+  if(r.fechaInvalida && r.fechaInvalida.trim()!=='' && r.fechaInvalida.trim()!=='Fecha inválida detectada')
+    issues.push('Fecha inválida en bitácora: '+r.fechaInvalida);
 
-  // Fechas en orden incorrecto
-  const chkOrden=(d1,d2,msg)=>{if(!d1||!d2)return;const a=parseD(d1),b=parseD(d2);if(a&&b&&a>b)issues.push(msg);};
-  chkOrden(r.ingreso,r.fechaAsig,'Asignación anterior al Ingreso');
-  chkOrden(r.fechaAsig,r.fechaObserv,'Observación anterior a Asignación');
-  chkOrden(r.fechaObserv,r.fechaSubs,'Subsanación anterior a Observación');
-  chkOrden(r.fechaSubs,r.fechaPermProv,'Permiso Provisional anterior a Subsanación');
-  chkOrden(r.fechaPermProv,r.fechaSolInsp,'Sol. Inspección anterior a Permiso Provisional');
-  chkOrden(r.fechaSolInsp,r.fechaInfInsp,'Informe Inspección anterior a Sol. Inspección');
-  chkOrden(r.fechaInfInsp,r.fechaRes,'Resolución anterior a Informe Inspección');
-  chkOrden(r.fechaRes,r.fechaNotif,'Notificación anterior a Resolución');
+  const chk = (d1,d2,msg) => {
+    if(!d1||!d2) return;
+    const a=parseD(d1), b=parseD(d2);
+    if(a&&b&&a>b) issues.push(msg);
+  };
 
+  const resUp = (r.resolucion||'').toUpperCase().trim();
+  const esCierreValidoSinFechas = CIERRE_VALIDO.map(x=>x.toUpperCase()).includes(resUp);
+
+  // Si es DESISTIDO o INVÁLIDO → cierre válido en cualquier etapa, no verificamos cadena
   if(esCierreValidoSinFechas) return issues;
 
-  // Cadena completa — cada regla independiente
-  if(r.fechaNotif&&!r.fechaRes) issues.push('Tiene notificación pero falta fecha de resolución');
+  // Fechas en orden incorrecto — todas se evalúan independientemente
+  chk(r.ingreso,      r.fechaAsig,     'Asignación anterior al Ingreso');
+  chk(r.fechaAsig,    r.fechaObserv,   'Observación anterior a Asignación');
+  chk(r.fechaObserv,  r.fechaSubs,     'Subsanación anterior a Observación');
+  chk(r.fechaSubs,    r.fechaPermProv, 'Permiso Provisional anterior a Subsanación');
+  chk(r.fechaPermProv,r.fechaSolInsp,  'Sol. Inspección anterior a Permiso Provisional');
+  chk(r.fechaSolInsp, r.fechaInfInsp,  'Informe Inspección anterior a Sol. Inspección');
+  chk(r.fechaInfInsp, r.fechaRes,      'Resolución anterior a Informe Inspección');
+  chk(r.fechaRes,     r.fechaNotif,    'Notificación anterior a Resolución');
 
+  // Cadena completa — cada regla corre independientemente, reporta todas las que faltan
+
+  // Tiene notificación → debe tener resolución
+  if(r.fechaNotif && !r.fechaRes)
+    issues.push('Tiene notificación pero falta fecha de resolución');
+
+  // Tiene resolución
   if(r.fechaRes){
-    if(r.fechaSolInsp&&!r.fechaInfInsp) issues.push('Tiene resolución pero falta informe de inspección');
-    if(!r.fechaSolInsp&&!r.fechaPermProv) issues.push('Tiene resolución pero falta Permiso Provisional');
+    if(r.fechaSolInsp && !r.fechaInfInsp)
+      issues.push('Tiene resolución pero falta informe de inspección');
+    if(!r.fechaSolInsp && !r.fechaPermProv)
+      issues.push('Tiene resolución pero falta Permiso Provisional');
   }
 
-  if(r.fechaInfInsp&&!r.fechaSolInsp) issues.push('Tiene informe de inspección pero falta Sol. Inspección');
-  if(r.fechaSolInsp&&!r.fechaPermProv) issues.push('Tiene Sol. Inspección pero falta Permiso Provisional');
-  if(r.fechaSolInsp&&r.fechaObserv&&!r.fechaSubs) issues.push('Tiene Sol. Inspección pero falta fecha de subsanación');
-  if(r.fechaPermProv&&r.fechaObserv&&!r.fechaSubs) issues.push('Tiene Permiso Provisional pero falta fecha de subsanación');
-  if(r.fechaSubs&&!r.fechaObserv) issues.push('Tiene subsanación pero falta fecha de observación');
-  if(r.fechaObserv&&!r.fechaAsig) issues.push('Tiene observación pero falta fecha de asignación');
+  // Tiene informe → debe tener sol. inspección
+  if(r.fechaInfInsp && !r.fechaSolInsp)
+    issues.push('Tiene informe de inspección pero falta Sol. Inspección');
+
+  // Tiene sol. inspección → debe tener permiso provisional
+  if(r.fechaSolInsp && !r.fechaPermProv)
+    issues.push('Tiene Sol. Inspección pero falta Permiso Provisional');
+
+  // Tiene sol. inspección + observación → debe tener subsanación
+  if(r.fechaSolInsp && r.fechaObserv && !r.fechaSubs)
+    issues.push('Tiene Sol. Inspección pero falta fecha de subsanación');
+
+  // Tiene permiso provisional + observación → debe tener subsanación
+  if(r.fechaPermProv && r.fechaObserv && !r.fechaSubs)
+    issues.push('Tiene Permiso Provisional pero falta fecha de subsanación');
+
+  // Tiene subsanación → debe tener observación
+  if(r.fechaSubs && !r.fechaObserv)
+    issues.push('Tiene subsanación pero falta fecha de observación');
+
+  // Tiene observación → debe tener asignación
+  if(r.fechaObserv && !r.fechaAsig)
+    issues.push('Tiene observación pero falta fecha de asignación');
 
   return issues;
 }
 
-function esSoloFaltaSolInsp(inconsistencias){
-  return inconsistencias.length===1&&
-    inconsistencias[0].includes('informe de inspección')&&
-    inconsistencias[0].includes('falta Sol. Inspección');
-}
-
+// ── Pendiente de cierre ───────────────────────────────────────
 function detectarPendienteCierre(r){
-  const today=new Date();today.setHours(0,0,0,0);
-  if(!r.fechaMaxSubs||r.fechaSubs)return null;
-  const ult=parseD(r.fechaMaxSubs);
-  if(!ult||ult>=today)return null;
-  if(r.fechaNotif)return null;
-  const faltantes=[];
-  if(!r.fechaRes)faltantes.push('Fecha de resolución');
-  if(!r.fechaNotif)faltantes.push('Notificación');
+  const today = new Date(); today.setHours(0,0,0,0);
+  if(!r.fechaMaxSubs || r.fechaSubs) return null;
+  const ult = parseD(r.fechaMaxSubs);
+  if(!ult || ult >= today) return null;
+  if(r.fechaNotif) return null;
+  const faltantes = [];
+  if(!r.fechaRes) faltantes.push('Fecha de resolución');
+  if(!r.fechaNotif) faltantes.push('Notificación');
   return faltantes;
 }
 
-function detectarInactividad(r,today){
-  if(['Inconsistencia','Finalizado','En subsanación','Pendiente cierre','En inspección'].includes(r.estado))return null;
-  const checks=[
-    {f:r.fechaNotif,   label:'Notificación',        siguienteUrep:false},
-    {f:r.fechaRes,     label:'Resolución',           siguienteUrep:false},
-    {f:r.fechaInfInsp, label:'Informe inspección',   siguienteUrep:true},
-    {f:r.fechaSolInsp, label:'Sol. inspección',      siguienteUrep:false},
-    {f:r.fechaPermProv,label:'Permiso Provisional',  siguienteUrep:true},
-    {f:r.fechaSubs,    label:'Subsanación',          siguienteUrep:true},
-    {f:r.fechaObserv,  label:'Observación',          siguienteUrep:false},
-    {f:r.fechaAsig,    label:'Asignación',           siguienteUrep:true},
+// ── Inactividad UREP +15 días ─────────────────────────────────
+function detectarInactividad(r, today){
+  if(['Inconsistencia','Finalizado','En subsanación','Pendiente cierre','En inspección'].includes(r.estado)) return null;
+  const checks = [
+    {f:r.fechaNotif,     label:'Notificación',          siguienteUrep:false},
+    {f:r.fechaRes,       label:'Resolución',             siguienteUrep:false},
+    {f:r.fechaInfInsp,   label:'Informe inspección',     siguienteUrep:true},
+    {f:r.fechaSolInsp,   label:'Sol. inspección',        siguienteUrep:false},
+    {f:r.fechaPermProv,  label:'Permiso Provisional',    siguienteUrep:true},
+    {f:r.fechaSubs,      label:'Subsanación',            siguienteUrep:true},
+    {f:r.fechaObserv,    label:'Observación',            siguienteUrep:false},
+    {f:r.fechaAsig,      label:'Asignación',             siguienteUrep:true},
   ].filter(x=>x.f);
-  if(!checks.length)return null;
-  const ultima=checks[0];
-  if(!ultima.siguienteUrep)return null;
-  const dias=workdays(parseD(ultima.f),today);
-  if(dias>=15)return{label:ultima.label,fecha:ultima.f,dias};
+  if(!checks.length) return null;
+  const ultima = checks[0];
+  if(!ultima.siguienteUrep) return null;
+  const dias = workdays(parseD(ultima.f), today);
+  if(dias >= 15) return {label:ultima.label, fecha:ultima.f, dias};
   return null;
 }
 
+// ── Derivar estado ────────────────────────────────────────────
 function derivarEstado(r){
-  const today=new Date();today.setHours(0,0,0,0);
-  const resUp=(r.resolucion||'').toLowerCase().trim();
-  const esCierreValidoSinFechas=CIERRE_VALIDO_SIN_FECHAS.includes(resUp);
-  if(esCierreValidoSinFechas)return 'Finalizado';
-  if(r.soloFaltaSolInsp)return 'Sin sol. inspección';
-  if(r.tieneIncons)return 'Inconsistencia';
-  if(r.fechaSolInsp&&!r.fechaInfInsp)return 'En inspección';
-  if(r.fechaNotif)return 'Finalizado';
-  if(r.pendienteCierre&&r.pendienteCierre.length>0)return 'Pendiente cierre';
-  if(r.fechaMaxSubs&&!r.fechaSubs){const u=parseD(r.fechaMaxSubs);if(u&&u>=today)return 'En subsanación';}
+  const today = new Date(); today.setHours(0,0,0,0);
+  const resUp = (r.resolucion||'').toUpperCase().trim();
+  const esCierreValidoSinFechas = CIERRE_VALIDO.map(x=>x.toUpperCase()).includes(resUp);
+
+  // DESISTIDO/INVÁLIDO → finalizado en cualquier etapa
+  if(esCierreValidoSinFechas) return 'Finalizado';
+
+  // Solo falta sol. inspección → categoría aparte
+  if(r.soloFaltaSolInsp) return 'Sin sol. inspección';
+
+  // Inconsistencia
+  if(r.tieneIncons) return 'Inconsistencia';
+
+  // Pendiente cierre — tiene prioridad sobre cualquier estado de resolución
+  if(r.pendienteCierre && r.pendienteCierre.length > 0) return 'Pendiente cierre';
+
+  // En inspección: tiene sol. inspección pero no informe
+  if(r.fechaSolInsp && !r.fechaInfInsp) return 'En inspección';
+
+  // Finalizado: tiene notificación
+  if(r.fechaNotif) return 'Finalizado';
+
+  // En subsanación: plazo vigente sin subsanación
+  if(r.fechaMaxSubs && !r.fechaSubs){
+    const u = parseD(r.fechaMaxSubs);
+    if(u && u >= today) return 'En subsanación';
+  }
+
   return 'En proceso';
 }
 
+// ── Mapear fila ───────────────────────────────────────────────
 function mapRow(row){
-  const today=new Date();today.setHours(0,0,0,0);
-  const ingreso      =parseD(g(row,C.ingreso));
-  const fechaAsig    =parseD(g(row,C.fechaAsig));
-  const fechaObserv  =parseD(g(row,C.fechaObserv));
-  const fechaMaxSubs =g(row,C.fechaMaxSubs);
-  const fechaSubs    =parseD(g(row,C.fechaSubs));
-  const fechaPermProv=parseD(g(row,C.fechaPermProv));
-  const fechaSolInsp =parseD(g(row,C.fechaSolInsp));
-  const fechaInfInsp =parseD(g(row,C.fechaInfInsp));
-  const fechaRes     =parseD(g(row,C.fechaRes));
-  const fechaNotif   =parseD(g(row,C.fechaNotif));
-  const fechaRecProrr=parseD(g(row,C.fechaRecProrr));
-  const tipoEstab    =g(row,C.tipoEstab);
-  const resolucion   =g(row,C.resolucion);
-  const diasProrr    =g(row,C.diasProrr);
-  const fechaInvalida=g(row,C.fechaInvalida);
+  const today = new Date(); today.setHours(0,0,0,0);
 
-  const categoria=esTabaco(tipoEstab)?'tabaco':'alimentos';
-  const expedito =esExpedito(tipoEstab,ingreso);
-  const tieneInsp=!!fechaSolInsp;
-  const resUp    =(resolucion||'').toLowerCase().trim();
-  const esCierreValidoSinFechas=CIERRE_VALIDO_SIN_FECHAS.includes(resUp);
+  const ingreso       = parseD(g(row, C.ingreso));
+  const fechaAsig     = parseD(g(row, C.fechaAsig));
+  const fechaObserv   = parseD(g(row, C.fechaObserv));
+  const fechaMaxSubs  = g(row, C.fechaMaxSubs);
+  const fechaSubs     = parseD(g(row, C.fechaSubs));
+  const fechaPermProv = parseD(g(row, C.fechaPermProv));
+  const fechaSolInsp  = parseD(g(row, C.fechaSolInsp));
+  const fechaInfInsp  = parseD(g(row, C.fechaInfInsp));
+  const fechaRes      = parseD(g(row, C.fechaRes));
+  const fechaNotif    = parseD(g(row, C.fechaNotif));
+  const tipoEstab     = g(row, C.tipoEstab);
+  const resolucion    = g(row, C.resolucion);
+  const diasProrr     = g(row, C.diasProrr);
+  const fechaInvalida = g(row, C.fechaInvalida);
 
-  const inconsistencias=detectarInconsistencias({
-    ingreso:fmt(ingreso),fechaAsig:fmt(fechaAsig),fechaObserv:fmt(fechaObserv),
-    fechaSubs:fmt(fechaSubs),fechaPermProv:fmt(fechaPermProv),
-    fechaSolInsp:fmt(fechaSolInsp),fechaInfInsp:fmt(fechaInfInsp),
-    fechaRes:fmt(fechaRes),fechaNotif:fmt(fechaNotif),
-    resolucion,fechaMaxSubs,fechaInvalida
+  const categoria = esTabaco(tipoEstab) ? 'tabaco' : 'alimentos';
+  const expedito  = esExpedito(tipoEstab, ingreso);
+  const tieneInsp = !!fechaSolInsp;
+
+  const inconsistencias = detectarInconsistencias({
+    ingreso:fmt(ingreso), fechaAsig:fmt(fechaAsig), fechaObserv:fmt(fechaObserv),
+    fechaSubs:fmt(fechaSubs), fechaPermProv:fmt(fechaPermProv),
+    fechaSolInsp:fmt(fechaSolInsp), fechaInfInsp:fmt(fechaInfInsp),
+    fechaRes:fmt(fechaRes), fechaNotif:fmt(fechaNotif),
+    resolucion, fechaMaxSubs, fechaInvalida
   });
 
-  const soloFaltaSolInsp=esSoloFaltaSolInsp(inconsistencias);
-  const tieneIncons=inconsistencias.length>0&&!soloFaltaSolInsp;
+  // Si la única inconsistencia es "tiene informe pero falta sol. inspección" → categoría aparte
+  const soloFaltaSolInsp = inconsistencias.length === 1 &&
+    inconsistencias[0].includes('informe de inspección') &&
+    inconsistencias[0].includes('falta Sol. Inspección');
+  const tieneIncons = inconsistencias.length > 0 && !soloFaltaSolInsp;
 
-  const pendienteCierre=detectarPendienteCierre({
-    fechaMaxSubs,fechaSubs:fmt(fechaSubs),fechaRes:fmt(fechaRes),fechaNotif:fmt(fechaNotif)
+  const pendienteCierre = detectarPendienteCierre({
+    fechaMaxSubs, fechaSubs:fmt(fechaSubs),
+    fechaRes:fmt(fechaRes), fechaNotif:fmt(fechaNotif)
   });
 
-  // Fases
-  const f1=workdays(ingreso,fechaAsig);
-  const f2=fechaObserv?workdays(fechaAsig,fechaObserv):null;
-  const f3=(fechaObserv&&!pendienteCierre&&!esCierreValidoSinFechas)?workdays(fechaObserv,fechaSubs||today):null;
-  const f3b=(fechaRecProrr&&fechaMaxSubs)?workdays(fechaRecProrr,parseD(fechaMaxSubs)):null;
-  const f3c=(fechaRecProrr&&fechaSubs)?workdays(fechaRecProrr,fechaSubs):null;
-  const basePermProv=fechaSubs||(fechaObserv?null:fechaAsig);
-  const f4=basePermProv?workdays(basePermProv,fechaPermProv):null;
-  const f5=(fechaPermProv&&fechaSolInsp)?workdays(fechaPermProv,fechaSolInsp):null;
-  const f6=(fechaSolInsp&&fechaInfInsp)?workdays(fechaSolInsp,fechaInfInsp):null;
-  const baseRes=fechaInfInsp||fechaPermProv||fechaSubs||(esCierreValidoSinFechas?fechaAsig:null);
-  const f7=baseRes?workdays(baseRes,fechaRes):null;
-  const f8=fechaRes?workdays(fechaRes,fechaNotif):null;
+  const resUp = resolucion.toUpperCase().trim();
+  const esCierreValido = CIERRE_VALIDO.map(x=>x.toUpperCase()).includes(resUp);
 
-  const esValidoParaCalculo=!tieneIncons&&!pendienteCierre;
-  const t_urep=esValidoParaCalculo?sumArr([f1,f2,f4,f5,f7,f8]):null;
-  const finTotal=fechaNotif||today;
-  const t_total=esValidoParaCalculo?workdays(ingreso,finTotal>today?today:finTotal):null;
+  // ── Fases ──────────────────────────────────────────────────
+  // F1: Ingreso → Asignación (UREP)
+  const f1 = workdays(ingreso, fechaAsig);
 
-  const obj={
-    nSol:g(row,C.nSol),establecimiento:g(row,C.establecimiento)||g(row,C.nSol),
-    analista:g(row,C.analista)||'Sin asignar',tramite:g(row,C.tramite)||'N/D',
-    tipoEstab,categoria,expedito,tieneInsp,resolucion,diasProrr,fechaInvalida,
-    esValido:esValidoParaCalculo,tieneIncons,soloFaltaSolInsp,pendienteCierre,
-    ingreso:fmt(ingreso),fechaAsig:fmt(fechaAsig),fechaObserv:fmt(fechaObserv),fechaMaxSubs,
-    fechaSubs:fmt(fechaSubs),fechaPermProv:fmt(fechaPermProv),fechaSolInsp:fmt(fechaSolInsp),
-    fechaInfInsp:fmt(fechaInfInsp),fechaRes:fmt(fechaRes),fechaNotif:fmt(fechaNotif),
-    f1,f2,f3,f3b,f3c,f4,f5,f6,f7,f8,t_urep,t_total,inconsistencias
+  // F2: Asignación → Observación (UREP) — solo ruta A
+  const f2 = fechaObserv ? workdays(fechaAsig, fechaObserv) : null;
+
+  // F3: Observación → Subsanación (Regulado) — solo ruta A
+  const f3 = (fechaObserv && !pendienteCierre && !esCierreValido)
+    ? workdays(fechaObserv, fechaSubs || today)
+    : null;
+
+  // Prórroga
+  const fechaRecProrr = parseD(g(row, C.fechaRecProrr));
+  const f3b = (fechaRecProrr && fechaMaxSubs) ? workdays(fechaRecProrr, parseD(fechaMaxSubs)) : null;
+  const f3c = (fechaRecProrr && fechaSubs)     ? workdays(fechaRecProrr, fechaSubs)            : null;
+
+  // F4: (Subsanación o Asignación si ruta B) → Permiso Provisional (UREP)
+  const basePermProv = fechaSubs || (fechaObserv ? null : fechaAsig);
+  const f4 = basePermProv ? workdays(basePermProv, fechaPermProv) : null;
+
+  // F5: Permiso Provisional → Sol. Inspección (UREP)
+  const f5 = (fechaPermProv && fechaSolInsp) ? workdays(fechaPermProv, fechaSolInsp) : null;
+
+  // F6: Sol. Inspección → Informe Inspección (Inspecciones)
+  const f6 = (fechaSolInsp && fechaInfInsp) ? workdays(fechaSolInsp, fechaInfInsp) : null;
+
+  // F7: Informe (o Permiso Prov si sin inspección) → Resolución (UREP) — idealmente 0
+  const baseRes = fechaInfInsp || fechaPermProv || fechaSubs || (esCierreValido ? fechaAsig : null);
+  const f7 = baseRes ? workdays(baseRes, fechaRes) : null;
+
+  // F8: Resolución → Notificación (UREP) — idealmente 0
+  const f8 = fechaRes ? workdays(fechaRes, fechaNotif) : null;
+
+  // ── Tiempos consolidados ───────────────────────────────────
+  // soloFaltaSolInsp entra en promedios pero F6 será null
+  const esValido = !tieneIncons && !pendienteCierre;
+
+  // T. UREP = F1 + F2 + F4 + F5 + F7 + F8
+  const t_urep = esValido ? sumArr([f1, f2, f4, f5, f7, f8]) : null;
+
+  // T. Total = Ingreso → Notificación (o hoy si activo)
+  const finTotal = fechaNotif || today;
+  const t_total  = esValido ? workdays(ingreso, finTotal > today ? today : finTotal) : null;
+
+  const obj = {
+    nSol:       g(row, C.nSol),
+    establecimiento: g(row, C.establecimiento) || g(row, C.nSol),
+    analista:   g(row, C.analista) || 'Sin asignar',
+    tramite:    g(row, C.tramite) || 'N/D',
+    tipoEstab,  categoria, expedito, tieneInsp,
+    resolucion, diasProrr,
+    esValido, tieneIncons, soloFaltaSolInsp, pendienteCierre,
+    ingreso:fmt(ingreso), fechaAsig:fmt(fechaAsig),
+    fechaObserv:fmt(fechaObserv), fechaMaxSubs,
+    fechaSubs:fmt(fechaSubs), fechaPermProv:fmt(fechaPermProv),
+    fechaSolInsp:fmt(fechaSolInsp), fechaInfInsp:fmt(fechaInfInsp),
+    fechaRes:fmt(fechaRes), fechaNotif:fmt(fechaNotif),
+    f1,f2,f3,f3b,f3c,f4,f5,f6,f7,f8,
+    t_urep, t_total, inconsistencias
   };
-  obj.estado=derivarEstado(obj);
-  obj.inactividad=detectarInactividad(obj,today);
+
+  obj.estado = derivarEstado(obj);
+  obj.inactividad = detectarInactividad(obj, today);
   return obj;
 }
 
-let RAW=[],FILTERED=[],activeTab='all',chF=null,chA=null;
+// ── Estado global ─────────────────────────────────────────────
+let RAW=[], FILTERED=[], activeTab='all', chF=null, chA=null;
 
+// ── Carga de datos ────────────────────────────────────────────
 async function loadData(){
   setBanner('loading','Conectando con Google Sheets...');
   document.getElementById('sdot').style.background='#9a9892';
   const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${SHEET_TAB}`;
   try{
-    const resp=await fetch(url);if(!resp.ok)throw new Error(`HTTP ${resp.status}`);
+    const resp=await fetch(url);
+    if(!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const text=await resp.text();
     const rows=parseCSV(text);
+    // Saltar fila de encabezado (fila 1), tomar desde fila 2
     const data=rows.filter(r=>r[C.nSol]&&r[C.nSol].trim()!==''&&r[C.nSol].trim()!=='Número de Solicitud');
-    RAW=data.map(mapRow);FILTERED=[...RAW];
-    populateFilters();renderAll();
+    RAW=data.map(mapRow);
+    FILTERED=[...RAW];
+    populateFilters();
+    renderAll();
     setBanner('ok',`✓ ${RAW.length} expedientes cargados · ${new Date().toLocaleString('es-SV')}`);
     document.getElementById('sdot').style.background='#639922';
     document.getElementById('slbl').textContent='Google Sheets en vivo';
     document.getElementById('ulbl').textContent=new Date().toLocaleTimeString('es-SV');
-  }catch(e){setBanner('error',`Error: ${e.message}`);document.getElementById('sdot').style.background='#E24B4A';}
+  }catch(e){
+    setBanner('error',`Error: ${e.message}`);
+    document.getElementById('sdot').style.background='#E24B4A';
+  }
 }
 
 function setBanner(t,msg){
-  const b=document.getElementById('banner');b.className=`banner b-${t}`;
+  const b=document.getElementById('banner');
+  b.className=`banner b-${t}`;
   b.innerHTML=(t==='loading'?'<div class="spin"></div>':'')+`<span>${msg}</span>`+
     (t==='ok'?`<button class="btn-xs" onclick="loadData()" style="margin-left:auto">↺ Actualizar</button>`:'');
 }
@@ -525,23 +753,29 @@ function populateFilters(){
 
 function applyFilters(){
   const nsol=document.getElementById('f-nsol').value.trim().toUpperCase();
-  const an=document.getElementById('f-an').value,tr=document.getElementById('f-tr').value;
-  const es=document.getElementById('f-es').value,cat=document.getElementById('f-cat').value;
+  const an=document.getElementById('f-an').value;
+  const tr=document.getElementById('f-tr').value;
+  const es=document.getElementById('f-es').value;
+  const cat=document.getElementById('f-cat').value;
   const insp=document.getElementById('f-insp').value;
-  const de=document.getElementById('f-de').value,ha=document.getElementById('f-ha').value;
+  const de=document.getElementById('f-de').value;
+  const ha=document.getElementById('f-ha').value;
   FILTERED=RAW.filter(r=>{
-    if(nsol&&!r.nSol.toUpperCase().includes(nsol))return false;
-    if(an&&r.analista!==an)return false;if(tr&&r.tramite!==tr)return false;
-    if(cat&&r.categoria!==cat)return false;
-    if(insp==='si'&&!r.tieneInsp)return false;if(insp==='no'&&r.tieneInsp)return false;
-    if(es==='proceso'&&r.estado!=='En proceso')return false;
-    if(es==='inspeccion'&&r.estado!=='En inspección')return false;
-    if(es==='subsanacion'&&r.estado!=='En subsanación')return false;
-    if(es==='cierre'&&r.estado!=='Pendiente cierre')return false;
-    if(es==='inconsistencia'&&r.estado!=='Inconsistencia')return false;
-    if(es==='soloInsp'&&r.estado!=='Sin sol. inspección')return false;
-    if(es==='finalizado'&&r.estado!=='Finalizado')return false;
-    if(de&&r.ingreso&&r.ingreso<de)return false;if(ha&&r.ingreso&&r.ingreso>ha)return false;
+    if(nsol && !r.nSol.toUpperCase().includes(nsol)) return false;
+    if(an   && r.analista!==an) return false;
+    if(tr   && r.tramite!==tr) return false;
+    if(cat  && r.categoria!==cat) return false;
+    if(insp==='si' && !r.tieneInsp) return false;
+    if(insp==='no' && r.tieneInsp)  return false;
+    if(es==='proceso'       && r.estado!=='En proceso')       return false;
+    if(es==='inspeccion'    && r.estado!=='En inspección')    return false;
+    if(es==='subsanacion'   && r.estado!=='En subsanación')   return false;
+    if(es==='cierre'        && r.estado!=='Pendiente cierre') return false;
+    if(es==='inconsistencia'&& r.estado!=='Inconsistencia')   return false;
+    if(es==='soloInsp'      && !r.soloFaltaSolInsp)           return false;
+    if(es==='finalizado'    && r.estado!=='Finalizado')       return false;
+    if(de && r.ingreso && r.ingreso<de) return false;
+    if(ha && r.ingreso && r.ingreso>ha) return false;
     return true;
   });
   renderAll();
@@ -550,13 +784,23 @@ function applyFilters(){
 function clearFilters(){
   document.getElementById('f-nsol').value='';
   ['f-an','f-tr','f-es','f-cat','f-insp'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('f-de').value='';document.getElementById('f-ha').value='';
-  document.getElementById('tbl-search').value='';FILTERED=[...RAW];renderAll();
+  document.getElementById('f-de').value='';
+  document.getElementById('f-ha').value='';
+  document.getElementById('tbl-search').value='';
+  FILTERED=[...RAW];
+  renderAll();
 }
 
-function switchTab(t,el){activeTab=t;document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));el.classList.add('active');renderTable();}
-function renderAll(){renderKPIs();renderPhases();renderCharts();renderMonitor();renderTable();renderAnalistas();}
+function switchTab(t,el){
+  activeTab=t;
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  el.classList.add('active');
+  renderTable();
+}
 
+function renderAll(){ renderKPIs(); renderPhases(); renderCharts(); renderMonitor(); renderTable(); renderAnalistas(); }
+
+// ── KPIs ──────────────────────────────────────────────────────
 function renderKPIs(){
   document.getElementById('k0').textContent=FILTERED.length;
   const validos=FILTERED.filter(r=>r.esValido);
@@ -572,187 +816,275 @@ function renderKPIs(){
   document.getElementById('k5').textContent=FILTERED.filter(r=>r.estado==='Pendiente cierre').length;
   document.getElementById('k6').textContent=FILTERED.filter(r=>r.estado==='Finalizado').length;
   document.getElementById('k7').textContent=FILTERED.filter(r=>r.estado==='Inconsistencia').length;
-  document.getElementById('k8').textContent=FILTERED.filter(r=>r.estado==='Sin sol. inspección').length;
+  document.getElementById('k8').textContent=FILTERED.filter(r=>r.soloFaltaSolInsp).length;
 }
 
-function pAvg(key,subset){const s=subset||FILTERED.filter(r=>r.esValido);return avg(s.map(r=>r[key]).filter(x=>x!==null&&!isNaN(x)&&x>=0));}
-function pCnt(key,subset){const s=subset||FILTERED.filter(r=>r.esValido);return s.filter(r=>r[key]!==null&&r[key]!==undefined&&!isNaN(r[key])&&r[key]>=0).length;}
+// ── Mini cards ────────────────────────────────────────────────
+function pAvg(key, subset){ 
+  const s = subset || FILTERED.filter(r=>r.esValido);
+  return avg(s.map(r=>r[key]).filter(x=>x!==null&&!isNaN(x)&&x>=0)); 
+}
+function pCnt(key, subset){ 
+  const s = subset || FILTERED.filter(r=>r.esValido);
+  return s.filter(r=>r[key]!==null&&r[key]!==undefined&&!isNaN(r[key])&&r[key]>=0).length; 
+}
 
 function miniCard(label,key,max,desc,isZero,color,subset){
-  const s=subset||FILTERED.filter(r=>r.esValido);const v=pAvg(key,s);if(v===null)return '';
+  const s = subset || FILTERED.filter(r=>r.esValido);
+  const v = pAvg(key, s);
+  if(v===null) return '';
   const pct=max>0?Math.min(100,Math.round((v/max)*100)):v===0?100:50;
-  let fc;if(isZero)fc=v===0?'fill-ok':'fill-bd';else{const p=v/max;fc=p<=.7?'fill-ok':p<=1?'fill-wn':'fill-bd';}
-  return `<div class="pmc"><div class="pmc-name">${label}</div>
+  let fc;
+  if(isZero) fc=v===0?'fill-ok':'fill-bd';
+  else{ const p=v/max; fc=p<=.7?'fill-ok':p<=1?'fill-wn':'fill-bd'; }
+  return `<div class="pmc">
+    <div class="pmc-name">${label}</div>
     <div class="pmc-val" style="color:${color}">${v}<span class="pmc-unit">días</span></div>
     <div class="pmc-desc">${desc}</div>
     <div class="pmc-bar"><div class="pmc-fill ${fc}" style="width:${pct}%"></div></div>
     ${isZero?'<div class="zero-note">Idealmente 0 días</div>':''}
-    <div style="font-size:10px;color:var(--text3);margin-top:3px">${pCnt(key,s)} exp.</div></div>`;
+    <div style="font-size:10px;color:var(--text3);margin-top:3px">${pCnt(key,s)} exp.</div>
+  </div>`;
 }
 
-function toggleGroup(el){el.closest('.tgroup').classList.toggle('tgroup-collapsed');}
+function toggleGroup(el){
+  const tg = el.closest('.tgroup');
+  tg.classList.toggle('tgroup-collapsed');
+}
 
+// ── Fases ─────────────────────────────────────────────────────
 function renderPhases(){
-  const el=document.getElementById('phases-container');
-  const validos=FILTERED.filter(r=>r.esValido);
-  const conInsp=validos.filter(r=>r.tieneInsp);
-  const avgU=avg(validos.map(r=>r.t_urep).filter(x=>x!==null&&x>0));
-  const avgI=avg(conInsp.map(r=>r.f6).filter(x=>x!==null&&x>=0));
-  const avgS=avg(validos.filter(r=>r.f3!==null).map(r=>r.f3).filter(x=>x!==null&&x>=0));
-  const avgT=avg(validos.map(r=>r.t_total).filter(x=>x!==null&&x>0));
-  const conProrr=validos.filter(r=>r.f3b!==null);
-  const vPD=conProrr.map(r=>r.f3b).filter(x=>x!==null&&!isNaN(x));
-  const vPU=conProrr.filter(r=>r.f3c!==null).map(r=>r.f3c).filter(x=>x!==null&&!isNaN(x)&&x>=0);
-  const prCard=conProrr.length?`<div class="pmc" style="min-width:200px"><div class="pmc-name">Prórroga (${conProrr.length} exp.)</div>
+  const el = document.getElementById('phases-container');
+  const validos = FILTERED.filter(r=>r.esValido);
+  const conInsp = validos.filter(r=>r.tieneInsp);
+  const sinInsp = validos.filter(r=>!r.tieneInsp);
+
+  const avgU  = avg(validos.map(r=>r.t_urep).filter(x=>x!==null&&x>0));
+  const avgI  = avg(conInsp.map(r=>r.f6).filter(x=>x!==null&&x>=0));
+  const avgS  = avg(validos.filter(r=>r.f3!==null).map(r=>r.f3).filter(x=>x!==null&&x>=0));
+  const avgT  = avg(validos.map(r=>r.t_total).filter(x=>x!==null&&x>0));
+
+  const conProrr = validos.filter(r=>r.f3b!==null);
+  const vPD = conProrr.map(r=>r.f3b).filter(x=>x!==null&&!isNaN(x));
+  const vPU = conProrr.filter(r=>r.f3c!==null).map(r=>r.f3c).filter(x=>x!==null&&!isNaN(x)&&x>=0);
+  const prCard = conProrr.length?`<div class="pmc" style="min-width:200px">
+    <div class="pmc-name">Prórroga (${conProrr.length} exp.)</div>
     <div class="prorr-wrap">
       <div class="prorr-half"><div class="prorr-v" style="color:#BA7517">${avg(vPD)||'—'}</div><div class="prorr-l">Días otorgados</div></div>
       <div class="prorr-half"><div class="prorr-v" style="color:#D4537E">${avg(vPU)||'—'}</div><div class="prorr-l">Días usados</div></div>
     </div></div>`:'';
 
-  el.innerHTML=
-    `<div class="tgroup"><div class="tgroup-header" onclick="toggleGroup(this)">
-      <div class="tgroup-title" style="color:var(--accent)">⬤ Tiempo UREP <span style="font-weight:400;font-size:11px;color:var(--text3)">(F1+F2+F4+F5+F7+F8)</span></div>
-      <div style="display:flex;align-items:center;gap:12px"><div class="tgroup-avg" style="color:var(--accent)">${avgU||'—'} días háb. promedio</div><span class="collapse-icon">▼</span></div>
-    </div><div class="tgroup-body">
-      ${miniCard('1. Asignación','f1',3,'Ingreso → Asignación',false,'#378ADD')}
-      ${miniCard('2. Observación','f2',5,'Asignación → Observación (ruta A)',false,'#2a6e3f')}
-      ${miniCard('4. Permiso Provisional','f4',5,'Subsanación/Asig. → Permiso Prov.',false,'#185fa5')}
-      ${miniCard('5. Sol. Inspección','f5',3,'Permiso Prov. → Sol. Inspección',false,'#7F77DD')}
-      ${miniCard('7. Resolución','f7',0,'Inf. Insp./Permiso Prov. → Resolución',true,'#BA7517')}
-      ${miniCard('8. Notificación','f8',0,'Resolución → Notificación',true,'#BA7517')}
-    </div></div>`+
-    `<div class="tgroup"><div class="tgroup-header" onclick="toggleGroup(this)">
-      <div class="tgroup-title" style="color:#D85A30">⬤ Tiempo inspecciones <span style="font-weight:400;font-size:11px;color:var(--text3)">(F6) · ${conInsp.length} exp.</span></div>
-      <div style="display:flex;align-items:center;gap:12px"><div class="tgroup-avg" style="color:#D85A30">${avgI||'—'} días háb. promedio</div><span class="collapse-icon">▼</span></div>
-    </div><div class="tgroup-body">
-      ${miniCard('6. Inspección','f6',15,'Sol. Inspección → Informe Inspección',false,'#D85A30',conInsp)}
-    </div></div>`+
-    `<div class="tgroup"><div class="tgroup-header" onclick="toggleGroup(this)">
-      <div class="tgroup-title" style="color:#854f0b">⬤ Tiempo regulado (subsanación) <span style="font-weight:400;font-size:11px;color:var(--text3)">(F3) · ruta A</span></div>
-      <div style="display:flex;align-items:center;gap:12px"><div class="tgroup-avg" style="color:#854f0b">${avgS||'—'} días háb. promedio</div><span class="collapse-icon">▼</span></div>
-    </div><div class="tgroup-body">
-      ${miniCard('3. Subsanación','f3',20,'Observación → Subsanación real',false,'#D4537E')}
-      ${prCard}
-    </div></div>`+
-    `<div class="tgroup"><div class="tgroup-header" onclick="toggleGroup(this)">
-      <div class="tgroup-title" style="color:var(--text2)">⬤ Resumen general</div>
-      <div style="display:flex;align-items:center;gap:12px"><div class="tgroup-avg">${avgT||'—'} días háb. total promedio</div><span class="collapse-icon">▼</span></div>
-    </div><div class="tgroup-summary">
-      <div class="ts-item">UREP: <span class="ts-val" style="color:var(--accent)">${avgU||'—'} días</span></div>
-      <div class="ts-item">Inspecciones: <span class="ts-val" style="color:#D85A30">${avgI||'—'} días</span></div>
-      <div class="ts-item">Subsanación: <span class="ts-val" style="color:#854f0b">${avgS||'—'} días</span></div>
-      <div class="ts-item">Total: <span class="ts-val">${avgT||'—'} días</span></div>
-      <div class="ts-item">Con inspección: <span class="ts-val">${conInsp.length}</span></div>
-      <div class="ts-item">Sin inspección: <span class="ts-val">${validos.length-conInsp.length}</span></div>
-    </div></div>`;
+  el.innerHTML =
+    `<div class="tgroup">
+      <div class="tgroup-header" onclick="toggleGroup(this)">
+        <div class="tgroup-title" style="color:var(--accent)">⬤ Tiempo UREP <span style="font-weight:400;font-size:11px;color:var(--text3)">(fases 1+2+4+5+7+8)</span></div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="tgroup-avg" style="color:var(--accent)">${avgU||'—'} días háb. promedio</div>
+          <span class="collapse-icon">▼</span>
+        </div>
+      </div>
+      <div class="tgroup-body">
+        ${miniCard('1. Asignación','f1',3,'Ingreso → Asignación',false,'#378ADD')}
+        ${miniCard('2. Observación','f2',5,'Asignación → Observación (ruta A)',false,'#2a6e3f')}
+        ${miniCard('4. Permiso Provisional','f4',5,'Subsanación/Asig. → Permiso Prov.',false,'#185fa5')}
+        ${miniCard('5. Sol. Inspección','f5',3,'Permiso Prov. → Sol. Inspección',false,'#7F77DD')}
+        ${miniCard('7. Resolución','f7',0,'Inf. Insp./Permiso Prov. → Resolución',true,'#BA7517')}
+        ${miniCard('8. Notificación','f8',0,'Resolución → Notificación',true,'#BA7517')}
+      </div>
+    </div>`+
+
+    `<div class="tgroup">
+      <div class="tgroup-header" onclick="toggleGroup(this)">
+        <div class="tgroup-title" style="color:#D85A30">⬤ Tiempo inspecciones <span style="font-weight:400;font-size:11px;color:var(--text3)">(fase 6) · ${conInsp.length} exp. con inspección</span></div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="tgroup-avg" style="color:#D85A30">${avgI||'—'} días háb. promedio</div>
+          <span class="collapse-icon">▼</span>
+        </div>
+      </div>
+      <div class="tgroup-body">
+        ${miniCard('6. Inspección','f6',15,'Sol. Inspección → Informe Inspección',false,'#D85A30', conInsp)}
+      </div>
+    </div>`+
+
+    `<div class="tgroup">
+      <div class="tgroup-header" onclick="toggleGroup(this)">
+        <div class="tgroup-title" style="color:#854f0b">⬤ Tiempo regulado (subsanación) <span style="font-weight:400;font-size:11px;color:var(--text3)">(fase 3) · ruta A</span></div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="tgroup-avg" style="color:#854f0b">${avgS||'—'} días háb. promedio</div>
+          <span class="collapse-icon">▼</span>
+        </div>
+      </div>
+      <div class="tgroup-body">
+        ${miniCard('3. Subsanación','f3',20,'Observación → Subsanación real',false,'#D4537E')}
+        ${prCard}
+      </div>
+    </div>`+
+
+    `<div class="tgroup">
+      <div class="tgroup-header" onclick="toggleGroup(this)">
+        <div class="tgroup-title" style="color:var(--text2)">⬤ Resumen general</div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="tgroup-avg">${avgT||'—'} días háb. total promedio</div>
+          <span class="collapse-icon">▼</span>
+        </div>
+      </div>
+      <div class="tgroup-summary">
+        <div class="ts-item">UREP: <span class="ts-val" style="color:var(--accent)">${avgU||'—'} días</span></div>
+        <div class="ts-item">Inspecciones: <span class="ts-val" style="color:#D85A30">${avgI||'—'} días</span></div>
+        <div class="ts-item">Subsanación: <span class="ts-val" style="color:#854f0b">${avgS||'—'} días</span></div>
+        <div class="ts-item">Total: <span class="ts-val">${avgT||'—'} días</span></div>
+        <div class="ts-item">Con inspección: <span class="ts-val">${conInsp.length}</span></div>
+        <div class="ts-item">Sin inspección: <span class="ts-val">${sinInsp.length}</span></div>
+      </div>
+    </div>`;
 }
 
+// ── Gráficos ──────────────────────────────────────────────────
 const PC=['#378ADD','#2a6e3f','#D4537E','#185fa5','#7F77DD','#D85A30','#BA7517','#BA7517'];
 
 function renderCharts(){
   const validos=FILTERED.filter(r=>r.esValido);
-  const phases=[{k:'f1',l:'Asig.'},{k:'f2',l:'Observ.'},{k:'f3',l:'Subs.'},
-    {k:'f4',l:'P.Prov.'},{k:'f5',l:'Sol.Insp.'},{k:'f6',l:'Inspección'},{k:'f7',l:'Resolución'},{k:'f8',l:'Notif.'}];
-  const fd=phases.map(ph=>{const v=validos.map(r=>r[ph.k]).filter(x=>x!==null&&!isNaN(x)&&x>=0);return v.length?avg(v):0;});
-  if(chF)chF.destroy();
-  chF=new Chart(document.getElementById('cf'),{type:'bar',
+  const phases=[
+    {k:'f1',l:'Asig.'},{k:'f2',l:'Observ.'},{k:'f3',l:'Subs.'},
+    {k:'f4',l:'P.Prov.'},{k:'f5',l:'Sol.Insp.'},{k:'f6',l:'Inspección'},
+    {k:'f7',l:'Resolución'},{k:'f8',l:'Notif.'}
+  ];
+  const fd=phases.map(ph=>{
+    const v=validos.map(r=>r[ph.k]).filter(x=>x!==null&&!isNaN(x)&&x>=0);
+    return v.length?avg(v):0;
+  });
+  if(chF) chF.destroy();
+  chF=new Chart(document.getElementById('cf'),{
+    type:'bar',
     data:{labels:phases.map(p=>p.l),datasets:[{data:fd,backgroundColor:PC,borderRadius:5,borderSkipped:false}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-      scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{font:{size:10}},title:{display:true,text:'días hábiles',font:{size:10}}}}}});
-  const co={};FILTERED.forEach(r=>{co[r.analista]=(co[r.analista]||0)+1;});
+      scales:{x:{grid:{display:false},ticks:{font:{size:10}}},
+              y:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{font:{size:10}},title:{display:true,text:'días hábiles',font:{size:10}}}}}
+  });
+  const co={};
+  FILTERED.forEach(r=>{ co[r.analista]=(co[r.analista]||0)+1; });
   const sa=Object.entries(co).sort((a,b)=>b[1]-a[1]);
-  if(chA)chA.destroy();
-  chA=new Chart(document.getElementById('ca'),{type:'doughnut',
+  if(chA) chA.destroy();
+  chA=new Chart(document.getElementById('ca'),{
+    type:'doughnut',
     data:{labels:sa.map(x=>x[0]),datasets:[{data:sa.map(x=>x[1]),backgroundColor:PC,borderWidth:2}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:11},boxWidth:12,padding:8}}}}});
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:11},boxWidth:12,padding:8}}}}
+  });
 }
 
-function catBadgeHtml(cat){
-  return cat==='tabaco'
-    ?'<span class="cat-badge cat-tab">Tabaco</span>'
-    :'<span class="cat-badge cat-alim">Alimentos</span>';
-}
-
+// ── Monitor ───────────────────────────────────────────────────
 function renderMonitor(){
-  const today=new Date();today.setHours(0,0,0,0);
+  const today=new Date(); today.setHours(0,0,0,0);
   const el=document.getElementById('monitor');
-  const incons     =FILTERED.filter(r=>r.tieneIncons);
-  const soloInsp   =FILTERED.filter(r=>r.soloFaltaSolInsp);
-  const cierre     =FILTERED.filter(r=>r.pendienteCierre&&r.pendienteCierre.length>0).sort((a,b)=>(parseD(a.fechaMaxSubs)||0)-(parseD(b.fechaMaxSubs)||0));
-  const inactivos  =FILTERED.filter(r=>r.inactividad&&!r.tieneIncons&&!r.pendienteCierre&&!r.soloFaltaSolInsp).sort((a,b)=>b.inactividad.dias-a.inactividad.dias);
-  const enInsp     =FILTERED.filter(r=>r.estado==='En inspección').sort((a,b)=>(parseD(a.fechaSolInsp)||0)-(parseD(b.fechaSolInsp)||0));
-  const subsActivas=FILTERED.filter(r=>r.estado==='En subsanación').sort((a,b)=>(parseD(a.fechaMaxSubs)||0)-(parseD(b.fechaMaxSubs)||0));
+
+  const incons      = FILTERED.filter(r=>r.tieneIncons);
+  const soloInsp    = FILTERED.filter(r=>r.soloFaltaSolInsp);
+  const cierre      = FILTERED.filter(r=>r.pendienteCierre&&r.pendienteCierre.length>0)
+                               .sort((a,b)=>(parseD(a.fechaMaxSubs)||0)-(parseD(b.fechaMaxSubs)||0));
+  const inactivos   = FILTERED.filter(r=>r.inactividad&&!r.tieneIncons&&!r.pendienteCierre&&!r.soloFaltaSolInsp)
+                               .sort((a,b)=>b.inactividad.dias-a.inactividad.dias);
+  const enInsp      = FILTERED.filter(r=>r.estado==='En inspección')
+                               .sort((a,b)=>(parseD(a.fechaSolInsp)||0)-(parseD(b.fechaSolInsp)||0));
+  const subsActivas = FILTERED.filter(r=>r.estado==='En subsanación')
+                               .sort((a,b)=>(parseD(a.fechaMaxSubs)||0)-(parseD(b.fechaMaxSubs)||0));
+
   let html='';
 
   if(incons.length){
     html+=`<div class="monitor-group"><div class="monitor-group-title mg-red">Inconsistencias en bitácora (${incons.length})</div>`;
-    html+=incons.map(r=>`<div class="monitor-row mr-red"><div>
-      <div class="mr-sol">${r.nSol} · ${r.establecimiento}</div>
-      <div class="mr-meta">${r.analista} · ${catBadgeHtml(r.categoria)}</div>
-      <div class="mr-missing">${r.inconsistencias.join(' · ')}</div>
-    </div><span class="tag bd-c">Revisar</span></div>`).join('');
+    html+=incons.map(r=>`<div class="monitor-row mr-red">
+      <div>
+        <div class="mr-sol">${r.nSol} · ${r.establecimiento}</div>
+        <div class="mr-meta">${r.analista} · <span class="cat-badge ${r.categoria==='tabaco'?'cat-tab':'cat-alim'}">${r.categoria==='tabaco'?'Tabaco':'Alimentos'}</span></div>
+        <div class="mr-missing">${r.inconsistencias.join(' · ')}</div>
+      </div>
+      <span class="tag bd-c">Revisar</span>
+    </div>`).join('');
     html+='</div>';
   }
 
   if(soloInsp.length){
     html+=`<div class="monitor-group"><div class="monitor-group-title mg-yellow">Posible error de captura — falta Sol. Inspección (${soloInsp.length})</div>`;
-    html+=soloInsp.map(r=>`<div class="monitor-row mr-yellow"><div>
-      <div class="mr-sol">${r.nSol} · ${r.establecimiento}</div>
-      <div class="mr-meta">${r.analista} · ${catBadgeHtml(r.categoria)} · Tiene informe pero falta sol. inspección</div>
-    </div><span class="tag yw-c">Verificar</span></div>`).join('');
+    html+=soloInsp.map(r=>`<div class="monitor-row mr-yellow">
+      <div>
+        <div class="mr-sol">${r.nSol} · ${r.establecimiento}</div>
+        <div class="mr-meta">${r.analista} · <span class="cat-badge ${r.categoria==='tabaco'?'cat-tab':'cat-alim'}">${r.categoria==='tabaco'?'Tabaco':'Alimentos'}</span> · Tiene informe pero falta sol. inspección</div>
+      </div>
+      <span class="tag yw-c">Verificar</span>
+    </div>`).join('');
     html+='</div>';
   }
 
   if(cierre.length){
     html+=`<div class="monitor-group"><div class="monitor-group-title mg-warn">Pendientes de cierre administrativo (${cierre.length})</div>`;
-    html+=cierre.map(r=>{const diasVencida=workdays(parseD(r.fechaMaxSubs),today);
-      return`<div class="monitor-row mr-warn"><div>
-        <div class="mr-sol">${r.nSol} · ${r.establecimiento}</div>
-        <div class="mr-meta">${r.analista} · ${catBadgeHtml(r.categoria)} · Plazo venció: ${r.fechaMaxSubs}</div>
-        <div class="mr-missing">Falta registrar: ${r.pendienteCierre.join(' · ')}</div>
-      </div><div><div class="mr-days" style="color:var(--warn)">${diasVencida}</div><div class="mr-lbl">días háb. vencida</div></div></div>`;
-    }).join('');html+='</div>';
+    html+=cierre.map(r=>{
+      const diasVencida=workdays(parseD(r.fechaMaxSubs),today);
+      return`<div class="monitor-row mr-warn">
+        <div>
+          <div class="mr-sol">${r.nSol} · ${r.establecimiento}</div>
+          <div class="mr-meta">${r.analista} · <span class="cat-badge ${r.categoria==='tabaco'?'cat-tab':'cat-alim'}">${r.categoria==='tabaco'?'Tabaco':'Alimentos'}</span> · Plazo venció: ${r.fechaMaxSubs}</div>
+          <div class="mr-missing">Falta registrar: ${r.pendienteCierre.join(' · ')}</div>
+        </div>
+        <div><div class="mr-days" style="color:var(--warn)">${diasVencida}</div><div class="mr-lbl">días háb. vencida</div></div>
+      </div>`;
+    }).join('');
+    html+='</div>';
   }
 
   if(inactivos.length){
     html+=`<div class="monitor-group"><div class="monitor-group-title mg-warn">Sin movimiento UREP +15 días hábiles (${inactivos.length})</div>`;
-    html+=inactivos.map(r=>`<div class="monitor-row mr-warn"><div>
-      <div class="mr-sol">${r.nSol} · ${r.establecimiento}</div>
-      <div class="mr-meta">${r.analista} · ${catBadgeHtml(r.categoria)} · Última fecha: ${r.inactividad.label} · ${r.inactividad.fecha}</div>
-    </div><div><div class="mr-days" style="color:var(--warn)">${r.inactividad.dias}</div><div class="mr-lbl">días háb. sin movimiento</div></div></div>`).join('');
+    html+=inactivos.map(r=>`<div class="monitor-row mr-warn">
+      <div>
+        <div class="mr-sol">${r.nSol} · ${r.establecimiento}</div>
+        <div class="mr-meta">${r.analista} · <span class="cat-badge ${r.categoria==='tabaco'?'cat-tab':'cat-alim'}">${r.categoria==='tabaco'?'Tabaco':'Alimentos'}</span> · Última fecha: ${r.inactividad.label} · ${r.inactividad.fecha}</div>
+      </div>
+      <div><div class="mr-days" style="color:var(--warn)">${r.inactividad.dias}</div><div class="mr-lbl">días háb. sin movimiento</div></div>
+    </div>`).join('');
     html+='</div>';
   }
 
   if(enInsp.length){
     html+=`<div class="monitor-group"><div class="monitor-group-title mg-blue">En inspección (${enInsp.length})</div>`;
-    html+=enInsp.map(r=>{const dias=workdays(parseD(r.fechaSolInsp),today);
-      return`<div class="monitor-row mr-blue"><div>
-        <div class="mr-sol">${r.nSol} · ${r.establecimiento}</div>
-        <div class="mr-meta">${r.analista} · ${catBadgeHtml(r.categoria)} · Sol.: ${r.fechaSolInsp||'—'}</div>
-      </div><div><div class="mr-days" style="color:var(--info)">${dias??'—'}</div><div class="mr-lbl">días háb. transcurridos</div></div></div>`;
-    }).join('');html+='</div>';
+    html+=enInsp.map(r=>{
+      const dias=workdays(parseD(r.fechaSolInsp),today);
+      return`<div class="monitor-row mr-blue">
+        <div>
+          <div class="mr-sol">${r.nSol} · ${r.establecimiento}</div>
+          <div class="mr-meta">${r.analista} · <span class="cat-badge ${r.categoria==='tabaco'?'cat-tab':'cat-alim'}">${r.categoria==='tabaco'?'Tabaco':'Alimentos'}</span> · Sol.: ${r.fechaSolInsp||'—'}</div>
+        </div>
+        <div><div class="mr-days" style="color:var(--info)">${dias??'—'}</div><div class="mr-lbl">días háb. transcurridos</div></div>
+      </div>`;
+    }).join('');
+    html+='</div>';
   }
 
   if(subsActivas.length){
     html+=`<div class="monitor-group"><div class="monitor-group-title mg-blue">En subsanación — plazo vigente (${subsActivas.length})</div>`;
     html+=subsActivas.map(r=>{
-      const ult=parseD(r.fechaMaxSubs);const diasRest=workdays(today,ult);
-      const diasTrans=workdays(parseD(r.fechaObserv),today);const urgente=diasRest<=3;
-      return`<div class="monitor-row ${urgente?'mr-warn':'mr-blue'}"><div>
-        <div class="mr-sol">${r.nSol} · ${r.establecimiento}</div>
-        <div class="mr-meta">${r.analista} · ${catBadgeHtml(r.categoria)} · Observado: ${r.fechaObserv}${r.diasProrr?' · Prórroga: '+r.diasProrr+'d':''} · Plazo: ${r.fechaMaxSubs}</div>
-      </div><div>
-        <div class="mr-days" style="color:${urgente?'var(--warn)':'var(--info)'}">${diasRest}</div>
-        <div class="mr-lbl">días háb. restantes</div>
-        <div class="mr-lbl">${diasTrans} días transcurridos</div>
-      </div></div>`;
-    }).join('');html+='</div>';
+      const ult=parseD(r.fechaMaxSubs);
+      const diasRest=workdays(today,ult);
+      const diasTrans=workdays(parseD(r.fechaObserv),today);
+      const urgente=diasRest<=3;
+      return`<div class="monitor-row ${urgente?'mr-warn':'mr-blue'}">
+        <div>
+          <div class="mr-sol">${r.nSol} · ${r.establecimiento}</div>
+          <div class="mr-meta">${r.analista} · <span class="cat-badge ${r.categoria==='tabaco'?'cat-tab':'cat-alim'}">${r.categoria==='tabaco'?'Tabaco':'Alimentos'}</span> · Observado: ${r.fechaObserv}${r.diasProrr?' · Prórroga: '+r.diasProrr+'d':''} · Plazo: ${r.fechaMaxSubs}</div>
+        </div>
+        <div>
+          <div class="mr-days" style="color:${urgente?'var(--warn)':'var(--info)'}">${diasRest}</div>
+          <div class="mr-lbl">días háb. restantes</div>
+          <div class="mr-lbl">${diasTrans} días transcurridos</div>
+        </div>
+      </div>`;
+    }).join('');
+    html+='</div>';
   }
 
-  if(!html)html='<div class="empty">No hay alertas activas.</div>';
+  if(!html) html='<div class="empty">No hay alertas activas.</div>';
   el.innerHTML=html;
 }
 
+// ── Tabla detalle ─────────────────────────────────────────────
 function etag(e){
   const m={'Finalizado':'ok-c','En proceso':'if-c','En inspección':'if-c','En subsanación':'wn-c',
            'Pendiente cierre':'bd-c','Inconsistencia':'bd-c','Sin sol. inspección':'yw-c'};
@@ -760,9 +1092,10 @@ function etag(e){
 }
 
 function celD(v,max,valid=true){
-  if(!valid||v===null||v===undefined)return '<td class="cn" style="color:var(--text3)">—</td>';
-  let col;if(max===0)col=v===0?'var(--success)':'var(--danger)';
-  else{const p=v/max;col=p<=.7?'var(--success)':p<=1?'var(--warn)':'var(--danger)';}
+  if(!valid||v===null||v===undefined) return '<td class="cn" style="color:var(--text3)">—</td>';
+  let col;
+  if(max===0) col=v===0?'var(--success)':'var(--danger)';
+  else{ const p=v/max; col=p<=.7?'var(--success)':p<=1?'var(--warn)':'var(--danger)'; }
   return `<td class="cn" style="color:${col}">${v}</td>`;
 }
 
@@ -773,51 +1106,74 @@ function renderTable(){
   if(activeTab==='finalizado') rows=rows.filter(r=>r.estado==='Finalizado');
   if(activeTab==='soloInsp')   rows=rows.filter(r=>r.soloFaltaSolInsp);
   const q=(document.getElementById('tbl-search').value||'').trim().toUpperCase();
-  if(q)rows=rows.filter(r=>r.nSol.toUpperCase().includes(q));
+  if(q) rows=rows.filter(r=>r.nSol.toUpperCase().includes(q));
   const tb=document.getElementById('tb');
   if(!rows.length){tb.innerHTML='<tr><td colspan="16" class="empty">Sin resultados.</td></tr>';return;}
   tb.innerHTML=rows.slice(0,1000).map(r=>{
     const cls=r.tieneIncons?'tr-incons':r.pendienteCierre?'tr-cierre':r.soloFaltaSolInsp?'tr-soloinsp':'';
     const v=r.esValido;
-    const catTag=r.categoria==='tabaco'?'<span class="tag tb-c">Tabaco</span>':'<span class="tag ok-c">Alim.</span>';
+    const catBadge=r.categoria==='tabaco'
+      ?'<span class="tag tb-c">Tabaco</span>'
+      :'<span class="tag ok-c">Alim.</span>';
     return`<tr class="${cls}">
       <td><strong>${r.nSol}</strong></td>
       <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis">${r.establecimiento}</td>
-      <td>${r.analista}</td><td>${catTag}</td>
+      <td>${r.analista}</td>
+      <td>${catBadge}</td>
       <td>${etag(r.estado)}${r.tieneIncons?'<span class="tag bd-c" style="margin-left:3px">!</span>':''}</td>
       <td><span class="tag ${r.tieneInsp?'ok-c':'if-c'}">${r.tieneInsp?'Sí':'No'}</span></td>
-      ${celD(r.f1,3,v)}${celD(r.f2,5,v)}${celD(r.f3,20,v)}${celD(r.f4,5,v)}
-      ${celD(r.f5,3,v)}${celD(r.f6,15,v)}${celD(r.f7,0,v)}${celD(r.f8,0,v)}
+      ${celD(r.f1,3,v)}
+      ${celD(r.f2,5,v)}
+      ${celD(r.f3,20,v)}
+      ${celD(r.f4,5,v)}
+      ${celD(r.f5,3,v)}
+      ${celD(r.f6,15,v)}
+      ${celD(r.f7,0,v)}
+      ${celD(r.f8,0,v)}
       <td class="cn" style="color:var(--accent);font-weight:700">${r.t_urep??'—'}</td>
       <td class="cn" style="font-weight:700">${r.t_total??'—'}</td>
     </tr>`;
   }).join('');
 }
 
+// ── Tabla analistas ───────────────────────────────────────────
 function renderAnalistas(){
-  const by={};FILTERED.forEach(r=>{if(!by[r.analista])by[r.analista]=[];by[r.analista].push(r);});
+  const by={};
+  FILTERED.forEach(r=>{ if(!by[r.analista])by[r.analista]=[]; by[r.analista].push(r); });
   const mx=Math.max(1,...Object.values(by).map(a=>a.length));
-  document.getElementById('tba').innerHTML=Object.entries(by).sort((a,b)=>b[1].length-a[1].length).map(([n,rows])=>{
-    const pct=Math.round((rows.length/mx)*100);
-    const validos=rows.filter(r=>r.esValido);
-    const u=avg(validos.map(r=>r.t_urep).filter(x=>x!==null&&x>0));
-    const t=avg(validos.map(r=>r.t_total).filter(x=>x!==null&&x>0));
-    return`<tr><td><strong>${n}</strong></td><td class="cn">${rows.length}</td>
-      <td class="cn" style="color:var(--accent)">${u??'—'}</td>
-      <td class="cn"><strong>${t??'—'}</strong></td>
-      <td><div style="font-size:10px;color:var(--text3)">${rows.length} exp.</div>
-          <div class="mb"><div class="mf" style="width:${pct}%"></div></div></td></tr>`;
-  }).join('');
+  document.getElementById('tba').innerHTML=Object.entries(by)
+    .sort((a,b)=>b[1].length-a[1].length)
+    .map(([n,rows])=>{
+      const pct=Math.round((rows.length/mx)*100);
+      const validos=rows.filter(r=>r.esValido);
+      const u=avg(validos.map(r=>r.t_urep).filter(x=>x!==null&&x>0));
+      const t=avg(validos.map(r=>r.t_total).filter(x=>x!==null&&x>0));
+      return`<tr>
+        <td><strong>${n}</strong></td>
+        <td class="cn">${rows.length}</td>
+        <td class="cn" style="color:var(--accent)">${u??'—'}</td>
+        <td class="cn"><strong>${t??'—'}</strong></td>
+        <td><div style="font-size:10px;color:var(--text3)">${rows.length} exp.</div>
+            <div class="mb"><div class="mf" style="width:${pct}%"></div></div></td>
+      </tr>`;
+    }).join('');
 }
 
+// ── Exportar CSV ──────────────────────────────────────────────
 function exportCSV(){
-  const h=['N°','Establecimiento','Analista','Categoría','Estado','Insp.','Inconsistencias','F1','F2','F3','F3b','F3c','F4','F5','F6','F7','F8','T.UREP','T.Total'];
-  const r=FILTERED.map(r=>[r.nSol,r.establecimiento,r.analista,r.categoria,r.estado,r.tieneInsp?'Si':'No',
-    r.inconsistencias.join(';'),r.f1??'',r.f2??'',r.f3??'',r.f3b??'',r.f3c??'',r.f4??'',r.f5??'',r.f6??'',r.f7??'',r.f8??'',r.t_urep??'',r.t_total??'']);
+  const h=['N°','Establecimiento','Analista','Categoría','Estado','Insp.','Inconsistencias',
+           'F1','F2','F3','F3b','F3c','F4','F5','F6','F7','F8','T.UREP','T.Total'];
+  const r=FILTERED.map(r=>[
+    r.nSol,r.establecimiento,r.analista,r.categoria,r.estado,r.tieneInsp?'Si':'No',
+    r.inconsistencias.join(';'),
+    r.f1??'',r.f2??'',r.f3??'',r.f3b??'',r.f3c??'',r.f4??'',r.f5??'',r.f6??'',r.f7??'',r.f8??'',
+    r.t_urep??'',r.t_total??''
+  ]);
   const csv=[h,...r].map(x=>x.join(',')).join('\n');
   const a=document.createElement('a');
   a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
-  a.download='urep_alimentos_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+  a.download='urep_alimentos_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
 }
 
 loadData();
