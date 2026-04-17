@@ -117,13 +117,11 @@ select:focus,input:focus{border-color:var(--accent);}
 .mg-warn{background:var(--warn-bg);color:var(--warn);}
 .mg-blue{background:var(--info-bg);color:var(--info);}
 .mg-green{background:var(--success-bg);color:var(--success);}
-.mg-yellow{background:#fef9e7;color:#856404;}
 .monitor-row{background:var(--surface);border:1px solid var(--border);border-left:3px solid;border-radius:var(--r);padding:10px 14px;margin-bottom:6px;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:6px;}
 .mr-red{border-left-color:#E24B4A;}
 .mr-warn{border-left-color:#BA7517;}
 .mr-blue{border-left-color:#378ADD;}
 .mr-green{border-left-color:#3b6d11;}
-.mr-yellow{border-left-color:#d4a017;}
 .mr-sol{font-size:13px;font-weight:600;}
 .mr-meta{font-size:12px;color:var(--text2);margin-top:2px;}
 .mr-missing{font-size:11px;color:var(--danger);margin-top:3px;}
@@ -142,7 +140,6 @@ tbody tr{border-bottom:1px solid var(--border);}
 tbody tr:hover{background:var(--surface2);}
 tbody tr.tr-incons{background:#fff8f8;}
 tbody tr.tr-cierre{background:#fffbf5;}
-tbody tr.tr-soloinsp{background:#fffde7;}
 tbody td{padding:7px 8px;white-space:nowrap;}
 .cn{text-align:right;font-variant-numeric:tabular-nums;font-weight:600;}
 .tag{display:inline-block;padding:1px 7px;border-radius:20px;font-size:10px;font-weight:500;}
@@ -151,7 +148,6 @@ tbody td{padding:7px 8px;white-space:nowrap;}
 .bd-c{background:var(--danger-bg);color:var(--danger);}
 .if-c{background:var(--info-bg);color:var(--info);}
 .tb-c{background:var(--tobacco-bg);color:var(--tobacco);}
-.yw-c{background:#fef9e7;color:#856404;}
 .mb{height:5px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:3px;}
 .mf{height:100%;border-radius:3px;background:var(--accent);}
 .empty{text-align:center;padding:32px;color:var(--text3);font-size:13px;}
@@ -192,7 +188,6 @@ tbody td{padding:7px 8px;white-space:nowrap;}
         <option value="subsanacion">En subsanación</option>
         <option value="cierre">Pendiente cierre</option>
         <option value="inconsistencia">Inconsistencia</option>
-        <option value="soloInsp">Sin sol. inspección</option>
         <option value="finalizado">Finalizado</option>
       </select>
     </div>
@@ -231,7 +226,6 @@ tbody td{padding:7px 8px;white-space:nowrap;}
     <div class="kpi"><div class="kl">Pendiente cierre</div><div class="kv" id="k5" style="color:var(--danger)">—</div></div>
     <div class="kpi"><div class="kl">Finalizados</div><div class="kv" id="k6" style="color:var(--success)">—</div></div>
     <div class="kpi"><div class="kl">Inconsistencias</div><div class="kv" id="k7" style="color:var(--danger)">—</div></div>
-    <div class="kpi"><div class="kl">Sin sol. inspección</div><div class="kv" id="k8" style="color:#856404">—</div></div>
   </div>
 
   <!-- TIEMPOS POR FASE -->
@@ -254,12 +248,11 @@ tbody td{padding:7px 8px;white-space:nowrap;}
       <div class="st" style="margin:0">Detalle por expediente</div>
       <button class="btn btn-g" style="font-size:12px" onclick="exportCSV()">Exportar CSV</button>
     </div>
-    <div class="table-note">Días hábiles — excluye fines de semana y feriados SV 2024·2025·2026. Inconsistencias y pendientes de cierre no entran en promedios. Fila amarilla = solo falta sol. inspección.</div>
+    <div class="table-note">Días hábiles — excluye fines de semana y feriados SV 2024·2025·2026. Expedientes con inconsistencias o pendientes de cierre no entran en promedios.</div>
     <div class="tabs">
       <button class="tab active" onclick="switchTab('all',this)">Todos</button>
       <button class="tab" onclick="switchTab('proceso',this)">En proceso</button>
       <button class="tab" onclick="switchTab('subsanacion',this)">Subsanación</button>
-      <button class="tab" onclick="switchTab('soloInsp',this)">Sin sol. insp.</button>
       <button class="tab" onclick="switchTab('finalizado',this)">Finalizados</button>
     </div>
     <div style="margin-bottom:10px"><input type="text" id="tbl-search" placeholder="🔍 Buscar por número de solicitud..." oninput="renderTable()" style="max-width:300px;height:30px;font-size:12px;"></div>
@@ -460,7 +453,6 @@ function esExpedito(tipoEstab, fechaIngreso){
 // ── Detección de inconsistencias ─────────────────────────────
 function detectarInconsistencias(r){
   const issues = [];
-
   const chk = (d1,d2,msg) => {
     if(!d1||!d2) return;
     const a=parseD(d1), b=parseD(d2);
@@ -468,40 +460,35 @@ function detectarInconsistencias(r){
   };
 
   const resUp = (r.resolucion||'').toUpperCase().trim();
-  const esCierreValidoSinFechas = CIERRE_VALIDO.map(x=>x.toUpperCase()).includes(resUp);
+  const esCierreValido = CIERRE_VALIDO.map(x=>x.toUpperCase()).includes(resUp);
+  const esCierreConFechas = CIERRE_CON_FECHAS.map(x=>x.toUpperCase()).includes(resUp);
 
-  // Si es DESISTIDO o INVÁLIDO → cierre válido en cualquier etapa, no verificamos cadena
-  if(esCierreValidoSinFechas) return issues;
+  // Fechas en orden incorrecto
+  chk(r.ingreso, r.fechaAsig,    'Asignación anterior al Ingreso');
+  chk(r.fechaAsig, r.fechaObserv,'Observación anterior a Asignación');
+  chk(r.fechaObserv, r.fechaSubs,'Subsanación anterior a Observación');
+  chk(r.fechaSubs, r.fechaPermProv,'Permiso Provisional anterior a Subsanación');
+  chk(r.fechaPermProv, r.fechaSolInsp,'Sol. Inspección anterior a Permiso Provisional');
+  chk(r.fechaSolInsp, r.fechaInfInsp,'Informe Inspección anterior a Sol. Inspección');
+  chk(r.fechaInfInsp, r.fechaRes,'Resolución anterior a Informe Inspección');
+  chk(r.fechaRes, r.fechaNotif,'Notificación anterior a Resolución');
 
-  // Fechas en orden incorrecto — todas independientes
-  chk(r.ingreso,       r.fechaAsig,     'Asignación anterior al Ingreso');
-  chk(r.fechaAsig,     r.fechaObserv,   'Observación anterior a Asignación');
-  chk(r.fechaObserv,   r.fechaSubs,     'Subsanación anterior a Observación');
-  chk(r.fechaSubs,     r.fechaPermProv, 'Permiso Provisional anterior a Subsanación');
-  chk(r.fechaPermProv, r.fechaSolInsp,  'Sol. Inspección anterior a Permiso Provisional');
-  chk(r.fechaSolInsp,  r.fechaInfInsp,  'Informe Inspección anterior a Sol. Inspección');
-  chk(r.fechaInfInsp,  r.fechaRes,      'Resolución anterior a Informe Inspección');
-  chk(r.fechaRes,      r.fechaNotif,    'Notificación anterior a Resolución');
+  // Fases posteriores sin anteriores
+  if(r.fechaObserv && !r.fechaAsig) issues.push('Tiene observación pero falta fecha de asignación');
+  if(r.fechaSubs && !r.fechaObserv) issues.push('Tiene subsanación pero falta fecha de observación');
+  if(r.fechaNotif && !r.fechaRes) issues.push('Tiene notificación pero falta fecha de resolución');
 
-  // Cadena completa — cada regla independiente, reporta todas las que faltan
-  if(r.fechaNotif && !r.fechaRes)
-    issues.push('Tiene notificación pero falta fecha de resolución');
-  if(r.fechaRes && r.fechaSolInsp && !r.fechaInfInsp)
-    issues.push('Tiene resolución pero falta informe de inspección');
-  if(r.fechaRes && !r.fechaSolInsp && !r.fechaPermProv)
-    issues.push('Tiene resolución pero falta Permiso Provisional');
-  if(r.fechaInfInsp && !r.fechaSolInsp)
-    issues.push('Tiene informe de inspección pero falta Sol. Inspección');
-  if(r.fechaSolInsp && !r.fechaPermProv)
-    issues.push('Tiene Sol. Inspección pero falta Permiso Provisional');
-  if(r.fechaSolInsp && r.fechaObserv && !r.fechaSubs)
-    issues.push('Tiene Sol. Inspección pero falta fecha de subsanación');
-  if(r.fechaPermProv && r.fechaObserv && !r.fechaSubs)
-    issues.push('Tiene Permiso Provisional pero falta fecha de subsanación');
-  if(r.fechaSubs && !r.fechaObserv)
-    issues.push('Tiene subsanación pero falta fecha de observación');
-  if(r.fechaObserv && !r.fechaAsig)
-    issues.push('Tiene observación pero falta fecha de asignación');
+  // Permiso provisional: si tiene sol. inspección, debe tener permiso provisional
+  if(r.fechaSolInsp && !r.fechaPermProv) issues.push('Tiene Sol. Inspección pero falta Permiso Provisional');
+
+  // Informe sin solicitud
+  if(r.fechaInfInsp && !r.fechaSolInsp) issues.push('Tiene informe de inspección pero falta Sol. Inspección');
+
+  // Resolución sin informe — solo si tiene inspección y no es cierre válido
+  if(r.fechaRes && r.fechaSolInsp && !r.fechaInfInsp && !esCierreValido) issues.push('Tiene resolución pero falta informe de inspección');
+
+  // Resolución final sin subsanación — excepto cierre válido o sin observación (ruta B)
+  if(r.fechaRes && !r.fechaSubs && r.fechaObserv && !esCierreValido && !esCierreConFechas) issues.push('Tiene resolución pero falta fecha de subsanación');
 
   return issues;
 }
@@ -521,17 +508,15 @@ function detectarPendienteCierre(r){
 
 // ── Inactividad UREP +15 días ─────────────────────────────────
 function detectarInactividad(r, today){
-  if(['Inconsistencia','Finalizado','En subsanación','Pendiente cierre','En inspección','Sin sol. inspección'].includes(r.estado)) return null;
-  // Orden cronológico inverso — la más reciente primero
+  if(['Inconsistencia','Finalizado','En subsanación','Pendiente cierre','En inspección'].includes(r.estado)) return null;
   const checks = [
-    {f:r.fechaNotif,    label:'Notificación',         siguienteUrep:false},
-    {f:r.fechaRes,      label:'Resolución',            siguienteUrep:false},
-    {f:r.fechaInfInsp,  label:'Informe inspección',    siguienteUrep:true},
-    {f:r.fechaSolInsp,  label:'Sol. inspección',       siguienteUrep:false},
-    {f:r.fechaPermProv, label:'Permiso Provisional',   siguienteUrep:true},
-    {f:r.fechaSubs,     label:'Subsanación',           siguienteUrep:true},
-    {f:r.fechaObserv,   label:'Observación',           siguienteUrep:false},
-    {f:r.fechaAsig,     label:'Asignación',            siguienteUrep:true},
+    {f:r.fechaInfInsp,   label:'Informe inspección',      siguienteUrep:true},
+    {f:r.fechaRes,       label:'Resolución',               siguienteUrep:true},
+    {f:r.fechaSubs,      label:'Subsanación',              siguienteUrep:true},
+    {f:r.fechaNotif,     label:'Notificación',             siguienteUrep:false},
+    {f:r.fechaPermProv,  label:'Permiso Provisional',      siguienteUrep:true},
+    {f:r.fechaObserv,    label:'Observación',              siguienteUrep:false}, // siguiente: regulado subsana
+    {f:r.fechaAsig,      label:'Asignación',               siguienteUrep:true},
   ].filter(x=>x.f);
   if(!checks.length) return null;
   const ultima = checks[0];
@@ -544,26 +529,16 @@ function detectarInactividad(r, today){
 // ── Derivar estado ────────────────────────────────────────────
 function derivarEstado(r){
   const today = new Date(); today.setHours(0,0,0,0);
-  const resUp = (r.resolucion||'').toUpperCase().trim();
-  const esCierreValidoSinFechas = CIERRE_VALIDO.map(x=>x.toUpperCase()).includes(resUp);
-
-  // DESISTIDO/INVÁLIDO → finalizado en cualquier etapa
-  if(esCierreValidoSinFechas) return 'Finalizado';
-
-  // Solo falta sol. inspección → categoría aparte
-  if(r.soloFaltaSolInsp) return 'Sin sol. inspección';
-
-  // Inconsistencia
   if(r.tieneIncons) return 'Inconsistencia';
-
-  // Pendiente cierre tiene prioridad sobre cualquier estado de resolución
-  if(r.pendienteCierre && r.pendienteCierre.length > 0) return 'Pendiente cierre';
 
   // En inspección: tiene sol. inspección pero no informe
   if(r.fechaSolInsp && !r.fechaInfInsp) return 'En inspección';
 
   // Finalizado: tiene notificación
   if(r.fechaNotif) return 'Finalizado';
+
+  // Pendiente cierre: plazo vencido sin subsanación
+  if(r.pendienteCierre && r.pendienteCierre.length > 0) return 'Pendiente cierre';
 
   // En subsanación: plazo vigente sin subsanación
   if(r.fechaMaxSubs && !r.fechaSubs){
@@ -603,12 +578,7 @@ function mapRow(row){
     fechaRes:fmt(fechaRes), fechaNotif:fmt(fechaNotif),
     resolucion, fechaMaxSubs
   });
-
-  // Si la única inconsistencia es "tiene informe pero falta sol. inspección" → categoría aparte
-  const soloFaltaSolInsp = inconsistencias.length === 1 &&
-    inconsistencias[0].includes('informe de inspección') &&
-    inconsistencias[0].includes('falta Sol. Inspección');
-  const tieneIncons = inconsistencias.length > 0 && !soloFaltaSolInsp;
+  const tieneIncons = inconsistencias.length > 0;
 
   const pendienteCierre = detectarPendienteCierre({
     fechaMaxSubs, fechaSubs:fmt(fechaSubs),
@@ -669,7 +639,7 @@ function mapRow(row){
     tramite:    g(row, C.tramite) || 'N/D',
     tipoEstab,  categoria, expedito, tieneInsp,
     resolucion, diasProrr,
-    esValido, tieneIncons, soloFaltaSolInsp, pendienteCierre,
+    esValido, tieneIncons, pendienteCierre,
     ingreso:fmt(ingreso), fechaAsig:fmt(fechaAsig),
     fechaObserv:fmt(fechaObserv), fechaMaxSubs,
     fechaSubs:fmt(fechaSubs), fechaPermProv:fmt(fechaPermProv),
@@ -748,7 +718,6 @@ function applyFilters(){
     if(es==='subsanacion'   && r.estado!=='En subsanación')   return false;
     if(es==='cierre'        && r.estado!=='Pendiente cierre') return false;
     if(es==='inconsistencia'&& r.estado!=='Inconsistencia')   return false;
-    if(es==='soloInsp'      && !r.soloFaltaSolInsp)           return false;
     if(es==='finalizado'    && r.estado!=='Finalizado')       return false;
     if(de && r.ingreso && r.ingreso<de) return false;
     if(ha && r.ingreso && r.ingreso>ha) return false;
@@ -792,7 +761,6 @@ function renderKPIs(){
   document.getElementById('k5').textContent=FILTERED.filter(r=>r.estado==='Pendiente cierre').length;
   document.getElementById('k6').textContent=FILTERED.filter(r=>r.estado==='Finalizado').length;
   document.getElementById('k7').textContent=FILTERED.filter(r=>r.estado==='Inconsistencia').length;
-  document.getElementById('k8').textContent=FILTERED.filter(r=>r.soloFaltaSolInsp).length;
 }
 
 // ── Mini cards ────────────────────────────────────────────────
@@ -954,10 +922,9 @@ function renderMonitor(){
   const el=document.getElementById('monitor');
 
   const incons      = FILTERED.filter(r=>r.tieneIncons);
-  const soloInsp    = FILTERED.filter(r=>r.soloFaltaSolInsp);
   const cierre      = FILTERED.filter(r=>r.pendienteCierre&&r.pendienteCierre.length>0)
                                .sort((a,b)=>(parseD(a.fechaMaxSubs)||0)-(parseD(b.fechaMaxSubs)||0));
-  const inactivos   = FILTERED.filter(r=>r.inactividad&&!r.tieneIncons&&!r.pendienteCierre&&!r.soloFaltaSolInsp)
+  const inactivos   = FILTERED.filter(r=>r.inactividad&&!r.tieneIncons&&!r.pendienteCierre)
                                .sort((a,b)=>b.inactividad.dias-a.inactividad.dias);
   const enInsp      = FILTERED.filter(r=>r.estado==='En inspección')
                                .sort((a,b)=>(parseD(a.fechaSolInsp)||0)-(parseD(b.fechaSolInsp)||0));
@@ -975,18 +942,6 @@ function renderMonitor(){
         <div class="mr-missing">${r.inconsistencias.join(' · ')}</div>
       </div>
       <span class="tag bd-c">Revisar</span>
-    </div>`).join('');
-    html+='</div>';
-  }
-
-  if(soloInsp.length){
-    html+=`<div class="monitor-group"><div class="monitor-group-title mg-yellow">Posible error de captura — falta Sol. Inspección (${soloInsp.length})</div>`;
-    html+=soloInsp.map(r=>`<div class="monitor-row mr-yellow">
-      <div>
-        <div class="mr-sol">${r.nSol} · ${r.establecimiento}</div>
-        <div class="mr-meta">${r.analista} · <span class="cat-badge ${r.categoria==='tabaco'?'cat-tab':'cat-alim'}">${r.categoria==='tabaco'?'Tabaco':'Alimentos'}</span> · Tiene informe pero falta sol. inspección</div>
-      </div>
-      <span class="tag yw-c">Verificar</span>
     </div>`).join('');
     html+='</div>';
   }
@@ -1062,8 +1017,7 @@ function renderMonitor(){
 
 // ── Tabla detalle ─────────────────────────────────────────────
 function etag(e){
-  const m={'Finalizado':'ok-c','En proceso':'if-c','En inspección':'if-c','En subsanación':'wn-c',
-           'Pendiente cierre':'bd-c','Inconsistencia':'bd-c','Sin sol. inspección':'yw-c'};
+  const m={'Finalizado':'ok-c','En proceso':'if-c','En inspección':'if-c','En subsanación':'wn-c','Pendiente cierre':'bd-c','Inconsistencia':'bd-c'};
   return `<span class="tag ${m[e]||'if-c'}">${e}</span>`;
 }
 
@@ -1080,13 +1034,12 @@ function renderTable(){
   if(activeTab==='proceso')    rows=rows.filter(r=>r.estado==='En proceso');
   if(activeTab==='subsanacion')rows=rows.filter(r=>['En subsanación','Pendiente cierre','En inspección'].includes(r.estado));
   if(activeTab==='finalizado') rows=rows.filter(r=>r.estado==='Finalizado');
-  if(activeTab==='soloInsp')   rows=rows.filter(r=>r.soloFaltaSolInsp);
   const q=(document.getElementById('tbl-search').value||'').trim().toUpperCase();
   if(q) rows=rows.filter(r=>r.nSol.toUpperCase().includes(q));
   const tb=document.getElementById('tb');
   if(!rows.length){tb.innerHTML='<tr><td colspan="16" class="empty">Sin resultados.</td></tr>';return;}
   tb.innerHTML=rows.slice(0,1000).map(r=>{
-    const cls=r.tieneIncons?'tr-incons':r.pendienteCierre?'tr-cierre':r.soloFaltaSolInsp?'tr-soloinsp':'';
+    const cls=r.tieneIncons?'tr-incons':r.pendienteCierre?'tr-cierre':'';
     const v=r.esValido;
     const catBadge=r.categoria==='tabaco'
       ?'<span class="tag tb-c">Tabaco</span>'
