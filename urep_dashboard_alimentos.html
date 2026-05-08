@@ -412,9 +412,6 @@ function derivarEstado(r){
   const resUp=(r.resolucion||'').toLowerCase().trim();
   const esCierreValidoSinFechas=CIERRE_VALIDO_SIN_FECHAS.includes(resUp);
   if(esCierreValidoSinFechas)return 'Finalizado';
-  // ARCHIVADO/DESFAVORABLE/IMPROCEDENTE con res y notif → cerró válidamente
-  const esCierreConFechasUp=REQUIEREN_FECHAS_CIERRE.map(x=>x.toUpperCase()).includes(resUp.toUpperCase());
-  if(esCierreConFechasUp&&r.fechaRes&&r.fechaNotif)return 'Finalizado';
   if(r.soloFaltaSolInsp)return 'Sin sol. inspección';
   if(r.tieneIncons)return 'Inconsistencia';
   if(r.fechaSolInsp&&!r.fechaInfInsp)return 'En inspección';
@@ -688,11 +685,9 @@ function renderMonitor(){
   const incons     =FILTERED.filter(r=>r.tieneIncons);
   const soloInsp   =FILTERED.filter(r=>r.soloFaltaSolInsp);
   const cierre     =FILTERED.filter(r=>r.pendienteCierre&&r.pendienteCierre.length>0).sort((a,b)=>(parseD(a.fechaMaxSubs)||0)-(parseD(b.fechaMaxSubs)||0));
-  const inactivos  =FILTERED.filter(r=>r.inactividad&&!r.tieneIncons&&!r.pendienteCierre).sort((a,b)=>b.inactividad.dias-a.inactividad.dias);
+  const inactivos  =FILTERED.filter(r=>r.inactividad&&!r.tieneIncons&&!r.pendienteCierre&&!r.soloFaltaSolInsp).sort((a,b)=>b.inactividad.dias-a.inactividad.dias);
   const enInsp     =FILTERED.filter(r=>r.estado==='En inspección').sort((a,b)=>(parseD(a.fechaSolInsp)||0)-(parseD(b.fechaSolInsp)||0));
-  const subsActivas=FILTERED.filter(r=>r.estado==='En subsanación'||
-    (r.soloFaltaSolInsp&&r.fechaMaxSubs&&!r.fechaSubs&&(()=>{const u=parseD(r.fechaMaxSubs);const t=new Date();t.setHours(0,0,0,0);return u&&u>=t;})()))
-    .sort((a,b)=>(parseD(a.fechaMaxSubs)||0)-(parseD(b.fechaMaxSubs)||0));
+  const subsActivas=FILTERED.filter(r=>r.estado==='En subsanación').sort((a,b)=>(parseD(a.fechaMaxSubs)||0)-(parseD(b.fechaMaxSubs)||0));
   let html='';
 
   if(incons.length){
