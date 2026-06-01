@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -472,6 +473,10 @@ function detectarInconsistencias(r){
   // Si es DESISTIDO o INVÁLIDO → cierre válido en cualquier etapa, no verificamos cadena
   if(esCierreValidoSinFechas) return issues;
 
+  // Si es ARCHIVADO/DESFAVORABLE/IMPROCEDENTE con res y notif → cerró válidamente
+  const esCierreConFechas = CIERRE_CON_FECHAS.map(x=>x.toUpperCase()).includes(resUp);
+  if(esCierreConFechas && r.fechaRes && r.fechaNotif) return issues;
+
   // Fechas en orden incorrecto — todas independientes
   chk(r.ingreso,       r.fechaAsig,     'Asignación anterior al Ingreso');
   chk(r.fechaAsig,     r.fechaObserv,   'Observación anterior a Asignación');
@@ -549,6 +554,10 @@ function derivarEstado(r){
   // DESISTIDO/INVÁLIDO → finalizado en cualquier etapa
   if(esCierreValidoSinFechas) return 'Finalizado';
 
+  // ARCHIVADO/DESFAVORABLE/IMPROCEDENTE con res y notif → cerró válidamente
+  const esCierreConFechas = CIERRE_CON_FECHAS.map(x=>x.toUpperCase()).includes(resUp);
+  if(esCierreConFechas && r.fechaRes && r.fechaNotif) return 'Finalizado';
+
   // Solo falta sol. inspección → categoría aparte
   if(r.soloFaltaSolInsp) return 'Sin sol. inspección';
 
@@ -608,7 +617,7 @@ function mapRow(row){
     inconsistencias[0].includes('informe de inspección') &&
     inconsistencias[0].includes('falta Sol. Inspección');
 
-  // Si es expedito-siempre y la única inconsistencia es "falta Permiso Provisional" → válido, no es inconsistencia
+  // Si es expedito-siempre y la única inconsistencia es "falta Permiso Provisional" → válido
   const esExpeditoSiempre = EXPEDITOS_SIEMPRE.some(e =>
     tipoEstab.toLowerCase().includes(e.toLowerCase()));
   const soloFaltaPermProv = esExpeditoSiempre &&
@@ -660,7 +669,9 @@ function mapRow(row){
   const f8 = fechaRes ? workdays(fechaRes, fechaNotif) : null;
 
   // ── Tiempos consolidados ───────────────────────────────────
-  const esValido = !tieneIncons && !pendienteCierre;
+  // DESISTIDO/INVÁLIDO sin res ni notif → no entra en promedios
+  const esCierreValidoSinCierre = esCierreValido && !fechaRes && !fechaNotif;
+  const esValido = !tieneIncons && !pendienteCierre && !esCierreValidoSinCierre;
 
   // T. UREP = F1 + F2 + F4 + F5 + F7 + F8
   const t_urep = esValido ? sumArr([f1, f2, f4, f5, f7, f8]) : null;
