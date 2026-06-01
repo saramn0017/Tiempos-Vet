@@ -612,19 +612,18 @@ function mapRow(row){
     resolucion, fechaMaxSubs
   });
 
-  // Si la única inconsistencia es "tiene informe pero falta sol. inspección" → categoría aparte
-  const soloFaltaSolInsp = inconsistencias.length === 1 &&
-    inconsistencias[0].includes('informe de inspección') &&
-    inconsistencias[0].includes('falta Sol. Inspección');
-
-  // Si es expedito-siempre y la única inconsistencia es "falta Permiso Provisional" → válido
+  // Si es expedito-siempre, quitar la inconsistencia de "falta Permiso Provisional" — es válido para ellos
   const esExpeditoSiempre = EXPEDITOS_SIEMPRE.some(e =>
     tipoEstab.toLowerCase().includes(e.toLowerCase()));
-  const soloFaltaPermProv = esExpeditoSiempre &&
-    inconsistencias.length === 1 &&
-    inconsistencias[0].includes('falta Permiso Provisional');
+  const inconsistenciasFiltradas = esExpeditoSiempre
+    ? inconsistencias.filter(i => !i.includes('falta Permiso Provisional'))
+    : inconsistencias;
 
-  const tieneIncons = inconsistencias.length > 0 && !soloFaltaSolInsp && !soloFaltaPermProv;
+  // Si la única inconsistencia restante es "tiene informe pero falta sol. inspección" → categoría aparte
+  const soloFaltaSolInsp = inconsistenciasFiltradas.length === 1 &&
+    inconsistenciasFiltradas[0].includes('informe de inspección') &&
+    inconsistenciasFiltradas[0].includes('falta Sol. Inspección');
+  const tieneIncons = inconsistenciasFiltradas.length > 0 && !soloFaltaSolInsp;
 
   const pendienteCierre = detectarPendienteCierre({
     fechaMaxSubs, fechaSubs:fmt(fechaSubs),
@@ -694,7 +693,7 @@ function mapRow(row){
     fechaSolInsp:fmt(fechaSolInsp), fechaInfInsp:fmt(fechaInfInsp),
     fechaRes:fmt(fechaRes), fechaNotif:fmt(fechaNotif),
     f1,f2,f3,f3b,f3c,f4,f5,f6,f7,f8,
-    t_urep, t_total, inconsistencias
+    t_urep, t_total, inconsistencias: inconsistenciasFiltradas
   };
 
   obj.estado = derivarEstado(obj);
