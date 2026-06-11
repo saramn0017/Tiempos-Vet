@@ -460,7 +460,7 @@ function sumArr(arr){
   return arr.filter(x=>x!==null&&!isNaN(x)&&x>=0).reduce((a,b)=>a+b,0);
 }
 
-function g(row,idx){const v=row[idx];return(v!==undefined&&v!==null)?String(v).trim():'';}
+function g(row,idx){try{const v=row[idx];return(v!==undefined&&v!==null)?String(v).trim():'';}catch(e){return '';}}
 
 // ── Parser CSV ───────────────────────────────────────────────────
 function parseCSV(text){
@@ -490,7 +490,9 @@ function parseCSV(text){
 
 // ── Parser fecha DD/MM/YYYY o YYYY-MM-DD, ignora hora ───────────
 function parseD(s){
-  if(!s||s.trim()==='')return null;
+  if(!s||s===null||s===undefined)return null;
+  s=String(s);
+  if(s.trim()==='')return null;
   // Quitar hora si viene
   const clean=s.trim().split(' ')[0].split('T')[0];
   if(!clean)return null;
@@ -557,7 +559,7 @@ function detectarFueraFlujo(r){
   // UREP favorable + solo inspecciones observó → no debería haber fechaDictSubs ni fechaVoboDictSubs
   const urepFav = r.estadoDictamen && r.estadoDictamen.toUpperCase().includes('FAVORABLE');
   const inspObs = r.estadoDictamenInsp && (r.estadoDictamenInsp.toUpperCase().includes('OBSERV') || r.estadoDictamenInsp.toUpperCase().includes('DESFAV'));
-  if(urepFav && inspObs && r.fechaDictSubs){
+  if(urepFav && inspObs && r.fechaDictSubs && r.fechaDictSubs!==''){
     alertas.push('Dictamen de subsanación UREP registrado siendo UREP favorable');
   }
   // Inverso
@@ -679,7 +681,7 @@ function mapRow(row){
   const rObj = {
     nSol:g(row,C.nSol), nReg:g(row,C.nReg), comercial:g(row,C.comercial),
     tipoTramite, clasif, sede, analista, estadoSistema, estadoDictamen,
-    estadoDictamenInsp, estadoDictSubsInsp,
+    estadoDictamenInsp:estadoDictInsp, estadoDictSubsInsp,
     ingreso, fechaAsig, fechaDictamen, fechaVoboDictamen,
     fechaDictamenInsp, fechaVoboInsp, fechaDictLib, fechaVoboDictLib,
     fechaNotifObs, fechaSubs, fechaDictSubs, fechaVoboDictSubs,
@@ -786,7 +788,7 @@ function mapRow(row){
   return {
     nSol:g(row,C.nSol), nReg:g(row,C.nReg), comercial:g(row,C.comercial),
     tipoTramite, clasif, sede, analista, estadoSistema,
-    estadoDictamen, estadoDictamenInsp,
+    estadoDictamen, estadoDictamenInsp:estadoDictInsp,
     ingreso:fmt(ingreso), fechaAsig:fmt(fechaAsig),
     fechaDictamen:fmt(fechaDictamen), fechaVoboDictamen:fmt(fechaVoboDictamen),
     fechaDictamenInsp:fmt(fechaDictamenInsp), fechaVoboInsp:fmt(fechaVoboInsp),
