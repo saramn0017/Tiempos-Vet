@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>UREP · Análisis de Tiempos Farma</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root{
   --bg:#f0f3f8;--surface:#fff;--surface2:#f5f7fc;--border:#dde3f0;
@@ -263,6 +264,29 @@ tr.detail-row td{background:#f8faff;padding:14px 16px;white-space:normal;}
 
   <!-- ═══ MÓDULO GENERAL ═══ -->
   <div id="page-general">
+    <div class="filters">
+      <div class="fg"><div class="fl">Clasificación personalizada</div>
+        <select id="gen-fil-clasif" onchange="renderGeneral()"><option value="">Todos</option></select>
+      </div>
+      <div class="fg"><div class="fl">Analista</div>
+        <select id="gen-fil-analista" onchange="renderGeneral()"><option value="">Todos</option></select>
+      </div>
+      <div class="fg"><div class="fl">Tipo de trámite</div>
+        <select id="gen-fil-tipo" onchange="renderGeneral()">
+          <option value="">Todos</option>
+          <option value="aut">Autorizaciones</option>
+          <option value="mod">Modificaciones</option>
+        </select>
+      </div>
+      <div class="fg"><div class="fl">Desde</div>
+        <input type="date" id="gen-fil-desde" onchange="renderGeneral()">
+      </div>
+      <div class="fg"><div class="fl">Hasta</div>
+        <input type="date" id="gen-fil-hasta" onchange="renderGeneral()">
+      </div>
+      <button class="btn btn-g" onclick="clearFilters('gen')">Limpiar</button>
+      <button class="btn btn-p" onclick="exportExcel('gen')">⬇ Excel</button>
+    </div>
     <div class="kpis" id="gen-kpis"></div>
     <div class="g2">
       <div class="card">
@@ -274,16 +298,7 @@ tr.detail-row td{background:#f8faff;padding:14px 16px;white-space:normal;}
         <div class="cw"><canvas id="gen-chart-analista-pend"></canvas></div>
       </div>
     </div>
-    <div class="g2">
-      <div class="card">
-        <div class="st">Finalizados por mes de ingreso</div>
-        <div class="cw"><canvas id="gen-chart-fin-mes"></canvas></div>
-      </div>
-      <div class="card">
-        <div class="st">Pendientes por mes de ingreso</div>
-        <div class="cw"><canvas id="gen-chart-pend-mes"></canvas></div>
-      </div>
-    </div>
+
     <div class="card">
       <div class="st">Mapa de calor — promedio días hábiles por fase (ambos tipos)</div>
       <div id="gen-heatmap"></div>
@@ -323,15 +338,13 @@ tr.detail-row td{background:#f8faff;padding:14px 16px;white-space:normal;}
     <div class="g2">
 
     </div>
-    <div class="g2">
-      <div class="card" style="grid-column:1/2">
-        <div class="st">Expedientes por analista</div>
-        <div class="cw"><canvas id="aut-chart-analista"></canvas></div>
-      </div>
-      <div class="card" style="grid-column:2/3">
-        <div class="st">Mapa de calor — fases</div>
-        <div id="aut-heatmap"></div>
-      </div>
+    <div class="card">
+      <div class="st">Expedientes por analista</div>
+      <div class="cw"><canvas id="aut-chart-analista"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="st">Mapa de calor — fases</div>
+      <div id="aut-heatmap"></div>
     </div>
     <div class="collapsible-header" onclick="toggleCollapsible('aut-pend-body','aut-pend-arrow','aut-pend-badge')">
       <div class="collapsible-title">Monitor de pendientes <span class="collapsible-badge" id="aut-pend-badge">—</span></div>
@@ -344,7 +357,7 @@ tr.detail-row td{background:#f8faff;padding:14px 16px;white-space:normal;}
     <div class="collapsible-header" onclick="toggleCollapsible('aut-tabla-body','aut-tabla-arrow')">
       <div class="collapsible-title">Detalle por expediente</div>
       <div style="display:flex;align-items:center;gap:10px">
-        <button class="btn btn-g" style="font-size:12px" onclick="event.stopPropagation();exportCSV('aut')">Exportar CSV</button>
+        <button class="btn btn-p" style="font-size:12px" onclick="event.stopPropagation();exportExcel('aut')">⬇ Excel</button>
         <span class="collapsible-arrow" id="aut-tabla-arrow">▼</span>
       </div>
     </div>
@@ -404,15 +417,13 @@ tr.detail-row td{background:#f8faff;padding:14px 16px;white-space:normal;}
     <div class="g2">
 
     </div>
-    <div class="g2">
-      <div class="card" style="grid-column:1/2">
-        <div class="st">Expedientes por analista</div>
-        <div class="cw"><canvas id="mod-chart-analista"></canvas></div>
-      </div>
-      <div class="card" style="grid-column:2/3">
-        <div class="st">Mapa de calor — fases</div>
-        <div id="mod-heatmap"></div>
-      </div>
+    <div class="card">
+      <div class="st">Expedientes por analista</div>
+      <div class="cw"><canvas id="mod-chart-analista"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="st">Mapa de calor — fases</div>
+      <div id="mod-heatmap"></div>
     </div>
     <div class="collapsible-header" onclick="toggleCollapsible('mod-pend-body','mod-pend-arrow','mod-pend-badge')">
       <div class="collapsible-title">Monitor de pendientes <span class="collapsible-badge" id="mod-pend-badge">—</span></div>
@@ -425,7 +436,7 @@ tr.detail-row td{background:#f8faff;padding:14px 16px;white-space:normal;}
     <div class="collapsible-header" onclick="toggleCollapsible('mod-tabla-body','mod-tabla-arrow')">
       <div class="collapsible-title">Detalle por expediente</div>
       <div style="display:flex;align-items:center;gap:10px">
-        <button class="btn btn-g" style="font-size:12px" onclick="event.stopPropagation();exportCSV('mod')">Exportar CSV</button>
+        <button class="btn btn-p" style="font-size:12px" onclick="event.stopPropagation();exportExcel('mod')">⬇ Excel</button>
         <span class="collapsible-arrow" id="mod-tabla-arrow">▼</span>
       </div>
     </div>
@@ -996,6 +1007,28 @@ function poblarFiltros(){
     fill(`${mod}-fil-clasif`, clasifs);
     fill(`${mod}-fil-analista`, analistas);
   });
+  // General
+  const clasifsAll = [...new Set(ALL_DATA.map(r=>r.clasif).filter(Boolean))].sort();
+  const analistasAll = [...new Set(ALL_DATA.map(r=>r.analista).filter(Boolean))].sort();
+  fill('gen-fil-clasif', clasifsAll);
+  fill('gen-fil-analista', analistasAll);
+}
+
+function getFilteredGen(){
+  const clasif  = document.getElementById('gen-fil-clasif')?.value||'';
+  const analista= document.getElementById('gen-fil-analista')?.value||'';
+  const tipo    = document.getElementById('gen-fil-tipo')?.value||'';
+  const desde   = document.getElementById('gen-fil-desde')?.value||'';
+  const hasta   = document.getElementById('gen-fil-hasta')?.value||'';
+  return ALL_DATA.filter(r=>{
+    if(clasif   && r.clasif!==clasif)       return false;
+    if(analista && r.analista!==analista)   return false;
+    if(tipo==='aut' && r.tipoTramite!==TIPO_AUT) return false;
+    if(tipo==='mod' && r.tipoTramite!==TIPO_MOD) return false;
+    if(desde && r.ingreso && r.ingreso<desde) return false;
+    if(hasta && r.ingreso && r.ingreso>hasta) return false;
+    return true;
+  });
 }
 
 function fill(id, opts){
@@ -1023,6 +1056,16 @@ function getFiltered(mod){
 }
 
 function clearFilters(mod){
+  if(mod==='gen'){
+    ['clasif','analista','desde','hasta'].forEach(f=>{
+      const el=document.getElementById(`gen-fil-${f}`);
+      if(el)el.value='';
+    });
+    const tipo=document.getElementById('gen-fil-tipo');
+    if(tipo)tipo.value='';
+    renderGeneral();
+    return;
+  }
   ['clasif','analista','desde','hasta'].forEach(f=>{
     const el=document.getElementById(`${mod}-fil-${f}`);
     if(el)el.value='';
@@ -1058,7 +1101,7 @@ function renderAll(){
 
 // ── GENERAL ─────────────────────────────────────────────────────
 function renderGeneral(){
-  const data = ALL_DATA;
+  const data = getFilteredGen ? getFilteredGen() : ALL_DATA;
   const fin = data.filter(r=>r.estado==='Finalizado').length;
   const activos = data.filter(r=>r.estado!=='Finalizado').length;
   const incons = data.filter(r=>r.estado==='Inconsistencia').length;
@@ -1517,9 +1560,19 @@ function renderModificaciones(){
 }
 
 // ── Export CSV ───────────────────────────────────────────────────
-function exportCSV(mod){
-  const data=getFiltered(mod);
-  const headers=[
+function exportExcel(mod){
+  let data, filename, sheetName;
+  if(mod==='gen'){
+    data = getFilteredGen ? getFilteredGen() : ALL_DATA;
+    filename = 'farma_general';
+    sheetName = 'General';
+  } else {
+    data = getFiltered(mod);
+    filename = mod==='aut' ? 'farma_autorizaciones' : 'farma_modificaciones';
+    sheetName = mod==='aut' ? 'Autorizaciones' : 'Modificaciones';
+  }
+
+  const headers = [
     'N° Solicitud','Establecimiento','Tipo Trámite','Clasif. Personalizada','Analista','Estado','Inspección',
     'Ingreso','Asignación','Dictamen UREP','VoBo Dictamen','Dict. Inspección','VoBo Inspección',
     'Dict. Liberación','VoBo Dict. Lib.','Subsanación UREP','Dict. Subs. UREP','VoBo Dict. Subs.',
@@ -1533,23 +1586,44 @@ function exportCSV(mod){
     'F9 Resolución (DH)','F9b Notificación (DH)',
     'T.UREP (DH)','T.UIFBP (DH)','T.Total (DH)'
   ];
-  const rows=data.map(r=>[
+
+  const rows = data.map(r => [
     r.nSol, r.comercial, r.tipoTramite, r.clasif, r.analista, r.estado, r.tieneInspeccion?'Sí':'No',
     r.ingreso, r.fechaAsig, r.fechaDictamen, r.fechaVoboDictamen, r.fechaDictamenInsp, r.fechaVoboInsp,
     r.fechaDictLib, r.fechaVoboDictLib, r.fechaSubs, r.fechaDictSubs, r.fechaVoboDictSubs,
     r.fechaSubsInsp, r.fechaDictSubsInsp, r.fechaVoboSubsInsp,
     r.fechaDictSubsLib, r.fechaVoboDictSubsLib, r.fechaRes, r.fechaNotifRes,
-    r.f1??'', r.f2??'', r.f2b??'',
-    r.f3??'', r.f4??'', r.f4b??'',
-    r.f5??'', r.f5b??'',
-    r.f6??'', r.f6b??'',
-    r.f7??'', r.f8??'', r.f8b??'',
-    r.f9??'', r.f9b??'',
-    r.t_urep??'', r.t_uifbp??'', r.t_total??''
+    r.f1??null, r.f2??null, r.f2b??null,
+    r.f3??null, r.f4??null, r.f4b??null,
+    r.f5??null, r.f5b??null,
+    r.f6??null, r.f6b??null,
+    r.f7??null, r.f8??null, r.f8b??null,
+    r.f9??null, r.f9b??null,
+    r.t_urep??null, r.t_uifbp??null, r.t_total??null
   ]);
-  const csv=[headers,...rows].map(r=>r.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(',')).join('\n');
-  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
-  a.download=`farma_${mod}_${new Date().toISOString().slice(0,10)}.csv`;a.click();
+
+  const wb = XLSX.utils.book_new();
+  const wsData = [headers, ...rows];
+  const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+  // Ancho de columnas
+  ws['!cols'] = [
+    {wch:22},{wch:35},{wch:55},{wch:30},{wch:20},{wch:25},{wch:8},
+    {wch:12},{wch:12},{wch:12},{wch:12},{wch:12},{wch:12},
+    {wch:12},{wch:12},{wch:12},{wch:12},{wch:12},
+    {wch:12},{wch:12},{wch:12},
+    {wch:12},{wch:12},{wch:12},{wch:12},
+    {wch:10},{wch:10},{wch:10},
+    {wch:10},{wch:10},{wch:10},
+    {wch:10},{wch:10},
+    {wch:10},{wch:10},
+    {wch:10},{wch:10},{wch:10},
+    {wch:10},{wch:10},
+    {wch:12},{wch:12},{wch:12}
+  ];
+
+  XLSX.utils.book_append_sheet(wb, ws, sheetName);
+  XLSX.writeFile(wb, `${filename}_${new Date().toISOString().slice(0,10)}.xlsx`);
 }
 
 
