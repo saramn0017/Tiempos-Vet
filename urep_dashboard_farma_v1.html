@@ -198,21 +198,24 @@ tr.detail-row td{background:#f8faff;padding:14px 16px;white-space:normal;}
 .dp-na{color:var(--text3);font-size:13px;}
 
 /* MONITOR PENDIENTES */
-.pend-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px;margin-bottom:16px;}
-.pend-card{border-radius:8px;padding:12px 14px;border:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column;gap:4px;}
-.pc-top{display:flex;align-items:center;justify-content:space-between;}
+.pend-grid{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
+.pend-card{border-radius:8px;padding:11px 16px;border:1px solid var(--border);background:var(--surface);display:flex;align-items:center;gap:16px;border-left:3px solid var(--border);}
+.pend-card-urep{border-left-color:var(--accent);}
+.pend-card-uifbp{border-left-color:var(--info);}
+.pend-card-reg{border-left-color:var(--warn);}
+.pc-left{flex:1;min-width:0;}
+.pc-top{display:flex;align-items:center;gap:8px;margin-bottom:2px;}
 .pc-sol{font-size:12px;font-weight:600;}
-.pc-est{font-size:11px;padding:2px 8px;border-radius:12px;font-weight:500;}
-.pc-name{font-size:12px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.pc-name{font-size:13px;font-weight:500;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .pc-meta{font-size:11px;color:var(--text3);}
-.pc-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:4px;}
-.pc-fase{font-size:11px;font-weight:500;padding:2px 8px;border-radius:4px;}
-.pc-fase-urep{background:var(--accent-light);color:var(--accent);}
-.pc-fase-uifbp{background:var(--info-bg);color:var(--info);}
-.pc-fase-reg{background:var(--warn-bg);color:var(--warn);}
-.pc-dias{font-size:18px;font-weight:700;text-align:right;}
-.pc-dias-lbl{font-size:10px;color:var(--text3);text-align:right;}
-.pc-bar{height:3px;border-radius:2px;margin-top:6px;background:var(--border);}
+.pc-pendiente{font-size:11px;font-weight:500;margin-top:3px;}
+.pc-pendiente-urep{color:var(--accent);}
+.pc-pendiente-uifbp{color:var(--info);}
+.pc-pendiente-reg{color:var(--warn);}
+.pc-right{display:flex;flex-direction:column;align-items:flex-end;flex-shrink:0;}
+.pc-dias{font-size:22px;font-weight:700;line-height:1;}
+.pc-dias-lbl{font-size:10px;color:var(--text3);}
+.pc-bar{height:3px;border-radius:2px;margin-top:6px;background:var(--border);width:80px;}
 .pc-bar-fill{height:100%;border-radius:2px;transition:width .4s;}
 .pend-filters{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center;}
 .pend-filter-btn{padding:4px 12px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text2);transition:all .15s;}
@@ -318,11 +321,17 @@ tr.detail-row td{background:#f8faff;padding:14px 16px;white-space:normal;}
       <button class="btn btn-g" onclick="clearFilters('aut')">Limpiar</button>
     </div>
     <div class="g2">
-      <div class="card"><div class="st">Expedientes por analista</div><div class="cw"><canvas id="aut-chart-analista"></canvas></div></div>
+
     </div>
-    <div class="card">
-      <div class="st">Mapa de calor — fases</div>
-      <div id="aut-heatmap"></div>
+    <div class="g2">
+      <div class="card" style="grid-column:1/2">
+        <div class="st">Expedientes por analista</div>
+        <div class="cw"><canvas id="aut-chart-analista"></canvas></div>
+      </div>
+      <div class="card" style="grid-column:2/3">
+        <div class="st">Mapa de calor — fases</div>
+        <div id="aut-heatmap"></div>
+      </div>
     </div>
     <div class="collapsible-header" onclick="toggleCollapsible('aut-pend-body','aut-pend-arrow','aut-pend-badge')">
       <div class="collapsible-title">Monitor de pendientes <span class="collapsible-badge" id="aut-pend-badge">—</span></div>
@@ -330,14 +339,6 @@ tr.detail-row td{background:#f8faff;padding:14px 16px;white-space:normal;}
     </div>
     <div class="collapsible-body" id="aut-pend-body">
       <div id="aut-monitor-pendientes"></div>
-    </div>
-
-    <div class="collapsible-header" onclick="toggleCollapsible('aut-alert-body','aut-alert-arrow','aut-alert-badge')">
-      <div class="collapsible-title">Monitor de alertas <span class="collapsible-badge" id="aut-alert-badge">—</span></div>
-      <span class="collapsible-arrow" id="aut-alert-arrow">▼</span>
-    </div>
-    <div class="collapsible-body" id="aut-alert-body">
-      <div id="aut-monitor"></div>
     </div>
 
     <div class="collapsible-header" onclick="toggleCollapsible('aut-tabla-body','aut-tabla-arrow')">
@@ -377,6 +378,9 @@ tr.detail-row td{background:#f8faff;padding:14px 16px;white-space:normal;}
         <tbody id="aut-analistas"></tbody>
       </table></div>
     </div>
+
+    <div class="st">Monitor de alertas <span id="aut-alert-badge" style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:12px;background:var(--accent-light);color:var(--accent);margin-left:6px">—</span></div>
+    <div id="aut-monitor" style="margin-bottom:20px"></div>
   </div>
 
   <!-- ═══ MÓDULO MODIFICACIONES ═══ -->
@@ -398,11 +402,17 @@ tr.detail-row td{background:#f8faff;padding:14px 16px;white-space:normal;}
       <button class="btn btn-g" onclick="clearFilters('mod')">Limpiar</button>
     </div>
     <div class="g2">
-      <div class="card"><div class="st">Expedientes por analista</div><div class="cw"><canvas id="mod-chart-analista"></canvas></div></div>
+
     </div>
-    <div class="card">
-      <div class="st">Mapa de calor — fases</div>
-      <div id="mod-heatmap"></div>
+    <div class="g2">
+      <div class="card" style="grid-column:1/2">
+        <div class="st">Expedientes por analista</div>
+        <div class="cw"><canvas id="mod-chart-analista"></canvas></div>
+      </div>
+      <div class="card" style="grid-column:2/3">
+        <div class="st">Mapa de calor — fases</div>
+        <div id="mod-heatmap"></div>
+      </div>
     </div>
     <div class="collapsible-header" onclick="toggleCollapsible('mod-pend-body','mod-pend-arrow','mod-pend-badge')">
       <div class="collapsible-title">Monitor de pendientes <span class="collapsible-badge" id="mod-pend-badge">—</span></div>
@@ -410,14 +420,6 @@ tr.detail-row td{background:#f8faff;padding:14px 16px;white-space:normal;}
     </div>
     <div class="collapsible-body" id="mod-pend-body">
       <div id="mod-monitor-pendientes"></div>
-    </div>
-
-    <div class="collapsible-header" onclick="toggleCollapsible('mod-alert-body','mod-alert-arrow','mod-alert-badge')">
-      <div class="collapsible-title">Monitor de alertas <span class="collapsible-badge" id="mod-alert-badge">—</span></div>
-      <span class="collapsible-arrow" id="mod-alert-arrow">▼</span>
-    </div>
-    <div class="collapsible-body" id="mod-alert-body">
-      <div id="mod-monitor"></div>
     </div>
 
     <div class="collapsible-header" onclick="toggleCollapsible('mod-tabla-body','mod-tabla-arrow')">
@@ -457,6 +459,9 @@ tr.detail-row td{background:#f8faff;padding:14px 16px;white-space:normal;}
         <tbody id="mod-analistas"></tbody>
       </table></div>
     </div>
+
+    <div class="st">Monitor de alertas <span id="mod-alert-badge" style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:12px;background:var(--accent-light);color:var(--accent);margin-left:6px">—</span></div>
+    <div id="mod-monitor" style="margin-bottom:20px"></div>
   </div>
 </div>
 
@@ -1272,7 +1277,8 @@ function renderMonitor(mod, data){
   el.innerHTML=html;
   // actualizar badge
   const alertCount = (incons.length+sinMov.length+enInsp.length+enSubs.length+fueraF.length);
-  setCollapsibleBadge(`${mod}-alert-badge`, alertCount > 0 ? alertCount + ' alertas' : '✓');
+  const badgeEl=document.getElementById(`${mod}-alert-badge`);
+  if(badgeEl) badgeEl.textContent = alertCount > 0 ? alertCount + ' alertas' : '✓';
 }
 
 // ── TABLA ────────────────────────────────────────────────────────
@@ -1549,19 +1555,19 @@ function exportCSV(mod){
 
 // ── MONITOR DE PENDIENTES ────────────────────────────────────────
 const FASE_INFO = {
-  'A espera de asignación':      {label:'Asignación',         actor:'urep',  color:'var(--accent)'},
-  'A espera de dictamen':        {label:'Dictamen UREP',       actor:'urep',  color:'var(--accent)'},
-  'A espera de VoBo dictamen':   {label:'VoBo Dictamen',       actor:'urep',  color:'var(--accent)'},
-  'En inspección':               {label:'Inspección',          actor:'uifbp', color:'var(--info)'},
-  'En inspección (subsanación)': {label:'Insp. Subsanación',   actor:'uifbp', color:'var(--info)'},
-  'A espera de liberación':      {label:'Dict. Liberación',    actor:'urep',  color:'var(--accent)'},
-  'A espera de liberación (subs.)':   {label:'Lib. Subs.',     actor:'urep',  color:'var(--accent)'},
-  'A espera de VoBo lib.':       {label:'VoBo Lib.',           actor:'urep',  color:'var(--accent)'},
-  'En subsanación':              {label:'Subsanación',         actor:'reg',   color:'var(--warn)'},
-  'A espera de VoBo dict. subs.':{label:'VoBo Dict. Subs.',    actor:'urep',  color:'var(--accent)'},
-  'A espera de dictamen subsanación':{label:'Dict. Subs.',     actor:'urep',  color:'var(--accent)'},
-  'A espera de resolución':      {label:'Resolución',          actor:'urep',  color:'var(--accent)'},
-  'A espera de notificación':    {label:'Notificación',        actor:'urep',  color:'var(--accent)'},
+  'A espera de asignación':           {label:'Asignación',                        actor:'urep',  color:'var(--accent)'},
+  'A espera de dictamen':             {label:'Dictamen UREP',                     actor:'urep',  color:'var(--accent)'},
+  'A espera de VoBo dictamen':        {label:'Visto Bueno Dictamen UREP',         actor:'urep',  color:'var(--accent)'},
+  'En inspección':                    {label:'Dictamen de Inspección',            actor:'uifbp', color:'var(--info)'},
+  'En inspección (subsanación)':      {label:'Dictamen de Inspección Subsanación',actor:'uifbp', color:'var(--info)'},
+  'A espera de liberación':           {label:'Dictamen de Liberación',            actor:'urep',  color:'var(--accent)'},
+  'A espera de liberación (subs.)':   {label:'Dictamen Liberación Subsanación',   actor:'urep',  color:'var(--accent)'},
+  'A espera de VoBo lib.':            {label:'Visto Bueno Liberación',            actor:'urep',  color:'var(--accent)'},
+  'En subsanación':                   {label:'Subsanación del Regulado',          actor:'reg',   color:'var(--warn)'},
+  'A espera de VoBo dict. subs.':     {label:'Visto Bueno Dictamen Subsanación',  actor:'urep',  color:'var(--accent)'},
+  'A espera de dictamen subsanación': {label:'Dictamen de Subsanación UREP',      actor:'urep',  color:'var(--accent)'},
+  'A espera de resolución':           {label:'Resolución',                        actor:'urep',  color:'var(--accent)'},
+  'A espera de notificación':         {label:'Notificación de Resolución',        actor:'urep',  color:'var(--accent)'},
 };
 
 let pendFiltroEstado = {};
@@ -1619,23 +1625,24 @@ function renderMonitorPendientes(mod, data){
   } else {
     html += `<div class="pend-grid">${conDias.map(r=>{
       const fi = r.faseInfo;
-      const actorClass = fi.actor==='uifbp'?'pc-fase-uifbp':fi.actor==='reg'?'pc-fase-reg':'pc-fase-urep';
+      const cardClass = fi.actor==='uifbp'?'pend-card-uifbp':fi.actor==='reg'?'pend-card-reg':'pend-card-urep';
+      const pendClass = fi.actor==='uifbp'?'pc-pendiente-uifbp':fi.actor==='reg'?'pc-pendiente-reg':'pc-pendiente-urep';
       const pct = Math.max(4, Math.round((r.diasEnFase/maxDias)*100));
-      return `<div class="pend-card">
-        <div class="pc-top">
-          <span class="pc-sol">${r.nSol}</span>
-          <span class="sem ${semClass(r.diasEnFase)}" style="width:10px;height:10px"></span>
-        </div>
-        <div class="pc-name">${r.comercial}</div>
-        <div class="pc-meta">${r.analista} · ${r.clasif||'—'}</div>
-        <div class="pc-bottom">
-          <span class="pc-fase ${actorClass}">${fi.label}</span>
-          <div>
-            <div class="pc-dias" style="color:${semColor(r.diasEnFase)}">${r.diasEnFase}</div>
-            <div class="pc-dias-lbl">días háb.</div>
+      return `<div class="pend-card ${cardClass}">
+        <div class="pc-left">
+          <div class="pc-top">
+            <span class="pc-sol">${r.nSol}</span>
+            <span class="sem ${semClass(r.diasEnFase)}" style="width:9px;height:9px"></span>
           </div>
+          <div class="pc-name">${r.comercial}</div>
+          <div class="pc-meta">${r.analista} · ${r.clasif||'—'}</div>
+          <div class="pc-pendiente ${pendClass}">Pendiente: ${fi.label}</div>
         </div>
-        <div class="pc-bar"><div class="pc-bar-fill" style="width:${pct}%;background:${semColor(r.diasEnFase)}"></div></div>
+        <div class="pc-right">
+          <div class="pc-dias" style="color:${semColor(r.diasEnFase)}">${r.diasEnFase}</div>
+          <div class="pc-dias-lbl">días háb.</div>
+          <div class="pc-bar"><div class="pc-bar-fill" style="width:${pct}%;background:${semColor(r.diasEnFase)}"></div></div>
+        </div>
       </div>`;
     }).join('')}</div>`;
   }
