@@ -217,6 +217,17 @@ tr.detail-row td{background:#f8faff;padding:14px 16px;white-space:normal;}
 .pend-filters{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center;}
 .pend-filter-btn{padding:4px 12px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text2);transition:all .15s;}
 .pend-filter-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+
+/* COLAPSABLES */
+.collapsible-header{display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:12px 16px;border-radius:var(--r);background:var(--surface);border:1px solid var(--border);margin-bottom:8px;transition:background .15s;user-select:none;}
+.collapsible-header:hover{background:var(--surface2);}
+.collapsible-title{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--text2);}
+.collapsible-title::before{content:'';display:block;width:3px;height:14px;background:var(--accent-mid);border-radius:2px;}
+.collapsible-badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:12px;background:var(--accent-light);color:var(--accent);}
+.collapsible-arrow{font-size:12px;color:var(--text3);transition:transform .2s;}
+.collapsible-arrow.open{transform:rotate(180deg);}
+.collapsible-body{display:none;margin-bottom:20px;}
+.collapsible-body.open{display:block;}
 </style>
 </head>
 <body>
@@ -279,8 +290,8 @@ tr.detail-row td{background:#f8faff;padding:14px 16px;white-space:normal;}
       <div id="gen-alertas"></div>
     </div>
     <div class="card">
-      <div class="st">Tendencia mensual — ingresos</div>
-      <div class="cw"><canvas id="gen-chart-tend"></canvas></div>
+      <div class="st">Tendencia mensual — ingresos, finalizados y pendientes</div>
+      <div class="cw" style="height:260px"><canvas id="gen-chart-tend"></canvas></div>
     </div>
     <div class="card">
       <div class="st">Comparativa mensual — T.UREP vs T.Total promedio</div>
@@ -307,24 +318,37 @@ tr.detail-row td{background:#f8faff;padding:14px 16px;white-space:normal;}
       <button class="btn btn-g" onclick="clearFilters('aut')">Limpiar</button>
     </div>
     <div class="g2">
-      <div class="card"><div class="st">Promedio por fase</div><div class="cw"><canvas id="aut-chart-fases"></canvas></div></div>
       <div class="card"><div class="st">Expedientes por analista</div><div class="cw"><canvas id="aut-chart-analista"></canvas></div></div>
-      <!-- analista bar reemplaza doughnut -->
     </div>
     <div class="card">
       <div class="st">Mapa de calor — fases</div>
       <div id="aut-heatmap"></div>
     </div>
-    <div class="st">Monitor de pendientes</div>
-    <div id="aut-monitor-pendientes" style="margin-bottom:20px"></div>
-    <div class="st">Monitor de alertas</div>
-    <div id="aut-monitor" style="margin-bottom:20px"></div>
-    <div class="card" style="margin-bottom:16px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-        <div class="st" style="margin:0">Detalle por expediente</div>
-        <button class="btn btn-g" style="font-size:12px" onclick="exportCSV('aut')">Exportar CSV</button>
+    <div class="collapsible-header" onclick="toggleCollapsible('aut-pend-body','aut-pend-arrow','aut-pend-badge')">
+      <div class="collapsible-title">Monitor de pendientes <span class="collapsible-badge" id="aut-pend-badge">—</span></div>
+      <span class="collapsible-arrow" id="aut-pend-arrow">▼</span>
+    </div>
+    <div class="collapsible-body" id="aut-pend-body">
+      <div id="aut-monitor-pendientes"></div>
+    </div>
+
+    <div class="collapsible-header" onclick="toggleCollapsible('aut-alert-body','aut-alert-arrow','aut-alert-badge')">
+      <div class="collapsible-title">Monitor de alertas <span class="collapsible-badge" id="aut-alert-badge">—</span></div>
+      <span class="collapsible-arrow" id="aut-alert-arrow">▼</span>
+    </div>
+    <div class="collapsible-body" id="aut-alert-body">
+      <div id="aut-monitor"></div>
+    </div>
+
+    <div class="collapsible-header" onclick="toggleCollapsible('aut-tabla-body','aut-tabla-arrow')">
+      <div class="collapsible-title">Detalle por expediente</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn btn-g" style="font-size:12px" onclick="event.stopPropagation();exportCSV('aut')">Exportar CSV</button>
+        <span class="collapsible-arrow" id="aut-tabla-arrow">▼</span>
       </div>
-      <div class="table-note">Días hábiles · excluye fines de semana y feriados SV 2024·2025·2026 · Click en fila para ver detalle de fases</div>
+    </div>
+    <div class="collapsible-body" id="aut-tabla-body" style="margin-bottom:16px">
+      <div class="table-note" style="margin-bottom:8px">Días hábiles · excluye fines de semana y feriados SV 2024·2025·2026 · Click en fila para ver detalle de fases</div>
       <div class="tabs">
         <button class="tab active" onclick="switchTab('aut','all',this)">Todos</button>
         <button class="tab" onclick="switchTab('aut','proceso',this)">En proceso</button>
@@ -374,24 +398,37 @@ tr.detail-row td{background:#f8faff;padding:14px 16px;white-space:normal;}
       <button class="btn btn-g" onclick="clearFilters('mod')">Limpiar</button>
     </div>
     <div class="g2">
-      <div class="card"><div class="st">Promedio por fase</div><div class="cw"><canvas id="mod-chart-fases"></canvas></div></div>
       <div class="card"><div class="st">Expedientes por analista</div><div class="cw"><canvas id="mod-chart-analista"></canvas></div></div>
-      <!-- analista bar reemplaza doughnut -->
     </div>
     <div class="card">
       <div class="st">Mapa de calor — fases</div>
       <div id="mod-heatmap"></div>
     </div>
-    <div class="st">Monitor de pendientes</div>
-    <div id="mod-monitor-pendientes" style="margin-bottom:20px"></div>
-    <div class="st">Monitor de alertas</div>
-    <div id="mod-monitor" style="margin-bottom:20px"></div>
-    <div class="card" style="margin-bottom:16px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-        <div class="st" style="margin:0">Detalle por expediente</div>
-        <button class="btn btn-g" style="font-size:12px" onclick="exportCSV('mod')">Exportar CSV</button>
+    <div class="collapsible-header" onclick="toggleCollapsible('mod-pend-body','mod-pend-arrow','mod-pend-badge')">
+      <div class="collapsible-title">Monitor de pendientes <span class="collapsible-badge" id="mod-pend-badge">—</span></div>
+      <span class="collapsible-arrow" id="mod-pend-arrow">▼</span>
+    </div>
+    <div class="collapsible-body" id="mod-pend-body">
+      <div id="mod-monitor-pendientes"></div>
+    </div>
+
+    <div class="collapsible-header" onclick="toggleCollapsible('mod-alert-body','mod-alert-arrow','mod-alert-badge')">
+      <div class="collapsible-title">Monitor de alertas <span class="collapsible-badge" id="mod-alert-badge">—</span></div>
+      <span class="collapsible-arrow" id="mod-alert-arrow">▼</span>
+    </div>
+    <div class="collapsible-body" id="mod-alert-body">
+      <div id="mod-monitor"></div>
+    </div>
+
+    <div class="collapsible-header" onclick="toggleCollapsible('mod-tabla-body','mod-tabla-arrow')">
+      <div class="collapsible-title">Detalle por expediente</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn btn-g" style="font-size:12px" onclick="event.stopPropagation();exportCSV('mod')">Exportar CSV</button>
+        <span class="collapsible-arrow" id="mod-tabla-arrow">▼</span>
       </div>
-      <div class="table-note">Días hábiles · excluye fines de semana y feriados SV 2024·2025·2026 · Click en fila para ver detalle de fases</div>
+    </div>
+    <div class="collapsible-body" id="mod-tabla-body" style="margin-bottom:16px">
+      <div class="table-note" style="margin-bottom:8px">Días hábiles · excluye fines de semana y feriados SV 2024·2025·2026 · Click en fila para ver detalle de fases</div>
       <div class="tabs">
         <button class="tab active" onclick="switchTab('mod','all',this)">Todos</button>
         <button class="tab" onclick="switchTab('mod','proceso',this)">En proceso</button>
@@ -1091,17 +1128,35 @@ function renderGeneral(){
     ${incons===0&&sinMov15===0&&enInsp===0&&fueraF===0?'<div style="color:var(--text3);font-size:13px;padding:8px">✓ Sin alertas críticas actualmente</div>':''}
   `;
 
-  // Tendencia mensual
-  const byMonth={};
+  // Tendencia mensual agrupada: ingresos + finalizados + pendientes
+  const byMonthIng={}, byMonthFin={}, byMonthPend={};
   data.forEach(r=>{
     if(!r.ingreso)return;
     const m=r.ingreso.slice(0,7);
-    byMonth[m]=(byMonth[m]||0)+1;
+    byMonthIng[m]=(byMonthIng[m]||0)+1;
+    if(r.estado==='Finalizado') byMonthFin[m]=(byMonthFin[m]||0)+1;
+    else byMonthPend[m]=(byMonthPend[m]||0)+1;
   });
-  const meses=Object.keys(byMonth).sort().slice(-18);
-  mkChart('gen-chart-tend','bar',meses,
-    [{label:'Ingresos',data:meses.map(m=>byMonth[m]),backgroundColor:'#4a7cc7',borderRadius:4,borderSkipped:false}],
-    {yTitle:'expedientes'});
+  const meses=Object.keys(byMonthIng).sort().slice(-18);
+  if(chartInstances['gen-chart-tend']) chartInstances['gen-chart-tend'].destroy();
+  const ctxTend=document.getElementById('gen-chart-tend');
+  if(ctxTend){
+    chartInstances['gen-chart-tend']=new Chart(ctxTend,{
+      type:'bar',
+      data:{labels:meses,datasets:[
+        {label:'Ingresos',data:meses.map(m=>byMonthIng[m]||0),backgroundColor:'#4a7cc7',borderRadius:4,borderSkipped:false},
+        {label:'Finalizados',data:meses.map(m=>byMonthFin[m]||0),backgroundColor:'#2d6a4f',borderRadius:4,borderSkipped:false},
+        {label:'Pendientes',data:meses.map(m=>byMonthPend[m]||0),backgroundColor:'#c6dbef',borderRadius:4,borderSkipped:false},
+      ]},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:true,position:'top',labels:{font:{size:11},boxWidth:12,padding:8}}},
+        scales:{
+          x:{grid:{display:false},ticks:{font:{size:10}}},
+          y:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{font:{size:10}},title:{display:true,text:'expedientes',font:{size:10}}}
+        }
+      }
+    });
+  }
   renderTendenciaComparativa(data);
 }
 
@@ -1215,6 +1270,9 @@ function renderMonitor(mod, data){
 
   if(!html) html='<div style="color:var(--text3);font-size:13px;padding:12px 0">✓ Sin alertas activas</div>';
   el.innerHTML=html;
+  // actualizar badge
+  const alertCount = (incons.length+sinMov.length+enInsp.length+enSubs.length+fueraF.length);
+  setCollapsibleBadge(`${mod}-alert-badge`, alertCount > 0 ? alertCount + ' alertas' : '✓');
 }
 
 // ── TABLA ────────────────────────────────────────────────────────
@@ -1416,12 +1474,6 @@ function renderAutorizaciones(){
   renderTabla('aut');
   renderAnalistas('aut', data);
 
-  // Charts
-  const faseLabels=['Asig.','Dict.','VoBo Dict.','Insp.','Dict.Lib.','Subs.','Dict.Subs.','Insp.Subs.','Dict.Lib.Subs.','Res.','Notif.'];
-  const faseKeys=['f1','f2','f2b','f3','f4','f5','f6','f7','f8','f9','f9b'];
-  const fd=faseKeys.map(k=>{const v=validos.map(r=>r[k]).filter(x=>x!==null&&x>=0);return v.length?Math.round(v.reduce((a,b)=>a+b,0)/v.length):0;});
-  mkChart('aut-chart-fases','bar',faseLabels,[{data:fd,backgroundColor:'#1e3a6e',borderRadius:4,borderSkipped:false}],{yTitle:'días hábiles'});
-
   const co={};data.forEach(r=>{if(r.analista)co[r.analista]=(co[r.analista]||0)+1;});
   const sa=Object.entries(co).sort((a,b)=>b[1]-a[1]).slice(0,10);
   mkChart('aut-chart-analista','bar',sa.map(x=>x[0]),[{data:sa.map(x=>x[1]),backgroundColor:'#1e3a6e',borderRadius:4,borderSkipped:false}],{yTitle:'expedientes'});
@@ -1453,11 +1505,6 @@ function renderModificaciones(){
   renderTabla('mod');
   renderAnalistas('mod', data);
 
-  const faseLabels=['Asig.','Dict.','VoBo Dict.','Insp.','Dict.Lib.','Subs.','Dict.Subs.','Insp.Subs.','Dict.Lib.Subs.','Res.','Notif.'];
-  const faseKeys=['f1','f2','f2b','f3','f4','f5','f6','f7','f8','f9','f9b'];
-  const fd=faseKeys.map(k=>{const v=validos.map(r=>r[k]).filter(x=>x!==null&&x>=0);return v.length?Math.round(v.reduce((a,b)=>a+b,0)/v.length):0;});
-  mkChart('mod-chart-fases','bar',faseLabels,[{data:fd,backgroundColor:'#2d6a4f',borderRadius:4,borderSkipped:false}],{yTitle:'días hábiles'});
-
   const co={};data.forEach(r=>{if(r.analista)co[r.analista]=(co[r.analista]||0)+1;});
   const sa=Object.entries(co).sort((a,b)=>b[1]-a[1]).slice(0,10);
   mkChart('mod-chart-analista','bar',sa.map(x=>x[0]),[{data:sa.map(x=>x[1]),backgroundColor:'#2d6a4f',borderRadius:4,borderSkipped:false}],{yTitle:'expedientes'});
@@ -1466,9 +1513,35 @@ function renderModificaciones(){
 // ── Export CSV ───────────────────────────────────────────────────
 function exportCSV(mod){
   const data=getFiltered(mod);
-  const headers=['N° Solicitud','Establecimiento','Tipo','Clasif.','Analista','Sede','Estado','Inspección','T.UREP','T.Total','Ingreso','Asignación','Dictamen','VoBo Dict.','Dict.Insp.','VoBo Insp.','Dict.Lib.','Fecha Res.','Fecha Notif.'];
-  const rows=data.map(r=>[r.nSol,r.comercial,r.tipoTramite,r.clasif,r.analista,r.sede,r.estado,r.tieneInspeccion?'Sí':'No',r.t_urep??'',r.t_total??'',r.ingreso,r.fechaAsig,r.fechaDictamen,r.fechaVoboDictamen,r.fechaDictamenInsp,r.fechaVoboInsp,r.fechaDictLib,r.fechaRes,r.fechaNotifRes]);
-  const csv=[headers,...rows].map(r=>r.map(v=>`"${String(v||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const headers=[
+    'N° Solicitud','Establecimiento','Tipo Trámite','Clasif. Personalizada','Analista','Estado','Inspección',
+    'Ingreso','Asignación','Dictamen UREP','VoBo Dictamen','Dict. Inspección','VoBo Inspección',
+    'Dict. Liberación','VoBo Dict. Lib.','Subsanación UREP','Dict. Subs. UREP','VoBo Dict. Subs.',
+    'Subs. Inspección','Dict. Subs. Insp.','VoBo Subs. Insp.',
+    'Dict. Lib. Subs.','VoBo Dict. Lib. Subs.','Resolución','Notif. Resolución',
+    'F1 Asignación (DH)','F2 Dictamen UREP (DH)','F2b VoBo Dict. (DH)',
+    'F3 Inspección (DH)','F4 Dict. Lib. (DH)','F4b VoBo Lib. (DH)',
+    'F5 Subs. UREP (DH)','F5b Subs. Insp. (DH)',
+    'F6 Dict. Subs. UREP (DH)','F6b VoBo Dict. Subs. (DH)',
+    'F7 Insp. Subs. (DH)','F8 Dict. Lib. Subs. (DH)','F8b VoBo Lib. Subs. (DH)',
+    'F9 Resolución (DH)','F9b Notificación (DH)',
+    'T.UREP (DH)','T.UIFBP (DH)','T.Total (DH)'
+  ];
+  const rows=data.map(r=>[
+    r.nSol, r.comercial, r.tipoTramite, r.clasif, r.analista, r.estado, r.tieneInspeccion?'Sí':'No',
+    r.ingreso, r.fechaAsig, r.fechaDictamen, r.fechaVoboDictamen, r.fechaDictamenInsp, r.fechaVoboInsp,
+    r.fechaDictLib, r.fechaVoboDictLib, r.fechaSubs, r.fechaDictSubs, r.fechaVoboDictSubs,
+    r.fechaSubsInsp, r.fechaDictSubsInsp, r.fechaVoboSubsInsp,
+    r.fechaDictSubsLib, r.fechaVoboDictSubsLib, r.fechaRes, r.fechaNotifRes,
+    r.f1??'', r.f2??'', r.f2b??'',
+    r.f3??'', r.f4??'', r.f4b??'',
+    r.f5??'', r.f5b??'',
+    r.f6??'', r.f6b??'',
+    r.f7??'', r.f8??'', r.f8b??'',
+    r.f9??'', r.f9b??'',
+    r.t_urep??'', r.t_uifbp??'', r.t_total??''
+  ]);
+  const csv=[headers,...rows].map(r=>r.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(',')).join('\n');
   const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
   a.download=`farma_${mod}_${new Date().toISOString().slice(0,10)}.csv`;a.click();
 }
@@ -1568,6 +1641,7 @@ function renderMonitorPendientes(mod, data){
   }
 
   el.innerHTML = html;
+  setCollapsibleBadge(`${mod}-pend-badge`, activos.length + ' activos');
 }
 
 function setPendFiltro(mod, estado){
@@ -1607,6 +1681,21 @@ function renderTendenciaComparativa(data){
       }
     }
   });
+}
+
+
+function toggleCollapsible(bodyId, arrowId, badgeId){
+  const body = document.getElementById(bodyId);
+  const arrow = document.getElementById(arrowId);
+  if(!body) return;
+  const open = body.classList.contains('open');
+  body.classList.toggle('open', !open);
+  if(arrow) arrow.classList.toggle('open', !open);
+}
+
+function setCollapsibleBadge(badgeId, val){
+  const el = document.getElementById(badgeId);
+  if(el) el.textContent = val;
 }
 
 loadData();
