@@ -196,6 +196,27 @@ tr.detail-row td{background:#f8faff;padding:14px 16px;white-space:normal;}
 .dp-val{font-size:18px;font-weight:700;margin-top:2px;}
 .dp-actor{font-size:10px;color:var(--text3);margin-top:2px;}
 .dp-na{color:var(--text3);font-size:13px;}
+
+/* MONITOR PENDIENTES */
+.pend-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px;margin-bottom:16px;}
+.pend-card{border-radius:8px;padding:12px 14px;border:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column;gap:4px;}
+.pc-top{display:flex;align-items:center;justify-content:space-between;}
+.pc-sol{font-size:12px;font-weight:600;}
+.pc-est{font-size:11px;padding:2px 8px;border-radius:12px;font-weight:500;}
+.pc-name{font-size:12px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.pc-meta{font-size:11px;color:var(--text3);}
+.pc-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:4px;}
+.pc-fase{font-size:11px;font-weight:500;padding:2px 8px;border-radius:4px;}
+.pc-fase-urep{background:var(--accent-light);color:var(--accent);}
+.pc-fase-uifbp{background:var(--info-bg);color:var(--info);}
+.pc-fase-reg{background:var(--warn-bg);color:var(--warn);}
+.pc-dias{font-size:18px;font-weight:700;text-align:right;}
+.pc-dias-lbl{font-size:10px;color:var(--text3);text-align:right;}
+.pc-bar{height:3px;border-radius:2px;margin-top:6px;background:var(--border);}
+.pc-bar-fill{height:100%;border-radius:2px;transition:width .4s;}
+.pend-filters{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center;}
+.pend-filter-btn{padding:4px 12px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text2);transition:all .15s;}
+.pend-filter-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);}
 </style>
 </head>
 <body>
@@ -231,12 +252,22 @@ tr.detail-row td{background:#f8faff;padding:14px 16px;white-space:normal;}
     <div class="kpis" id="gen-kpis"></div>
     <div class="g2">
       <div class="card">
-        <div class="st">Distribución por tipo de trámite</div>
-        <div class="cw"><canvas id="gen-chart-tipo"></canvas></div>
+        <div class="st">Finalizados por analista</div>
+        <div class="cw"><canvas id="gen-chart-analista-fin"></canvas></div>
       </div>
       <div class="card">
-        <div class="st">Expedientes por analista</div>
-        <div class="cw"><canvas id="gen-chart-analista"></canvas></div>
+        <div class="st">Pendientes por analista</div>
+        <div class="cw"><canvas id="gen-chart-analista-pend"></canvas></div>
+      </div>
+    </div>
+    <div class="g2">
+      <div class="card">
+        <div class="st">Finalizados por mes de ingreso</div>
+        <div class="cw"><canvas id="gen-chart-fin-mes"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="st">Pendientes por mes de ingreso</div>
+        <div class="cw"><canvas id="gen-chart-pend-mes"></canvas></div>
       </div>
     </div>
     <div class="card">
@@ -251,17 +282,18 @@ tr.detail-row td{background:#f8faff;padding:14px 16px;white-space:normal;}
       <div class="st">Tendencia mensual — ingresos</div>
       <div class="cw"><canvas id="gen-chart-tend"></canvas></div>
     </div>
+    <div class="card">
+      <div class="st">Comparativa mensual — T.UREP vs T.Total promedio</div>
+      <div class="cw" style="height:260px"><canvas id="gen-chart-comparativa"></canvas></div>
+    </div>
   </div>
 
   <!-- ═══ MÓDULO AUTORIZACIONES ═══ -->
   <div id="page-autorizaciones" style="display:none">
     <div class="kpis" id="aut-kpis"></div>
     <div class="filters">
-      <div class="fg"><div class="fl">Tipo de establecimiento</div>
+      <div class="fg"><div class="fl">Clasificación personalizada</div>
         <select id="aut-fil-clasif" onchange="renderAutorizaciones()"><option value="">Todos</option></select>
-      </div>
-      <div class="fg"><div class="fl">Sede</div>
-        <select id="aut-fil-sede" onchange="renderAutorizaciones()"><option value="">Todas</option></select>
       </div>
       <div class="fg"><div class="fl">Analista</div>
         <select id="aut-fil-analista" onchange="renderAutorizaciones()"><option value="">Todos</option></select>
@@ -277,12 +309,15 @@ tr.detail-row td{background:#f8faff;padding:14px 16px;white-space:normal;}
     <div class="g2">
       <div class="card"><div class="st">Promedio por fase</div><div class="cw"><canvas id="aut-chart-fases"></canvas></div></div>
       <div class="card"><div class="st">Expedientes por analista</div><div class="cw"><canvas id="aut-chart-analista"></canvas></div></div>
+      <!-- analista bar reemplaza doughnut -->
     </div>
     <div class="card">
       <div class="st">Mapa de calor — fases</div>
       <div id="aut-heatmap"></div>
     </div>
-    <div class="st">Monitor de seguimiento</div>
+    <div class="st">Monitor de pendientes</div>
+    <div id="aut-monitor-pendientes" style="margin-bottom:20px"></div>
+    <div class="st">Monitor de alertas</div>
     <div id="aut-monitor" style="margin-bottom:20px"></div>
     <div class="card" style="margin-bottom:16px">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
@@ -324,11 +359,8 @@ tr.detail-row td{background:#f8faff;padding:14px 16px;white-space:normal;}
   <div id="page-modificaciones" style="display:none">
     <div class="kpis" id="mod-kpis"></div>
     <div class="filters">
-      <div class="fg"><div class="fl">Tipo de establecimiento</div>
+      <div class="fg"><div class="fl">Clasificación personalizada</div>
         <select id="mod-fil-clasif" onchange="renderModificaciones()"><option value="">Todos</option></select>
-      </div>
-      <div class="fg"><div class="fl">Sede</div>
-        <select id="mod-fil-sede" onchange="renderModificaciones()"><option value="">Todas</option></select>
       </div>
       <div class="fg"><div class="fl">Analista</div>
         <select id="mod-fil-analista" onchange="renderModificaciones()"><option value="">Todos</option></select>
@@ -344,12 +376,15 @@ tr.detail-row td{background:#f8faff;padding:14px 16px;white-space:normal;}
     <div class="g2">
       <div class="card"><div class="st">Promedio por fase</div><div class="cw"><canvas id="mod-chart-fases"></canvas></div></div>
       <div class="card"><div class="st">Expedientes por analista</div><div class="cw"><canvas id="mod-chart-analista"></canvas></div></div>
+      <!-- analista bar reemplaza doughnut -->
     </div>
     <div class="card">
       <div class="st">Mapa de calor — fases</div>
       <div id="mod-heatmap"></div>
     </div>
-    <div class="st">Monitor de seguimiento</div>
+    <div class="st">Monitor de pendientes</div>
+    <div id="mod-monitor-pendientes" style="margin-bottom:20px"></div>
+    <div class="st">Monitor de alertas</div>
     <div id="mod-monitor" style="margin-bottom:20px"></div>
     <div class="card" style="margin-bottom:16px">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
@@ -420,13 +455,13 @@ const FERIADOS = new Set([
   '2024-12-26','2024-12-27','2024-12-28','2024-12-29','2024-12-30','2024-12-31',
   '2025-04-14','2025-04-15','2025-04-16','2025-04-17','2025-04-18',
   '2025-04-19','2025-04-20','2025-04-21','2025-04-22',
-  '2025-05-01','2025-06-17','2025-07-31',
+  '2025-05-01','2025-05-10','2025-06-17','2025-07-31',
   '2025-08-01','2025-08-04','2025-08-05','2025-08-06','2025-08-07',
   '2025-09-15','2025-12-22','2025-12-23','2025-12-24','2025-12-25',
   '2025-12-26','2025-12-27','2025-12-28','2025-12-29','2025-12-30','2025-12-31',
   '2026-01-01','2026-02-01',
   '2026-03-30','2026-03-31','2026-04-01','2026-04-02','2026-04-03','2026-04-04','2026-04-05','2026-04-06','2026-04-07',
-  '2026-05-01','2026-06-17','2026-07-31',
+  '2026-05-01','2026-05-10','2026-06-17','2026-07-31',
   '2026-08-03','2026-08-04','2026-08-05','2026-08-06','2026-08-07',
   '2026-09-15','2026-11-02',
   '2026-12-21','2026-12-22','2026-12-23','2026-12-24','2026-12-25',
@@ -556,17 +591,24 @@ function detectarInconsistencias(r){
 // ── Detectar captura fuera de flujo ─────────────────────────────
 function detectarFueraFlujo(r){
   const alertas=[];
-  // UREP favorable + solo inspecciones observó → no debería haber fechaDictSubs ni fechaVoboDictSubs
-  const urepFav = r.estadoDictamen && r.estadoDictamen.toUpperCase().includes('FAVORABLE');
-  const inspObs = r.estadoDictamenInsp && (r.estadoDictamenInsp.toUpperCase().includes('OBSERV') || r.estadoDictamenInsp.toUpperCase().includes('DESFAV'));
-  if(urepFav && inspObs && r.fechaDictSubs && r.fechaDictSubs!==''){
-    alertas.push('Dictamen de subsanación UREP registrado siendo UREP favorable');
+  const estUrep = (r.estadoDictamen||'').toUpperCase();
+  const estInsp = (r.estadoDictamenInsp||'').toUpperCase();
+  const urepFav = estUrep.includes('FAVORABLE');
+  const inspFav = estInsp.includes('FAVORABLE');
+  const urepObs = estUrep.includes('OBSERV') || estUrep.includes('DESFAV');
+  const inspObs = estInsp.includes('OBSERV') || estInsp.includes('DESFAV');
+
+  // UREP favorable → no debería haber dict subs de UREP
+  if(urepFav && r.fechaDictSubs){
+    alertas.push('Dict. subs. UREP registrado siendo UREP favorable');
   }
-  // Inverso
-  const urepObs = r.estadoDictamen && (r.estadoDictamen.toUpperCase().includes('OBSERV') || r.estadoDictamen.toUpperCase().includes('DESFAV'));
-  const inspFav = r.estadoDictamenInsp && r.estadoDictamenInsp.toUpperCase().includes('FAVORABLE');
-  if(urepObs && inspFav && r.fechaDictSubsInsp){
-    alertas.push('Dictamen subs. inspección registrado siendo inspecciones favorable');
+  // Inspecciones favorable → no debería haber subs de inspección
+  if(inspFav && r.fechaDictSubsInsp){
+    alertas.push('Dict. subs. inspección registrado siendo inspecciones favorable');
+  }
+  // Sin inspección → no debería haber fechas de liberación
+  if(!r.tieneInspeccion && r.fechaDictLib){
+    alertas.push('Dict. liberación registrado sin inspección activa');
   }
   return alertas;
 }
@@ -749,8 +791,15 @@ function mapRow(row){
   const f8b = fechaDictSubsLib ? workdays(fechaDictSubsLib, fechaVoboDictSubsLib) : null;
 
   // F9: Resolución + Notificación (UREP)
+  // baseRes depende de quién observó:
+  // - Si solo UREP observó (sin insp subs) → desde VoBo Dict Subs directo a resolución
+  // - Si inspecciones observó → siempre hay lib subs → desde VoBo Dict Lib Subs
+  // - Sin subsanación con insp → desde VoBo Dict Lib
+  // - Sin inspección ni subsanación → desde VoBo Dictamen
   let baseRes = null;
   if(fechaVoboDictSubsLib) baseRes = fechaVoboDictSubsLib;
+  else if(fechaVoboDictSubs && !tieneInspeccionSubs) baseRes = fechaVoboDictSubs; // solo UREP observó
+  else if(fechaVoboSubsInsp && !fechaVoboDictSubs) baseRes = fechaVoboSubsInsp;  // solo insp observó sin lib aún
   else if(fechaVoboDictLib) baseRes = fechaVoboDictLib;
   else if(!tieneInspeccion && fechaVoboDictamen) baseRes = fechaVoboDictamen;
   const f9 = baseRes ? workdays(baseRes, fechaRes) : null;
@@ -762,9 +811,11 @@ function mapRow(row){
   // T.UREP = fases propias de UREP: f1+f2+f2b+f4+f4b+f6+f6b+f8+f8b+f9+f9b
   const t_urep = esValido ? sumArr([f1,f2,f2b,f4,f4b,f6,f6b,f8,f8b,f9,f9b]) : null;
 
-  // T.Total = Ingreso → última fecha relevante
-  const finTotal = fechaNotifRes || fechaRes || today;
-  const t_total = esValido ? workdays(ingreso, finTotal > today ? today : finTotal) : null;
+  // T.UIFBP = fases de inspección
+  const t_uifbp = esValido ? sumArr([f3,f7]) : null;
+
+  // T.Total = suma de TODAS las fases (más consistente que workdays extremo)
+  const t_total = esValido ? sumArr([f1,f2,f2b,f3,f4,f4b,f5,f5b,f6,f6b,f7,f8,f8b,f9,f9b]) : null;
 
   // ── Estado derivado ─────────────────────────────────────────────
   const estado = tieneIncons ? 'Inconsistencia' : derivarEstado(rObj);
@@ -799,7 +850,7 @@ function mapRow(row){
     fechaRes:fmt(fechaRes), fechaNotifRes:fmt(fechaNotifRes),
     tieneInspeccion, tieneInspeccionSubs, fueObservado,
     f1,f2,f2b,f3,f4,f4b,f5,f5b,f6,f6b,f7,f8,f8b,f9,f9b,
-    t_urep, t_total, estado, esValido,
+    t_urep, t_uifbp, t_total, estado, esValido,
     inconsistencias, fueraFlujo, inactividad
   };
 }
@@ -814,6 +865,32 @@ let chartInstances = {};
 
 // ── Charts helper ────────────────────────────────────────────────
 const PC = ['#1e3a6e','#2d6a9f','#4a90d9','#6baed6','#9ecae1','#c6dbef','#deebf7','#3b6e4a','#5a9e6e','#85c99a'];
+
+// Plugin para mostrar números en barras
+const datalabelsPlugin = {
+  id:'datalabels',
+  afterDatasetsDraw(chart){
+    const ctx=chart.ctx;
+    chart.data.datasets.forEach((ds,di)=>{
+      const meta=chart.getDatasetMeta(di);
+      if(meta.hidden)return;
+      meta.data.forEach((bar,i)=>{
+        const val=ds.data[i];
+        if(val===null||val===undefined||val===0)return;
+        ctx.save();
+        ctx.font='bold 11px -apple-system,sans-serif';
+        ctx.fillStyle='#1a1e2e';
+        ctx.textAlign='center';
+        ctx.textBaseline='bottom';
+        const x=bar.x;
+        const y=bar.y-3;
+        ctx.fillText(val,x,y);
+        ctx.restore();
+      });
+    });
+  }
+};
+Chart.register(datalabelsPlugin);
 
 function mkChart(id, type, labels, datasets, opts={}){
   if(chartInstances[id]) chartInstances[id].destroy();
@@ -873,10 +950,8 @@ function poblarFiltros(){
   ['aut','mod'].forEach(mod => {
     const data = mod==='aut' ? AUT_DATA : MOD_DATA;
     const clasifs = [...new Set(data.map(r=>r.clasif).filter(Boolean))].sort();
-    const sedes   = [...new Set(data.map(r=>r.sede).filter(Boolean))].sort();
     const analistas=[...new Set(data.map(r=>r.analista).filter(Boolean))].sort();
     fill(`${mod}-fil-clasif`, clasifs);
-    fill(`${mod}-fil-sede`, sedes);
     fill(`${mod}-fil-analista`, analistas);
   });
 }
@@ -893,13 +968,11 @@ function fill(id, opts){
 function getFiltered(mod){
   const data = mod==='aut' ? AUT_DATA : MOD_DATA;
   const clasif = document.getElementById(`${mod}-fil-clasif`)?.value||'';
-  const sede   = document.getElementById(`${mod}-fil-sede`)?.value||'';
   const analista=document.getElementById(`${mod}-fil-analista`)?.value||'';
   const desde  = document.getElementById(`${mod}-fil-desde`)?.value||'';
   const hasta  = document.getElementById(`${mod}-fil-hasta`)?.value||'';
   return data.filter(r=>{
     if(clasif && r.clasif!==clasif) return false;
-    if(sede   && r.sede!==sede)     return false;
     if(analista && r.analista!==analista) return false;
     if(desde && r.ingreso && r.ingreso<desde) return false;
     if(hasta && r.ingreso && r.ingreso>hasta) return false;
@@ -908,7 +981,7 @@ function getFiltered(mod){
 }
 
 function clearFilters(mod){
-  ['clasif','sede','analista','desde','hasta'].forEach(f=>{
+  ['clasif','analista','desde','hasta'].forEach(f=>{
     const el=document.getElementById(`${mod}-fil-${f}`);
     if(el)el.value='';
   });
@@ -963,22 +1036,38 @@ function renderGeneral(){
     <div class="kpi"><div class="kl">En subsanación</div><div class="kv" style="color:var(--warn)">${enSubs}</div></div>
     <div class="kpi"><div class="kl">Inconsistencias</div><div class="kv" style="color:var(--danger)">${incons}</div></div>
     <div class="kpi kpi-accent"><div class="kl">T.UREP prom.</div><div class="kv kv-sm">${avgUrep??'—'}<span class="ku">días háb.</span></div></div>
+    <div class="kpi"><div class="kl">T.UIFBP prom.</div><div class="kv kv-sm" style="color:var(--info)">${avg(validos.filter(r=>r.t_uifbp!==null).map(r=>r.t_uifbp))??'—'}<span class="ku">días háb.</span></div></div>
     <div class="kpi"><div class="kl">T.Total prom.</div><div class="kv kv-sm">${avgTotal??'—'}<span class="ku">días háb.</span></div></div>
   `;
 
-  // Gráfico tipo trámite
-  mkChart('gen-chart-tipo','doughnut',
-    ['Autorizaciones','Modificaciones','Otros'],
-    [{data:[AUT_DATA.length, MOD_DATA.length, data.length-AUT_DATA.length-MOD_DATA.length],
-      backgroundColor:['#1e3a6e','#2d6a4f','#aaa'],borderWidth:2}],
-    {legend:true}
-  );
+  // Finalizados por analista (top 10)
+  const coFin={};const coPend={};
+  data.forEach(r=>{
+    if(!r.analista)return;
+    if(r.estado==='Finalizado') coFin[r.analista]=(coFin[r.analista]||0)+1;
+    else coPend[r.analista]=(coPend[r.analista]||0)+1;
+  });
+  const analAll=[...new Set([...Object.keys(coFin),...Object.keys(coPend)])];
+  const saFin=analAll.map(a=>({n:a,v:coFin[a]||0})).sort((a,b)=>b.v-a.v).slice(0,10);
+  const saPend=analAll.map(a=>({n:a,v:coPend[a]||0})).sort((a,b)=>b.v-a.v).slice(0,10);
+  mkChart('gen-chart-analista-fin','bar',saFin.map(x=>x.n),
+    [{data:saFin.map(x=>x.v),backgroundColor:'#2d6a4f',borderRadius:4,borderSkipped:false}],{yTitle:'expedientes'});
+  mkChart('gen-chart-analista-pend','bar',saPend.map(x=>x.n),
+    [{data:saPend.map(x=>x.v),backgroundColor:'#1e3a6e',borderRadius:4,borderSkipped:false}],{yTitle:'expedientes'});
 
-  // Gráfico analistas (top 10)
-  const co={};data.forEach(r=>{if(r.analista)co[r.analista]=(co[r.analista]||0)+1;});
-  const sa=Object.entries(co).sort((a,b)=>b[1]-a[1]).slice(0,10);
-  mkChart('gen-chart-analista','doughnut',sa.map(x=>x[0]),
-    [{data:sa.map(x=>x[1]),backgroundColor:PC,borderWidth:2}],{legend:true});
+  // Finalizados y pendientes por mes de ingreso (últimos 18 meses)
+  const byMesFin={};const byMesPend={};
+  data.forEach(r=>{
+    if(!r.ingreso)return;
+    const m=r.ingreso.slice(0,7);
+    if(r.estado==='Finalizado') byMesFin[m]=(byMesFin[m]||0)+1;
+    else byMesPend[m]=(byMesPend[m]||0)+1;
+  });
+  const mesesFin=Object.keys({...byMesFin,...byMesPend}).sort().slice(-18);
+  mkChart('gen-chart-fin-mes','bar',mesesFin,
+    [{label:'Finalizados',data:mesesFin.map(m=>byMesFin[m]||0),backgroundColor:'#2d6a4f',borderRadius:4,borderSkipped:false}],{yTitle:'expedientes'});
+  mkChart('gen-chart-pend-mes','bar',mesesFin,
+    [{label:'Pendientes',data:mesesFin.map(m=>byMesPend[m]||0),backgroundColor:'#4a7cc7',borderRadius:4,borderSkipped:false}],{yTitle:'expedientes'});
 
   // Heatmap general
   renderHeatmap('gen-heatmap', data);
@@ -1013,6 +1102,7 @@ function renderGeneral(){
   mkChart('gen-chart-tend','bar',meses,
     [{label:'Ingresos',data:meses.map(m=>byMonth[m]),backgroundColor:'#4a7cc7',borderRadius:4,borderSkipped:false}],
     {yTitle:'expedientes'});
+  renderTendenciaComparativa(data);
 }
 
 // ── HEATMAP ──────────────────────────────────────────────────────
@@ -1321,6 +1411,7 @@ function renderAutorizaciones(){
   `;
 
   renderHeatmap('aut-heatmap', data);
+  renderMonitorPendientes('aut', data);
   renderMonitor('aut', data);
   renderTabla('aut');
   renderAnalistas('aut', data);
@@ -1333,7 +1424,7 @@ function renderAutorizaciones(){
 
   const co={};data.forEach(r=>{if(r.analista)co[r.analista]=(co[r.analista]||0)+1;});
   const sa=Object.entries(co).sort((a,b)=>b[1]-a[1]).slice(0,10);
-  mkChart('aut-chart-analista','doughnut',sa.map(x=>x[0]),[{data:sa.map(x=>x[1]),backgroundColor:PC,borderWidth:2}],{legend:true});
+  mkChart('aut-chart-analista','bar',sa.map(x=>x[0]),[{data:sa.map(x=>x[1]),backgroundColor:'#1e3a6e',borderRadius:4,borderSkipped:false}],{yTitle:'expedientes'});
 }
 
 // ── MODIFICACIONES ───────────────────────────────────────────────
@@ -1357,6 +1448,7 @@ function renderModificaciones(){
   `;
 
   renderHeatmap('mod-heatmap', data);
+  renderMonitorPendientes('mod', data);
   renderMonitor('mod', data);
   renderTabla('mod');
   renderAnalistas('mod', data);
@@ -1368,7 +1460,7 @@ function renderModificaciones(){
 
   const co={};data.forEach(r=>{if(r.analista)co[r.analista]=(co[r.analista]||0)+1;});
   const sa=Object.entries(co).sort((a,b)=>b[1]-a[1]).slice(0,10);
-  mkChart('mod-chart-analista','doughnut',sa.map(x=>x[0]),[{data:sa.map(x=>x[1]),backgroundColor:PC,borderWidth:2}],{legend:true});
+  mkChart('mod-chart-analista','bar',sa.map(x=>x[0]),[{data:sa.map(x=>x[1]),backgroundColor:'#2d6a4f',borderRadius:4,borderSkipped:false}],{yTitle:'expedientes'});
 }
 
 // ── Export CSV ───────────────────────────────────────────────────
@@ -1379,6 +1471,142 @@ function exportCSV(mod){
   const csv=[headers,...rows].map(r=>r.map(v=>`"${String(v||'').replace(/"/g,'""')}"`).join(',')).join('\n');
   const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
   a.download=`farma_${mod}_${new Date().toISOString().slice(0,10)}.csv`;a.click();
+}
+
+
+// ── MONITOR DE PENDIENTES ────────────────────────────────────────
+const FASE_INFO = {
+  'A espera de asignación':      {label:'Asignación',         actor:'urep',  color:'var(--accent)'},
+  'A espera de dictamen':        {label:'Dictamen UREP',       actor:'urep',  color:'var(--accent)'},
+  'A espera de VoBo dictamen':   {label:'VoBo Dictamen',       actor:'urep',  color:'var(--accent)'},
+  'En inspección':               {label:'Inspección',          actor:'uifbp', color:'var(--info)'},
+  'En inspección (subsanación)': {label:'Insp. Subsanación',   actor:'uifbp', color:'var(--info)'},
+  'A espera de liberación':      {label:'Dict. Liberación',    actor:'urep',  color:'var(--accent)'},
+  'A espera de liberación (subs.)':   {label:'Lib. Subs.',     actor:'urep',  color:'var(--accent)'},
+  'A espera de VoBo lib.':       {label:'VoBo Lib.',           actor:'urep',  color:'var(--accent)'},
+  'En subsanación':              {label:'Subsanación',         actor:'reg',   color:'var(--warn)'},
+  'A espera de VoBo dict. subs.':{label:'VoBo Dict. Subs.',    actor:'urep',  color:'var(--accent)'},
+  'A espera de dictamen subsanación':{label:'Dict. Subs.',     actor:'urep',  color:'var(--accent)'},
+  'A espera de resolución':      {label:'Resolución',          actor:'urep',  color:'var(--accent)'},
+  'A espera de notificación':    {label:'Notificación',        actor:'urep',  color:'var(--accent)'},
+};
+
+let pendFiltroEstado = {};
+
+function renderMonitorPendientes(mod, data){
+  const today = new Date(); today.setHours(0,0,0,0);
+  const el = document.getElementById(`${mod}-monitor-pendientes`);
+  if(!el) return;
+
+  const activos = data.filter(r => r.estado !== 'Finalizado' && r.estado !== 'Inconsistencia');
+
+  // Agrupar por estado para filtros
+  const grupos = {};
+  activos.forEach(r => { grupos[r.estado] = (grupos[r.estado]||0)+1; });
+
+  if(!pendFiltroEstado[mod]) pendFiltroEstado[mod] = 'all';
+
+  const filtrados = pendFiltroEstado[mod] === 'all'
+    ? activos
+    : activos.filter(r => r.estado === pendFiltroEstado[mod]);
+
+  // Calcular días en fase actual
+  const conDias = filtrados.map(r => {
+    const fi = FASE_INFO[r.estado] || {label:r.estado, actor:'urep', color:'var(--accent)'};
+    // Días desde última fecha relevante
+    let baseDate = null;
+    if(r.estado.includes('inspección')) baseDate = parseD(r.fechaDictamenInsp) || parseD(r.fechaAsig);
+    else if(r.estado === 'En subsanación') baseDate = parseD(r.fechaSubs) || parseD(r.fechaVoboDictLib) || parseD(r.fechaVoboDictamen);
+    else if(r.estado === 'A espera de dictamen') baseDate = parseD(r.fechaAsig);
+    else if(r.estado === 'A espera de VoBo dictamen') baseDate = parseD(r.fechaDictamen);
+    else if(r.estado === 'A espera de liberación') baseDate = parseD(r.fechaVoboInsp) || parseD(r.fechaVoboDictamen);
+    else if(r.estado === 'A espera de resolución') baseDate = parseD(r.fechaVoboDictLib) || parseD(r.fechaVoboDictSubs) || parseD(r.fechaVoboDictamen);
+    else baseDate = parseD(r.ingreso);
+
+    const dias = baseDate ? workdays(baseDate, today) : 0;
+    return {...r, diasEnFase: dias, faseInfo: fi};
+  }).sort((a,b) => b.diasEnFase - a.diasEnFase);
+
+  const maxDias = Math.max(...conDias.map(x=>x.diasEnFase), 1);
+
+  const semClass = (d) => d >= 20 ? 'sem-r' : d >= 10 ? 'sem-y' : 'sem-g';
+  const semColor = (d) => d >= 20 ? '#ef4444' : d >= 10 ? '#f59e0b' : '#22c55e';
+
+  let html = `<div class="pend-filters">
+    <span style="font-size:11px;font-weight:600;color:var(--text3)">Filtrar:</span>
+    <button class="pend-filter-btn ${pendFiltroEstado[mod]==='all'?'active':''}" onclick="setPendFiltro('${mod}','all')">Todos (${activos.length})</button>
+    ${Object.entries(grupos).sort((a,b)=>b[1]-a[1]).map(([est,n])=>`
+      <button class="pend-filter-btn ${pendFiltroEstado[mod]===est?'active':''}" onclick="setPendFiltro('${mod}','${est.replace(/'/g,"\'")}')">
+        ${FASE_INFO[est]?.label||est} (${n})
+      </button>`).join('')}
+  </div>`;
+
+  if(!conDias.length){
+    html += '<div style="color:var(--text3);font-size:13px;padding:12px 0">✓ Sin expedientes activos</div>';
+  } else {
+    html += `<div class="pend-grid">${conDias.map(r=>{
+      const fi = r.faseInfo;
+      const actorClass = fi.actor==='uifbp'?'pc-fase-uifbp':fi.actor==='reg'?'pc-fase-reg':'pc-fase-urep';
+      const pct = Math.max(4, Math.round((r.diasEnFase/maxDias)*100));
+      return `<div class="pend-card">
+        <div class="pc-top">
+          <span class="pc-sol">${r.nSol}</span>
+          <span class="sem ${semClass(r.diasEnFase)}" style="width:10px;height:10px"></span>
+        </div>
+        <div class="pc-name">${r.comercial}</div>
+        <div class="pc-meta">${r.analista} · ${r.clasif||'—'}</div>
+        <div class="pc-bottom">
+          <span class="pc-fase ${actorClass}">${fi.label}</span>
+          <div>
+            <div class="pc-dias" style="color:${semColor(r.diasEnFase)}">${r.diasEnFase}</div>
+            <div class="pc-dias-lbl">días háb.</div>
+          </div>
+        </div>
+        <div class="pc-bar"><div class="pc-bar-fill" style="width:${pct}%;background:${semColor(r.diasEnFase)}"></div></div>
+      </div>`;
+    }).join('')}</div>`;
+  }
+
+  el.innerHTML = html;
+}
+
+function setPendFiltro(mod, estado){
+  pendFiltroEstado[mod] = estado;
+  if(mod==='aut') renderAutorizaciones();
+  else renderModificaciones();
+}
+
+// ── TENDENCIA COMPARATIVA ────────────────────────────────────────
+function renderTendenciaComparativa(data){
+  const byMonth = {};
+  data.filter(r=>r.esValido&&r.estado==='Finalizado').forEach(r=>{
+    if(!r.ingreso)return;
+    const m = r.ingreso.slice(0,7);
+    if(!byMonth[m]) byMonth[m] = {urep:[],total:[]};
+    if(r.t_urep!==null) byMonth[m].urep.push(r.t_urep);
+    if(r.t_total!==null) byMonth[m].total.push(r.t_total);
+  });
+  const meses = Object.keys(byMonth).sort().slice(-18);
+  const avgUrep = meses.map(m=>avg(byMonth[m].urep));
+  const avgTotal = meses.map(m=>avg(byMonth[m].total));
+
+  if(chartInstances['gen-chart-comparativa']) chartInstances['gen-chart-comparativa'].destroy();
+  const ctx = document.getElementById('gen-chart-comparativa');
+  if(!ctx)return;
+  chartInstances['gen-chart-comparativa'] = new Chart(ctx, {
+    type:'line',
+    data:{labels:meses, datasets:[
+      {label:'T.UREP prom.',data:avgUrep,borderColor:'#1e3a6e',backgroundColor:'rgba(30,58,110,0.08)',tension:0.3,pointRadius:4,pointBackgroundColor:'#1e3a6e'},
+      {label:'T.Total prom.',data:avgTotal,borderColor:'#4a7cc7',backgroundColor:'rgba(74,124,199,0.08)',tension:0.3,pointRadius:4,pointBackgroundColor:'#4a7cc7'},
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:true,position:'top',labels:{font:{size:11},boxWidth:12,padding:8}}},
+      scales:{
+        x:{grid:{display:false},ticks:{font:{size:10}}},
+        y:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{font:{size:10}},title:{display:true,text:'días hábiles',font:{size:10}}}
+      }
+    }
+  });
 }
 
 loadData();
