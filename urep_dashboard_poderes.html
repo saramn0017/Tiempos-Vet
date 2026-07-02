@@ -216,6 +216,7 @@ tr.detail-row td{background:#f8faff;padding:14px 16px;white-space:normal;}
 .pc-right{display:flex;flex-direction:column;align-items:flex-end;flex-shrink:0;}
 .pc-dias{font-size:22px;font-weight:700;line-height:1;}
 .pc-dias-lbl{font-size:10px;color:var(--text3);}
+.pc-dias-total{font-size:10px;color:var(--text3);margin-top:2px;}
 .pc-bar{height:3px;border-radius:2px;margin-top:6px;background:var(--border);width:80px;}
 .pc-bar-fill{height:100%;border-radius:2px;transition:width .4s;}
 .pend-filters{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center;}
@@ -766,6 +767,7 @@ function mapRow(row){
   let inactividad = null;
   if(!['Finalizado','Inconsistencia','En subsanación'].includes(estado)){
     const checks = [
+      {f:fechaRes,          label:'Resolución'},
       {f:fechaVoboDictSubs, label:'VoBo Dict. Subs.'},
       {f:fechaVoboDictamen, label:'VoBo Dictamen'},
       {f:fechaAsig,         label:'Asignación'},
@@ -1404,22 +1406,26 @@ function exportExcelPendientes(mod){
   const data = mod==='aut' ? AUT_DATA : MOD_DATA;
   const activos = data.filter(r => r.estado !== 'Finalizado' && r.estado !== 'Inconsistencia');
 
-  const headers = ['N° Solicitud','Nombre Comercial','Clasif. Personalizada','Analista','Estado Derivado','Pendiente','Días en fase (DH)','Ingreso'];
+  const headers = ['N° Solicitud','Nombre Comercial','Clasif. Personalizada','Analista','Estado Derivado','Pendiente','Días en fase (DH)','Días totales desde ingreso (DH)','Ingreso'];
   const rows = activos.map(r => {
     const fi = FASE_INFO[r.estado] || {label: r.estado};
     let baseDate = null;
     if(r.estado === 'En subsanación') baseDate = parseD(r.fechaSubs) || parseD(r.fechaVoboDictamen);
     else if(r.estado === 'A espera de dictamen') baseDate = parseD(r.fechaAsig);
     else if(r.estado === 'A espera de VoBo dictamen') baseDate = parseD(r.fechaDictamen);
+    else if(r.estado === 'A espera de VoBo dict. subs.') baseDate = parseD(r.fechaDictSubs);
     else if(r.estado === 'A espera de resolución') baseDate = parseD(r.fechaVoboDictSubs) || parseD(r.fechaVoboDictamen);
+    else if(r.estado === 'A espera de notificación') baseDate = parseD(r.fechaRes);
     else baseDate = parseD(r.ingreso);
     const dias = baseDate ? workdays(baseDate, today) : 0;
-    return [r.nSol, r.comercial, r.clasif||'', r.analista, r.estado, fi.label, dias, r.ingreso];
+    const ingresoDate = parseD(r.ingreso);
+    const diasTotal = ingresoDate ? workdays(ingresoDate, today) : 0;
+    return [r.nSol, r.comercial, r.clasif||'', r.analista, r.estado, fi.label, dias, diasTotal, r.ingreso];
   }).sort((a,b) => b[6]-a[6]);
 
   const wb = XLSX.utils.book_new();
   const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
-  ws['!cols'] = [{wch:22},{wch:35},{wch:30},{wch:20},{wch:30},{wch:40},{wch:15},{wch:12}];
+  ws['!cols'] = [{wch:22},{wch:35},{wch:30},{wch:20},{wch:30},{wch:40},{wch:15},{wch:15},{wch:12}];
   XLSX.utils.book_append_sheet(wb, ws, 'Pendientes');
   const nombre = mod==='aut'?'nuevos':'modificaciones';
   XLSX.writeFile(wb, `poderes_pendientes_${nombre}_${new Date().toISOString().slice(0,10)}.xlsx`);
@@ -1559,19 +1565,24 @@ function renderMonitorPendientes(mod, data){
     ? activos
     : activos.filter(r => r.estado === pendFiltroEstado[mod]);
 
-  // Calcular días en fase actual
+  // Calcular días en fase actual + días totales desde ingreso
   const conDias = filtrados.map(r => {
     const fi = FASE_INFO[r.estado] || {label:r.estado, actor:'urep', color:'var(--accent)'};
-    // Días desde última fecha relevante
+    // Días desde última fecha relevante (fase actual)
     let baseDate = null;
     if(r.estado === 'En subsanación') baseDate = parseD(r.fechaSubs) || parseD(r.fechaVoboDictamen);
     else if(r.estado === 'A espera de dictamen') baseDate = parseD(r.fechaAsig);
     else if(r.estado === 'A espera de VoBo dictamen') baseDate = parseD(r.fechaDictamen);
+    else if(r.estado === 'A espera de VoBo dict. subs.') baseDate = parseD(r.fechaDictSubs);
     else if(r.estado === 'A espera de resolución') baseDate = parseD(r.fechaVoboDictSubs) || parseD(r.fechaVoboDictamen);
+    else if(r.estado === 'A espera de notificación') baseDate = parseD(r.fechaRes);
     else baseDate = parseD(r.ingreso);
 
     const dias = baseDate ? workdays(baseDate, today) : 0;
-    return {...r, diasEnFase: dias, faseInfo: fi};
+    // Días totales desde que ingresó el expediente (independiente de la fase)
+    const ingresoDate = parseD(r.ingreso);
+    const diasTotal = ingresoDate ? workdays(ingresoDate, today) : 0;
+    return {...r, diasEnFase: dias, diasTotal, faseInfo: fi};
   }).sort((a,b) => b.diasEnFase - a.diasEnFase);
 
   const maxDias = Math.max(...conDias.map(x=>x.diasEnFase), 1);
@@ -1608,7 +1619,8 @@ function renderMonitorPendientes(mod, data){
         </div>
         <div class="pc-right">
           <div class="pc-dias" style="color:${semColor(r.diasEnFase)}">${r.diasEnFase}</div>
-          <div class="pc-dias-lbl">días háb.</div>
+          <div class="pc-dias-lbl">días háb. en esta fase</div>
+          <div class="pc-dias-total">${r.diasTotal} días háb. totales</div>
           <div class="pc-bar"><div class="pc-bar-fill" style="width:${pct}%;background:${semColor(r.diasEnFase)}"></div></div>
         </div>
       </div>`;
